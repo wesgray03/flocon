@@ -1148,7 +1148,7 @@ export default function ProjectsPage() {
         <h1
           style={{
             fontSize: 28,
-            fontWeight: 300,
+            fontWeight: 700,
             margin: 0,
             color: '#1e40af',
             flex: 1,
@@ -1157,7 +1157,7 @@ export default function ProjectsPage() {
             letterSpacing: '-0.02em',
           }}
         >
-          FloCon Projects
+          FloCon | Projects
         </h1>
 
         {/* Right: Actions and User Info */}
