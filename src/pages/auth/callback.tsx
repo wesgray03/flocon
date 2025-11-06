@@ -10,23 +10,45 @@ export default function AuthCallback() {
     const handleAuthCallback = async () => {
       try {
         setStatus('Processing authentication...');
+        console.log('Starting auth callback...');
 
-        // Listen for auth state changes
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, session) => {
-          console.log('Auth event:', event, 'Session:', !!session);
+        // Check if there are auth tokens in the URL
+        const hashParams = new URLSearchParams(
+          window.location.hash.substring(1)
+        );
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
 
-          if (event === 'SIGNED_IN' && session) {
-            setStatus('Authentication successful! Redirecting...');
-            setTimeout(() => router.replace('/projects'), 500);
-          } else if (event === 'SIGNED_OUT') {
-            setStatus('Authentication failed. Redirecting to login...');
-            setTimeout(() => router.replace('/login'), 2000);
-          }
+        console.log('Hash params:', {
+          accessToken: !!accessToken,
+          refreshToken: !!refreshToken,
         });
 
-        // Also immediately check for existing session
+        if (accessToken) {
+          console.log('Found access token, setting session...');
+          // We have tokens in the URL, set the session
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || '',
+          });
+
+          if (error) {
+            console.error('Error setting session:', error);
+            setStatus('Authentication failed. Redirecting to login...');
+            setTimeout(() => router.replace('/login'), 2000);
+            return;
+          }
+
+          if (data.session) {
+            console.log('Session set successfully');
+            setStatus('Authentication successful! Redirecting...');
+            setTimeout(() => router.replace('/projects'), 500);
+            return;
+          }
+        }
+
+        // Fallback: Check for existing session
+        console.log('No tokens in URL, checking existing session...');
         const { data, error } = await supabase.auth.getSession();
 
         if (error) {
@@ -37,23 +59,38 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
+          console.log('Found existing session');
           setStatus('Authentication successful! Redirecting...');
           setTimeout(() => router.replace('/projects'), 500);
         } else {
-          // Wait for auth state change event
+          console.log('No session found, setting up listener...');
+          // Set up auth state listener as fallback
           setStatus('Completing authentication...');
+
+          const {
+            data: { subscription },
+          } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state change:', event, 'Session:', !!session);
+
+            if (event === 'SIGNED_IN' && session) {
+              setStatus('Authentication successful! Redirecting...');
+              setTimeout(() => router.replace('/projects'), 500);
+              subscription.unsubscribe();
+            } else if (event === 'SIGNED_OUT') {
+              setStatus('Authentication failed. Redirecting to login...');
+              setTimeout(() => router.replace('/login'), 2000);
+              subscription.unsubscribe();
+            }
+          });
 
           // Timeout after 10 seconds if no auth event
           setTimeout(() => {
+            console.log('Auth timeout');
             setStatus('Authentication timeout. Redirecting to login...');
             setTimeout(() => router.replace('/login'), 2000);
+            subscription.unsubscribe();
           }, 10000);
         }
-
-        // Cleanup subscription when component unmounts
-        return () => {
-          subscription.unsubscribe();
-        };
       } catch (err) {
         console.error('Unexpected error:', err);
         setStatus('Authentication failed. Redirecting to login...');
@@ -61,8 +98,11 @@ export default function AuthCallback() {
       }
     };
 
-    handleAuthCallback();
-  }, [router]);
+    // Only run when router is ready
+    if (router.isReady) {
+      handleAuthCallback();
+    }
+  }, [router, router.isReady]);
 
   return (
     <div
