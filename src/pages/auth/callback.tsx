@@ -9,7 +9,24 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Handle the auth callback
+        setStatus('Processing authentication...');
+
+        // Listen for auth state changes
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth event:', event, 'Session:', !!session);
+
+          if (event === 'SIGNED_IN' && session) {
+            setStatus('Authentication successful! Redirecting...');
+            setTimeout(() => router.replace('/projects'), 500);
+          } else if (event === 'SIGNED_OUT') {
+            setStatus('Authentication failed. Redirecting to login...');
+            setTimeout(() => router.replace('/login'), 2000);
+          }
+        });
+
+        // Also immediately check for existing session
         const { data, error } = await supabase.auth.getSession();
 
         if (error) {
@@ -20,15 +37,23 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
-          // Successfully authenticated
           setStatus('Authentication successful! Redirecting...');
-          // Redirect to projects page
-          router.replace('/projects');
+          setTimeout(() => router.replace('/projects'), 500);
         } else {
-          // No session found
-          setStatus('No session found. Redirecting to login...');
-          setTimeout(() => router.replace('/login'), 2000);
+          // Wait for auth state change event
+          setStatus('Completing authentication...');
+
+          // Timeout after 10 seconds if no auth event
+          setTimeout(() => {
+            setStatus('Authentication timeout. Redirecting to login...');
+            setTimeout(() => router.replace('/login'), 2000);
+          }, 10000);
         }
+
+        // Cleanup subscription when component unmounts
+        return () => {
+          subscription.unsubscribe();
+        };
       } catch (err) {
         console.error('Unexpected error:', err);
         setStatus('Authentication failed. Redirecting to login...');
@@ -36,7 +61,6 @@ export default function AuthCallback() {
       }
     };
 
-    // Only run once when component mounts
     handleAuthCallback();
   }, [router]);
 
