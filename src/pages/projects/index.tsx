@@ -11,6 +11,7 @@ import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectStyles';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -25,6 +26,35 @@ type Filters = {
   owner: string[];
   stage: string[];
 };
+
+interface TaskData {
+  id: string;
+  name: string;
+  stages?: { name?: string }[] | { name?: string };
+}
+
+interface StageData {
+  id?: string;
+  name: string;
+  order?: number;
+}
+
+interface NameRecord {
+  name: string;
+}
+
+interface ProjectPayload {
+  name: string;
+  qbid: string | null;
+  customer_id: string | null;
+  manager: string | null;
+  owner: string | null;
+  sharepoint_folder: string | null;
+  contract_amount: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  stage_id?: string | null;
+}
 
 /* ========================= MASTER DATA MODAL ========================= */
 
@@ -76,11 +106,16 @@ function MasterDataModal({
         error = result.error;
         // Transform to include stage_name
         if (data) {
-          data = data.map((task: any) => ({
-            id: task.id,
-            name: task.name,
-            stage_name: task.stages?.name || 'Unknown Stage',
-          }));
+          data = data.map((task: TaskData) => {
+            const stageName = Array.isArray(task.stages)
+              ? task.stages[0]?.name
+              : task.stages?.name;
+            return {
+              id: task.id,
+              name: task.name,
+              stage_name: stageName || 'Unknown Stage',
+            };
+          });
         }
       } else {
         const result = await supabase
@@ -523,25 +558,45 @@ export default function ProjectsPage() {
       if (error) {
         console.error(
           'Project dashboard load error:',
-          (error as any).message ?? error
+          (error as { message?: string }).message ?? error
         );
         setRows([]);
         return;
       }
 
-      const rowsData = (data ?? []) as any[];
+      interface ProjectDashboardRow {
+        id: string;
+        qbid?: string | null;
+        project_name: string;
+        customer_name?: string | null;
+        manager?: string | null;
+        owner?: string | null;
+        stage_id?: string | null;
+        stage_name?: string | null;
+        stage_order?: number | null;
+        sharepoint_folder?: string | null;
+        contract_amt?: number;
+        co_amt?: number;
+        total_amt?: number;
+        billed_amt?: number;
+        balance?: number;
+        start_date?: string | null;
+        end_date?: string | null;
+      }
+
+      const rowsData = (data ?? []) as ProjectDashboardRow[];
 
       // Load stages table to prefer canonical stages.name where possible.
       // Build maps for names and orders
-      let stagesMap: Record<string, string> = {};
-      let normalizedNameMap: Record<string, string> = {};
-      let stageOrderMap: Record<string, number> = {};
+      const stagesMap: Record<string, string> = {};
+      const normalizedNameMap: Record<string, string> = {};
+      const stageOrderMap: Record<string, number | null> = {};
       try {
         const { data: stagesData, error: stagesErr } = await supabase
           .from('stages')
           .select('id,name,order');
         if (!stagesErr && stagesData) {
-          (stagesData as any[]).forEach((s) => {
+          (stagesData as StageData[]).forEach((s) => {
             if (s?.id && s?.name) {
               const displayName = s.order ? `${s.order}. ${s.name}` : s.name;
               stagesMap[s.id] = displayName;
@@ -551,40 +606,78 @@ export default function ProjectsPage() {
             }
           });
         }
-      } catch (e) {
+      } catch {
         // ignore - stages table may not exist
       }
 
-      const mapped: Row[] = rowsData.map((r) => {
-        let stage_order = r.stages?.order;
-
+      const mapped: Row[] = rowsData.map((r): Row => {
         // prefer stage_id -> stages.name if available
         if (r.stage_id && stagesMap[r.stage_id]) {
           return {
-            ...r,
+            id: r.id,
+            qbid: r.qbid ?? null,
+            project_name: r.project_name,
+            customer_name: r.customer_name ?? null,
+            manager: r.manager ?? null,
+            owner: r.owner ?? null,
             stage: stagesMap[r.stage_id],
-            stage_order: stageOrderMap[r.stage_id],
-            sharepoint_folder: r.sharepoint_folder || null,
+            stage_id: r.stage_id,
+            stage_order: stageOrderMap[r.stage_id] ?? null,
+            sharepoint_folder: r.sharepoint_folder ?? null,
+            contract_amt: r.contract_amt ?? 0,
+            co_amt: r.co_amt ?? 0,
+            total_amt: r.total_amt ?? 0,
+            billed_amt: r.billed_amt ?? 0,
+            balance: r.balance ?? 0,
+            start_date: r.start_date ?? null,
+            end_date: r.end_date ?? null,
           };
         }
 
-        // otherwise, if we have a stage display string, try to match to a canonical
-        // stages.name (case-insensitive). If no match, leave the original string.
-        if (r.stage && typeof r.stage === 'string') {
-          const key = r.stage.trim().toLowerCase();
-          if (normalizedNameMap[key])
-            return {
-              ...r,
-              stage: normalizedNameMap[key],
-              stage_order: stage_order || null,
-              sharepoint_folder: r.sharepoint_folder || null,
-            };
+        // otherwise, if we have a stage_name, try to match to a canonical
+        // stages.name (case-insensitive). If no match, use stage_name as-is.
+        if (r.stage_name && typeof r.stage_name === 'string') {
+          const key = r.stage_name.trim().toLowerCase();
+          const displayStage = normalizedNameMap[key] || r.stage_name;
+          return {
+            id: r.id,
+            qbid: r.qbid ?? null,
+            project_name: r.project_name,
+            customer_name: r.customer_name ?? null,
+            manager: r.manager ?? null,
+            owner: r.owner ?? null,
+            stage: displayStage,
+            stage_id: r.stage_id,
+            stage_order: r.stage_order ?? null,
+            sharepoint_folder: r.sharepoint_folder ?? null,
+            contract_amt: r.contract_amt ?? 0,
+            co_amt: r.co_amt ?? 0,
+            total_amt: r.total_amt ?? 0,
+            billed_amt: r.billed_amt ?? 0,
+            balance: r.balance ?? 0,
+            start_date: r.start_date ?? null,
+            end_date: r.end_date ?? null,
+          };
         }
 
         return {
-          ...r,
-          stage_order: stage_order || null,
-          sharepoint_folder: r.sharepoint_folder || null,
+          id: r.id,
+          qbid: r.qbid ?? null,
+          project_name: r.project_name,
+          customer_name: r.customer_name ?? null,
+          manager: r.manager ?? null,
+          owner: r.owner ?? null,
+          stage: null,
+          stage_id: r.stage_id,
+          stage_order: r.stage_order ?? null,
+          sharepoint_folder: r.sharepoint_folder ?? null,
+          contract_amt: r.contract_amt ?? 0,
+          co_amt: r.co_amt ?? 0,
+          total_amt: r.total_amt ?? 0,
+          billed_amt: r.billed_amt ?? 0,
+          balance: r.balance ?? 0,
+          start_date: r.start_date ?? null,
+          end_date: r.end_date ?? null,
         };
       });
       setRows(mapped as Row[]);
@@ -606,7 +699,9 @@ export default function ProjectsPage() {
           .order('name', { ascending: true });
         setCustomerOptions(
           (
-            (custs ?? []).map((c: any) => c.name).filter(Boolean) as string[]
+            (custs ?? [])
+              .map((c: NameRecord) => c.name)
+              .filter(Boolean) as string[]
           ).sort()
         );
 
@@ -618,7 +713,9 @@ export default function ProjectsPage() {
           .order('name', { ascending: true });
         setManagerOptions(
           (
-            (mgrs ?? []).map((m: any) => m.name).filter(Boolean) as string[]
+            (mgrs ?? [])
+              .map((m: NameRecord) => m.name)
+              .filter(Boolean) as string[]
           ).sort()
         );
 
@@ -630,7 +727,9 @@ export default function ProjectsPage() {
           .order('name', { ascending: true });
         setOwnerOptions(
           (
-            (owns ?? []).map((o: any) => o.name).filter(Boolean) as string[]
+            (owns ?? [])
+              .map((o: NameRecord) => o.name)
+              .filter(Boolean) as string[]
           ).sort()
         );
 
@@ -644,7 +743,9 @@ export default function ProjectsPage() {
           if (!stagesErr && stagesData && stagesData.length > 0) {
             setStageOptions(
               stagesData
-                .map((s: any) => (s.order ? `${s.order}. ${s.name}` : s.name))
+                .map((s: StageData) =>
+                  s.order ? `${s.order}. ${s.name}` : s.name
+                )
                 .filter(Boolean) as string[]
             );
           } else {
@@ -665,7 +766,7 @@ export default function ProjectsPage() {
             ];
             setStageOptions(defaults.sort());
           }
-        } catch (e) {
+        } catch {
           // If `stages` table isn't available or permissions block access, use defaults.
           const defaults = [
             'Project Setup',
@@ -829,7 +930,7 @@ export default function ProjectsPage() {
       const customer_id = await getOrCreateCustomerId(form.customer_name);
       // Try to resolve a stage id from the `stages` table.
       const stage_id = await getOrCreateStageId(form.stage);
-      const payload: any = {
+      const payload: ProjectPayload = {
         name: form.name,
         qbid: form.qbid || null,
         customer_id,
@@ -889,7 +990,7 @@ export default function ProjectsPage() {
       return tokens.some((t) => v.includes(String(t).toLowerCase()));
     };
 
-    let out = rows.filter((row) => {
+    const out = rows.filter((row) => {
       return (
         matchesTokens(row.qbid, filters.qbid) &&
         matchesTokens(row.project_name, filters.project_name) &&
@@ -929,9 +1030,9 @@ export default function ProjectsPage() {
 
       // numeric/date compare first
       const aNum =
-        typeof aVal === 'number' ? aVal : Date.parse(aVal as any) || NaN;
+        typeof aVal === 'number' ? aVal : Date.parse(String(aVal)) || NaN;
       const bNum =
-        typeof bVal === 'number' ? bVal : Date.parse(bVal as any) || NaN;
+        typeof bVal === 'number' ? bVal : Date.parse(String(bVal)) || NaN;
       if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) {
         return sortOrder === 'asc' ? aNum - bNum : bNum - aNum;
       }
@@ -989,7 +1090,7 @@ export default function ProjectsPage() {
           <p style={{ marginTop: 0, marginBottom: 16, color: '#475569' }}>
             Please sign in with your Microsoft account to access Projects.
           </p>
-          <a
+          <Link
             href="/login"
             style={{
               display: 'inline-block',
@@ -1002,7 +1103,7 @@ export default function ProjectsPage() {
             }}
           >
             Go to Sign in
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -1034,9 +1135,11 @@ export default function ProjectsPage() {
       >
         {/* Left: Logo */}
         <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-          <img
+          <Image
             src="/Logo.png"
             alt="Logo"
+            width={64}
+            height={48}
             style={{ height: 48, width: 'auto' }}
           />
         </div>
@@ -1550,8 +1653,10 @@ export default function ProjectsPage() {
                             .eq('id', r.id);
                           if (error) throw error;
                           await loadProjects();
-                        } catch (err: any) {
-                          alert(`Delete failed: ${err?.message ?? err}`);
+                        } catch (err) {
+                          const errorMessage =
+                            err instanceof Error ? err.message : String(err);
+                          alert(`Delete failed: ${errorMessage}`);
                         }
                       }}
                       title="Delete project"
@@ -1771,58 +1876,6 @@ const td: React.CSSProperties = {
 const tdRight: React.CSSProperties = { ...td, textAlign: 'right' };
 const tdCenter: React.CSSProperties = { ...td, textAlign: 'center' };
 
-const overlay: React.CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: 'rgba(0,0,0,0.4)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 1000,
-};
-const modal: React.CSSProperties = {
-  background: '#fff',
-  borderRadius: 12,
-  padding: 24,
-  maxWidth: 1400,
-  width: '90%',
-  maxHeight: '90vh',
-  overflowY: 'auto',
-  boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-};
-const input: React.CSSProperties = {
-  padding: 8,
-  border: '1px solid #e5e7eb',
-  borderRadius: 6,
-  width: '100%',
-};
-const btnCancel: React.CSSProperties = {
-  padding: '8px 12px',
-  border: '1px solid #cbd5e1',
-  borderRadius: 6,
-  background: '#fff',
-  cursor: 'pointer',
-};
-const btnSave: React.CSSProperties = {
-  padding: '8px 12px',
-  borderRadius: 6,
-  background: '#2563eb',
-  color: '#fff',
-  border: 'none',
-  cursor: 'pointer',
-};
-const btnSmall: React.CSSProperties = {
-  padding: '4px 8px',
-  fontSize: 12,
-  background: '#0f172a',
-  color: '#fff',
-  border: 'none',
-  borderRadius: 4,
-  cursor: 'pointer',
-};
 const menuItemButton: React.CSSProperties = {
   display: 'block',
   width: '100%',
