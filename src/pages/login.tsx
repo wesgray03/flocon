@@ -22,7 +22,7 @@ export default function LoginPage() {
   const signInWithMicrosoft = async () => {
     const redirectTo =
       typeof window !== 'undefined'
-        ? `${window.location.origin}/projects`
+        ? `${window.location.origin}/auth/callback`
         : undefined;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'azure',
