@@ -515,9 +515,11 @@ export default function ProjectsPage() {
   const loadProjects = async () => {
     setLoading(true);
     try {
+      // Note: project_dashboard view already includes stage info (stage_id, stage_name, stage_order)
+      // so we don't need to join with stages table
       const { data, error } = await supabase
         .from('project_dashboard')
-        .select('*, stages(id,name,order)');
+        .select('*');
       if (error) {
         console.error(
           'Project dashboard load error:',
@@ -1043,14 +1045,16 @@ export default function ProjectsPage() {
         <h1
           style={{
             fontSize: 28,
-            fontWeight: 600,
+            fontWeight: 300,
             margin: 0,
             color: '#1e40af',
             flex: 1,
             textAlign: 'center',
+            fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
+            letterSpacing: '-0.02em',
           }}
         >
-          Projects
+          FloCon Projects
         </h1>
 
         {/* Right: Actions and User Info */}
