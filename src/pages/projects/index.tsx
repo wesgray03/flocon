@@ -1033,7 +1033,7 @@ export default function ProjectsPage() {
         {/* Left: Logo */}
         <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
           <img
-            src="/logo.png"
+            src="/Logo.png"
             alt="Logo"
             style={{ height: 48, width: 'auto' }}
           />
