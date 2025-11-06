@@ -11,22 +11,41 @@ export default function AuthCallback() {
       try {
         setStatus('Processing authentication...');
         console.log('Starting auth callback...');
+        console.log('Current URL:', window.location.href);
 
-        // Check if there are auth tokens in the URL
+        // First, try to handle URL hash/query parameters that might contain auth tokens
+        const urlParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(
           window.location.hash.substring(1)
         );
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
 
-        console.log('Hash params:', {
+        const accessToken =
+          hashParams.get('access_token') || urlParams.get('access_token');
+        const refreshToken =
+          hashParams.get('refresh_token') || urlParams.get('refresh_token');
+        const code = urlParams.get('code');
+        const error = urlParams.get('error');
+
+        console.log('URL Parameters:', {
           accessToken: !!accessToken,
           refreshToken: !!refreshToken,
+          code: !!code,
+          error: error,
+          hash: window.location.hash,
+          search: window.location.search,
         });
+
+        if (error) {
+          console.error('OAuth error in URL:', error);
+          setStatus(`Authentication failed: ${error}`);
+          setTimeout(() => router.replace('/login'), 3000);
+          return;
+        }
 
         if (accessToken) {
           console.log('Found access token, setting session...');
-          // We have tokens in the URL, set the session
+          setStatus('Setting up your session...');
+
           const { data, error } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken || '',
@@ -34,67 +53,87 @@ export default function AuthCallback() {
 
           if (error) {
             console.error('Error setting session:', error);
-            setStatus('Authentication failed. Redirecting to login...');
-            setTimeout(() => router.replace('/login'), 2000);
+            setStatus('Session setup failed. Redirecting to login...');
+            setTimeout(() => router.replace('/login'), 3000);
             return;
           }
 
           if (data.session) {
-            console.log('Session set successfully');
+            console.log('Session set successfully:', data.session);
             setStatus('Authentication successful! Redirecting...');
-            setTimeout(() => router.replace('/projects'), 500);
+            setTimeout(() => router.replace('/projects'), 1000);
             return;
           }
         }
 
-        // Fallback: Check for existing session
-        console.log('No tokens in URL, checking existing session...');
-        const { data, error } = await supabase.auth.getSession();
+        // If no tokens in URL, try multiple approaches to get session
+        console.log('No tokens in URL, checking for existing session...');
+        setStatus('Checking authentication status...');
 
-        if (error) {
-          console.error('Auth callback error:', error);
-          setStatus('Authentication failed. Redirecting to login...');
-          setTimeout(() => router.replace('/login'), 2000);
-          return;
-        }
+        // Try getting session multiple times with delays
+        for (let attempt = 1; attempt <= 5; attempt++) {
+          console.log(`Session check attempt ${attempt}/5`);
 
-        if (data.session) {
-          console.log('Found existing session');
-          setStatus('Authentication successful! Redirecting...');
-          setTimeout(() => router.replace('/projects'), 500);
-        } else {
-          console.log('No session found, setting up listener...');
-          // Set up auth state listener as fallback
-          setStatus('Completing authentication...');
+          const { data, error } = await supabase.auth.getSession();
 
-          const {
-            data: { subscription },
-          } = supabase.auth.onAuthStateChange(async (event, session) => {
-            console.log('Auth state change:', event, 'Session:', !!session);
-
-            if (event === 'SIGNED_IN' && session) {
-              setStatus('Authentication successful! Redirecting...');
-              setTimeout(() => router.replace('/projects'), 500);
-              subscription.unsubscribe();
-            } else if (event === 'SIGNED_OUT') {
+          if (error) {
+            console.error(`Session check error (attempt ${attempt}):`, error);
+            if (attempt === 5) {
               setStatus('Authentication failed. Redirecting to login...');
-              setTimeout(() => router.replace('/login'), 2000);
-              subscription.unsubscribe();
+              setTimeout(() => router.replace('/login'), 3000);
+              return;
             }
-          });
+          } else if (data.session) {
+            console.log(`Session found on attempt ${attempt}:`, data.session);
+            setStatus('Authentication successful! Redirecting...');
+            setTimeout(() => router.replace('/projects'), 1000);
+            return;
+          }
 
-          // Timeout after 10 seconds if no auth event
-          setTimeout(() => {
-            console.log('Auth timeout');
-            setStatus('Authentication timeout. Redirecting to login...');
-            setTimeout(() => router.replace('/login'), 2000);
-            subscription.unsubscribe();
-          }, 10000);
+          // Wait before next attempt
+          if (attempt < 5) {
+            setStatus(`Checking authentication... (${attempt}/5)`);
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
         }
+
+        // If all session checks failed, set up auth state listener as final fallback
+        console.log(
+          'No session found after 5 attempts, setting up listener...'
+        );
+        setStatus('Waiting for authentication to complete...');
+
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth state change:', event, 'Session:', !!session);
+
+          if (event === 'SIGNED_IN' && session) {
+            console.log('Auth state listener: signed in');
+            setStatus('Authentication successful! Redirecting...');
+            setTimeout(() => router.replace('/projects'), 1000);
+            subscription.unsubscribe();
+          } else if (event === 'SIGNED_OUT') {
+            console.log('Auth state listener: signed out');
+            setStatus('Authentication failed. Redirecting to login...');
+            setTimeout(() => router.replace('/login'), 3000);
+            subscription.unsubscribe();
+          }
+        });
+
+        // Extended timeout - 30 seconds instead of 10
+        setTimeout(() => {
+          console.log('Auth timeout after 30 seconds');
+          setStatus(
+            'Authentication timeout. This may be a configuration issue. Redirecting to login...'
+          );
+          setTimeout(() => router.replace('/login'), 5000);
+          subscription.unsubscribe();
+        }, 30000);
       } catch (err) {
-        console.error('Unexpected error:', err);
+        console.error('Unexpected error in auth callback:', err);
         setStatus('Authentication failed. Redirecting to login...');
-        setTimeout(() => router.replace('/login'), 2000);
+        setTimeout(() => router.replace('/login'), 3000);
       }
     };
 
