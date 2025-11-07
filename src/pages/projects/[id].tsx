@@ -175,6 +175,23 @@ export default function ProjectDetail() {
     { id: string; name: string; order: number }[]
   >([]);
 
+  // Toast notifications state (lightweight, auto-dismiss)
+  const [toast, setToast] = useState<
+    | {
+        message: string;
+        type: 'success' | 'error' | 'info';
+      }
+    | null
+  >(null);
+  const notify = (
+    message: string,
+    type: 'success' | 'error' | 'info' = 'success',
+    timeoutMs = 2500
+  ) => {
+    setToast({ message, type });
+    window.setTimeout(() => setToast(null), timeoutMs);
+  };
+
   const [newLine, setNewLine] = useState<{
     line_code: string;
     description: string;
@@ -586,10 +603,12 @@ export default function ProjectDetail() {
       });
     }
     setEditMode(true);
+    notify('Editing enabled', 'info', 1800);
   };
 
   const cancelEdit = () => {
     setEditMode(false);
+    notify('Changes discarded', 'info');
   };
 
   const saveEdit = async () => {
@@ -643,7 +662,7 @@ export default function ProjectDetail() {
 
       if (error) {
         console.error('Error updating project:', error);
-        alert('Error updating project: ' + error.message);
+        notify('Error updating project: ' + error.message, 'error');
         return;
       }
 
@@ -690,9 +709,10 @@ export default function ProjectDetail() {
       }
 
       setEditMode(false);
+      notify('Project updated successfully', 'success');
     } catch (err) {
       console.error('Unexpected error:', err);
-      alert('Unexpected error updating project');
+      notify('Unexpected error updating project', 'error');
     } finally {
       setSaving(false);
     }
@@ -1007,6 +1027,7 @@ export default function ProjectDetail() {
         fontFamily: 'system-ui',
       }}
     >
+      {toast && <Toast message={toast.message} type={toast.type} />}
       {/* Header */}
       <div
         style={{
@@ -1069,8 +1090,17 @@ export default function ProjectDetail() {
                   top: 24,
                 }}
               >
-                {/* Header with Edit Button */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid #2563eb' }}>
+                {/* Header with Edit/Save/Cancel Buttons */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                    paddingBottom: 12,
+                    borderBottom: '2px solid #2563eb',
+                  }}
+                >
                   <h2
                     style={{
                       fontSize: 18,
@@ -1081,27 +1111,219 @@ export default function ProjectDetail() {
                   >
                     Project Information
                   </h2>
-                  <button
-                    onClick={() => alert('Edit functionality coming soon')}
-                    style={{
-                      padding: '6px 12px',
-                      background: '#2563eb',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: 6,
-                      fontSize: 13,
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Edit Project
-                  </button>
+                  {!editMode ? (
+                    <button
+                      onClick={startEdit}
+                      style={{
+                        padding: '6px 12px',
+                        background: '#2563eb',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Edit Project
+                    </button>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        onClick={cancelEdit}
+                        disabled={saving}
+                        style={{
+                          padding: '6px 12px',
+                          background: '#6b7280',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 6,
+                          fontSize: 13,
+                          fontWeight: 500,
+                          cursor: saving ? 'not-allowed' : 'pointer',
+                          opacity: saving ? 0.7 : 1,
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={saveEdit}
+                        disabled={saving}
+                        style={{
+                          padding: '6px 12px',
+                          background: '#16a34a',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 6,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          cursor: saving ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          opacity: saving ? 0.7 : 1,
+                        }}
+                      >
+                        {saving ? 'Saving…' : 'Save'}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
-                {/* Project Details */}
+                {/* Project Details / Edit Form */}
                 <div
                   style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
                 >
+                  {editMode && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 12,
+                        background: '#f1f5f9',
+                        padding: 12,
+                        borderRadius: 8,
+                        border: '1px solid #e2e8f0',
+                      }}
+                    >
+                      {/* Contract Amount */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Contract Amount</label>
+                        <input
+                          type="number"
+                          value={editForm.contract_amount}
+                          onChange={(e) => handleEditChange('contract_amount', e.target.value)}
+                          style={inputStyle}
+                          placeholder="0.00"
+                        />
+                      </div>
+                      {/* Start Date */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Start Date</label>
+                        <input
+                          type="date"
+                          value={editForm.start_date}
+                          onChange={(e) => handleEditChange('start_date', e.target.value)}
+                          style={inputStyle}
+                        />
+                      </div>
+                      {/* End Date */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Finish Date</label>
+                        <input
+                          type="date"
+                          value={editForm.end_date}
+                          onChange={(e) => handleEditChange('end_date', e.target.value)}
+                          style={inputStyle}
+                        />
+                      </div>
+                      {/* Customer Name (datalist) */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Customer</label>
+                        <input
+                          list="customer-options"
+                          value={editForm.customer_name}
+                          onChange={(e) => handleEditChange('customer_name', e.target.value)}
+                          style={inputStyle}
+                          placeholder="Customer Name"
+                        />
+                        <datalist id="customer-options">
+                          {customerOptions.map((c) => (
+                            <option key={c} value={c} />
+                          ))}
+                        </datalist>
+                      </div>
+                      {/* Manager */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Manager</label>
+                        <input
+                          list="manager-options"
+                          value={editForm.manager}
+                          onChange={(e) => handleEditChange('manager', e.target.value)}
+                          style={inputStyle}
+                          placeholder="Manager"
+                        />
+                        <datalist id="manager-options">
+                          {managerOptions.map((m) => (
+                            <option key={m} value={m} />
+                          ))}
+                        </datalist>
+                      </div>
+                      {/* Superintendent (not editable yet) */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Superintendent</label>
+                        <input
+                          value={project.superintendent || ''}
+                          disabled
+                          style={{ ...inputStyle, background: '#f8fafc', color: '#64748b' }}
+                          placeholder="Not set"
+                        />
+                      </div>
+                      {/* Owner */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Owner</label>
+                        <input
+                          list="owner-options"
+                          value={editForm.owner}
+                          onChange={(e) => handleEditChange('owner', e.target.value)}
+                          style={inputStyle}
+                          placeholder="Owner"
+                        />
+                        <datalist id="owner-options">
+                          {ownerOptions.map((o) => (
+                            <option key={o} value={o} />
+                          ))}
+                        </datalist>
+                      </div>
+                      {/* Foreman (not editable yet) */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Foreman</label>
+                        <input
+                          value={project.foreman || ''}
+                          disabled
+                          style={{ ...inputStyle, background: '#f8fafc', color: '#64748b' }}
+                          placeholder="Not set"
+                        />
+                      </div>
+                      {/* Stage */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Stage</label>
+                        <select
+                          value={editForm.stage_id}
+                          onChange={(e) => handleEditChange('stage_id', e.target.value)}
+                          style={inputStyle}
+                        >
+                          <option value="">Select Stage</option>
+                          {stageOptions.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.order}. {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      {/* QBID */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>QBID</label>
+                        <input
+                          value={editForm.qbid}
+                          onChange={(e) => handleEditChange('qbid', e.target.value)}
+                          style={inputStyle}
+                          placeholder="QBID"
+                        />
+                      </div>
+                      {/* Project Name */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Project Name</label>
+                        <input
+                          value={editForm.name}
+                          onChange={(e) => handleEditChange('name', e.target.value)}
+                          style={inputStyle}
+                          placeholder="Project Name"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {!editMode && (
                   <div>
                     <p
                       style={{
@@ -1125,7 +1347,9 @@ export default function ProjectDetail() {
                       {money(project.contract_amount || 0)}
                     </p>
                   </div>
+                  )}
 
+                  {!editMode && (
                   <div>
                     <p
                       style={{
@@ -1149,7 +1373,9 @@ export default function ProjectDetail() {
                       {dateStr(project.start_date)}
                     </p>
                   </div>
+                  )}
 
+                  {!editMode && (
                   <div>
                     <p
                       style={{
@@ -1173,7 +1399,9 @@ export default function ProjectDetail() {
                       {dateStr(project.end_date)}
                     </p>
                   </div>
+                  )}
 
+                  {!editMode && (
                   <div
                     style={{
                       borderTop: '1px solid #e5e7eb',
@@ -1205,7 +1433,9 @@ export default function ProjectDetail() {
                       />
                     </div>
                   </div>
+                  )}
 
+                  {!editMode && (
                   <div
                     style={{
                       borderTop: '1px solid #e5e7eb',
@@ -1228,7 +1458,9 @@ export default function ProjectDetail() {
                       <DetailItem label="Foreman" value={project.foreman} />
                     </div>
                   </div>
+                  )}
 
+                  {!editMode && (
                   <div
                     style={{
                       borderTop: '1px solid #e5e7eb',
@@ -1317,6 +1549,7 @@ export default function ProjectDetail() {
                       </div>
                     )}
                   </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -2657,6 +2890,38 @@ export default function ProjectDetail() {
   );
 }
 
+// Toast UI
+const Toast = ({
+  message,
+  type,
+}: {
+  message: string;
+  type: 'success' | 'error' | 'info';
+}) => (
+  <div
+    style={{
+      position: 'fixed',
+      right: 20,
+      bottom: 20,
+      background:
+        type === 'success'
+          ? '#10b981'
+          : type === 'error'
+            ? '#ef4444'
+            : '#3b82f6',
+      color: '#fff',
+      padding: '10px 14px',
+      borderRadius: 8,
+      boxShadow: '0 10px 20px rgba(0,0,0,0.15)',
+      fontSize: 14,
+      zIndex: 9999,
+      maxWidth: 320,
+    }}
+  >
+    {message}
+  </div>
+);
+
 const thBase: React.CSSProperties = {
   padding: 8,
   borderBottom: '1px solid #e5e7eb',
@@ -2765,4 +3030,14 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid #d1d5db',
   borderRadius: 6,
   fontSize: 14,
+};
+
+// Label style for edit form inputs
+const labelStyle: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: '#475569',
+  marginBottom: 4,
+  letterSpacing: '.25px',
+  textTransform: 'uppercase',
 };
