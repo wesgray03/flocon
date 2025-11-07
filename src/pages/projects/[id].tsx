@@ -1336,59 +1336,6 @@ export default function ProjectDetail() {
                   <h2 style={{ ...sectionHeaderStyle, margin: 0 }}>
                     Project Status
                   </h2>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {editMode ? (
-                      <>
-                        <button
-                          onClick={cancelEdit}
-                          disabled={saving}
-                          style={{
-                            padding: '8px 16px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: 6,
-                            background: '#fff',
-                            color: '#374151',
-                            fontSize: 14,
-                            cursor: saving ? 'not-allowed' : 'pointer',
-                            opacity: saving ? 0.6 : 1,
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={saveEdit}
-                          disabled={saving}
-                          style={{
-                            padding: '8px 16px',
-                            border: '1px solid #059669',
-                            borderRadius: 6,
-                            background: '#059669',
-                            color: '#fff',
-                            fontSize: 14,
-                            cursor: saving ? 'not-allowed' : 'pointer',
-                            opacity: saving ? 0.6 : 1,
-                          }}
-                        >
-                          {saving ? 'Saving...' : 'Save Changes'}
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={startEdit}
-                        style={{
-                          padding: '8px 16px',
-                          border: '1px solid #2563eb',
-                          borderRadius: 6,
-                          background: '#2563eb',
-                          color: '#fff',
-                          fontSize: 14,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Edit Project
-                      </button>
-                    )}
-                  </div>
                 </div>
                 <div
                   style={{
