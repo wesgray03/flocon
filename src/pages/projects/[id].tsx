@@ -1069,68 +1069,189 @@ export default function ProjectDetail() {
                   top: 24,
                 }}
               >
-                <h2
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 700,
-                    margin: '0 0 16px 0',
-                    color: '#0f172a',
-                    borderBottom: '2px solid #2563eb',
-                    paddingBottom: 12,
-                  }}
-                >
-                  Project Information
-                </h2>
-                
+                {/* Header with Edit Button */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid #2563eb' }}>
+                  <h2
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      margin: 0,
+                      color: '#0f172a',
+                    }}
+                  >
+                    Project Information
+                  </h2>
+                  <button
+                    onClick={() => alert('Edit functionality coming soon')}
+                    style={{
+                      padding: '6px 12px',
+                      background: '#2563eb',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 6,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Edit Project
+                  </button>
+                </div>
+
                 {/* Project Details */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+                >
                   <div>
-                    <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: '#6b7280',
+                        marginBottom: 4,
+                      }}
+                    >
                       Contract Amount
                     </p>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: '#0f172a' }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: '#0f172a',
+                      }}
+                    >
                       {money(project.contract_amount || 0)}
                     </p>
                   </div>
-                  
+
                   <div>
-                    <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: '#6b7280',
+                        marginBottom: 4,
+                      }}
+                    >
                       Start Date
                     </p>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: '#0f172a' }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: '#0f172a',
+                      }}
+                    >
                       {dateStr(project.start_date)}
                     </p>
                   </div>
-                  
+
                   <div>
-                    <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: '#6b7280',
+                        marginBottom: 4,
+                      }}
+                    >
                       Finish Date
                     </p>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: '#0f172a' }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: '#0f172a',
+                      }}
+                    >
                       {dateStr(project.end_date)}
                     </p>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 4 }}>
-                    <p style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 600, color: '#0f172a' }}>
+                  <div
+                    style={{
+                      borderTop: '1px solid #e5e7eb',
+                      paddingTop: 16,
+                      marginTop: 4,
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: '0 0 12px 0',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: '#0f172a',
+                      }}
+                    >
                       Customer
                     </p>
-                    <DetailItem label="Customer" value={project.customer_name} />
-                    <div style={{ marginTop: 8 }}><DetailItem label="Manager" value={project.manager} /></div>
-                    <div style={{ marginTop: 8 }}><DetailItem label="Superintendent" value={project.superintendent} /></div>
+                    <DetailItem
+                      label="Customer"
+                      value={project.customer_name}
+                    />
+                    <div style={{ marginTop: 8 }}>
+                      <DetailItem label="Manager" value={project.manager} />
+                    </div>
+                    <div style={{ marginTop: 8 }}>
+                      <DetailItem
+                        label="Superintendent"
+                        value={project.superintendent}
+                      />
+                    </div>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 4 }}>
-                    <p style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 600, color: '#0f172a' }}>
+                  <div
+                    style={{
+                      borderTop: '1px solid #e5e7eb',
+                      paddingTop: 16,
+                      marginTop: 4,
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: '0 0 12px 0',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: '#0f172a',
+                      }}
+                    >
                       Team
                     </p>
                     <DetailItem label="Owner" value={project.owner} />
-                    <div style={{ marginTop: 8 }}><DetailItem label="Foreman" value={project.foreman} /></div>
+                    <div style={{ marginTop: 8 }}>
+                      <DetailItem label="Foreman" value={project.foreman} />
+                    </div>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 4 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#0f172a' }}>
+                  <div
+                    style={{
+                      borderTop: '1px solid #e5e7eb',
+                      paddingTop: 16,
+                      marginTop: 4,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 12,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: '#0f172a',
+                        }}
+                      >
                         Subcontractors
                       </p>
                       <button
@@ -1149,11 +1270,24 @@ export default function ProjectDetail() {
                       </button>
                     </div>
                     {projectSubcontractors.length === 0 ? (
-                      <p style={{ margin: 0, fontSize: 13, color: '#9ca3af', fontStyle: 'italic' }}>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: 13,
+                          color: '#9ca3af',
+                          fontStyle: 'italic',
+                        }}
+                      >
                         No subcontractors assigned
                       </p>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 6,
+                        }}
+                      >
                         {projectSubcontractors.map((ps) => (
                           <div
                             key={ps.id}
@@ -1168,7 +1302,13 @@ export default function ProjectDetail() {
                               {ps.subcontractor_name}
                             </div>
                             {ps.work_order_number && (
-                              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+                              <div
+                                style={{
+                                  fontSize: 12,
+                                  color: '#64748b',
+                                  marginTop: 2,
+                                }}
+                              >
                                 WO: {ps.work_order_number}
                               </div>
                             )}
