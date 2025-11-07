@@ -1186,6 +1186,26 @@ export default function ProjectDetail() {
                         border: '1px solid #e2e8f0',
                       }}
                     >
+                      {/* QBID */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>QBID</label>
+                        <input
+                          value={editForm.qbid}
+                          onChange={(e) => handleEditChange('qbid', e.target.value)}
+                          style={inputStyle}
+                          placeholder="QBID"
+                        />
+                      </div>
+                      {/* Project Name */}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={labelStyle}>Project Name</label>
+                        <input
+                          value={editForm.name}
+                          onChange={(e) => handleEditChange('name', e.target.value)}
+                          style={inputStyle}
+                          placeholder="Project Name"
+                        />
+                      </div>
                       {/* Contract Amount */}
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <label style={labelStyle}>Contract Amount</label>
@@ -1300,26 +1320,6 @@ export default function ProjectDetail() {
                             </option>
                           ))}
                         </select>
-                      </div>
-                      {/* QBID */}
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <label style={labelStyle}>QBID</label>
-                        <input
-                          value={editForm.qbid}
-                          onChange={(e) => handleEditChange('qbid', e.target.value)}
-                          style={inputStyle}
-                          placeholder="QBID"
-                        />
-                      </div>
-                      {/* Project Name */}
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <label style={labelStyle}>Project Name</label>
-                        <input
-                          value={editForm.name}
-                          onChange={(e) => handleEditChange('name', e.target.value)}
-                          style={inputStyle}
-                          placeholder="Project Name"
-                        />
                       </div>
                     </div>
                   )}
