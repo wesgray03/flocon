@@ -394,6 +394,7 @@ export default function ProjectDetail() {
       if (projSubsErr)
         console.error('Project subcontractors load error:', projSubsErr);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mappedProjectSubs = (projSubsData ?? []).map((ps: any) => ({
         id: ps.id,
         subcontractor_id: ps.subcontractor_id,
@@ -427,6 +428,7 @@ export default function ProjectDetail() {
 
       if (commentsErr) console.error('Comments load error:', commentsErr);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mappedComments = (commentsData ?? []).map((c: any) => ({
         id: c.id,
         project_id: c.project_id,
@@ -618,6 +620,7 @@ export default function ProjectDetail() {
       }
 
       // Update project
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updatePayload: any = {
         name: editForm.name.trim(),
         qbid: editForm.qbid.trim() || null,
@@ -828,6 +831,7 @@ export default function ProjectDetail() {
       const newProjectSub: ProjectSubcontractor = {
         id: data.id,
         subcontractor_id: data.subcontractor_id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         subcontractor_name: (data.subcontractors as any)?.name || 'Unknown',
         work_order_number: data.work_order_number,
         assigned_date: data.assigned_date,
@@ -908,7 +912,9 @@ export default function ProjectDetail() {
         user_id: data.user_id,
         comment_text: data.comment_text,
         created_at: data.created_at,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         user_name: (data.users as any)?.name || currentUser?.name || 'Unknown',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         user_type:
           (data.users as any)?.user_type || currentUser?.user_type || 'Unknown',
       };
@@ -916,6 +922,7 @@ export default function ProjectDetail() {
       setComments([newCommentObj, ...comments]);
       setNewComment('');
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       console.error('Unexpected error:', err);
       alert('Unexpected error adding comment');
     } finally {
@@ -1048,10 +1055,10 @@ export default function ProjectDetail() {
 
       {loading || !project ? null : (
         <div style={{ maxWidth: 1800, margin: '0 auto', padding: 24 }}>
-          {/* 3-Column Layout: Modules Menu + Main Content + Comments */}
+          {/* 3-Column Layout: Project Info + Main Content + Comments */}
           <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-            {/* Left Sidebar - Project Modules Menu (20%) */}
-            <div style={{ flex: '0 0 18%' }}>
+            {/* Left Sidebar - Project Information (20%) */}
+            <div style={{ flex: '0 0 20%' }}>
               <div
                 style={{
                   background: '#fff',
@@ -1072,51 +1079,110 @@ export default function ProjectDetail() {
                     paddingBottom: 12,
                   }}
                 >
-                  Project Modules
+                  Project Information
                 </h2>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 12,
-                  }}
-                >
-                  <ModuleCard
-                    title="Proposals"
-                    description="Manage proposals"
-                    color="#0ea5e9"
-                    onClick={() => alert('Proposals module coming soon')}
-                  />
-                  <ModuleCard
-                    title="Materials"
-                    description="Track materials"
-                    color="#ef4444"
-                    onClick={() => alert('Materials module coming soon')}
-                  />
-                  <ModuleCard
-                    title="Schedule of Values"
-                    description="Manage billing"
-                    color="#3b82f6"
-                    onClick={() => router.push(`/billings/${project?.id}`)}
-                  />
-                  <ModuleCard
-                    title="Submittals"
-                    description="Track submittals"
-                    color="#8b5cf6"
-                    onClick={() => alert('Submittals module coming soon')}
-                  />
-                  <ModuleCard
-                    title="Procurement"
-                    description="Manage purchasing"
-                    color="#f97316"
-                    onClick={() => alert('Procurement module coming soon')}
-                  />
+                
+                {/* Project Details */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>
+                      Contract Amount
+                    </p>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: '#0f172a' }}>
+                      {money(project.contract_amount || 0)}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>
+                      Start Date
+                    </p>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: '#0f172a' }}>
+                      {dateStr(project.start_date)}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>
+                      Finish Date
+                    </p>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: '#0f172a' }}>
+                      {dateStr(project.end_date)}
+                    </p>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 4 }}>
+                    <p style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 600, color: '#0f172a' }}>
+                      Customer
+                    </p>
+                    <DetailItem label="Customer" value={project.customer_name} />
+                    <div style={{ marginTop: 8 }}><DetailItem label="Manager" value={project.manager} /></div>
+                    <div style={{ marginTop: 8 }}><DetailItem label="Superintendent" value={project.superintendent} /></div>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 4 }}>
+                    <p style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 600, color: '#0f172a' }}>
+                      Team
+                    </p>
+                    <DetailItem label="Owner" value={project.owner} />
+                    <div style={{ marginTop: 8 }}><DetailItem label="Foreman" value={project.foreman} /></div>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 4 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#0f172a' }}>
+                        Subcontractors
+                      </p>
+                      <button
+                        onClick={() => setShowAddSubcontractor(true)}
+                        style={{
+                          padding: '2px 8px',
+                          background: '#2563eb',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 4,
+                          fontSize: 12,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                    {projectSubcontractors.length === 0 ? (
+                      <p style={{ margin: 0, fontSize: 13, color: '#9ca3af', fontStyle: 'italic' }}>
+                        No subcontractors assigned
+                      </p>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {projectSubcontractors.map((ps) => (
+                          <div
+                            key={ps.id}
+                            style={{
+                              padding: 8,
+                              background: '#f8fafc',
+                              borderRadius: 4,
+                              fontSize: 13,
+                            }}
+                          >
+                            <div style={{ fontWeight: 500, color: '#0f172a' }}>
+                              {ps.subcontractor_name}
+                            </div>
+                            {ps.work_order_number && (
+                              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+                                WO: {ps.work_order_number}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Main Content - 57% */}
-            <div style={{ flex: '0 0 57%' }}>
+            {/* Main Content - 55% */}
+            <div style={{ flex: '0 0 55%' }}>
               {/* Stage Progress with Tasks */}
               <div style={cardStyle}>
                 <div

@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "migrate:staging": "node migrate.js staging",
+    "migrate:production": "node migrate.js production",
+    "migrate:status:staging": "node migration-status.js staging",
+    "migrate:status:production": "node migration-status.js production"
+  }
+}

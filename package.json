@@ -8,7 +8,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "setup-staging": "node setup-staging.js",
+    "copy-data": "node copy-to-staging.js",
+    "migrate": "node migrate.js",
+    "migrate:staging": "node migrate.js staging",
+    "migrate:production": "node migrate.js production"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
