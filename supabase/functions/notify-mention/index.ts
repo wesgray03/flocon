@@ -91,6 +91,11 @@ serve(async (req) => {
 
       try {
         const resendApiKey = Deno.env.get('RESEND_API_KEY');
+        
+        // Resend test domain restriction: only send to verified email (wesgray03@outlook.com)
+        // To send to all users, verify a custom domain at resend.com/domains
+        const recipientEmail = user.email === 'wesgray03@outlook.com' ? user.email : 'wesgray03@outlook.com';
+        
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -99,7 +104,7 @@ serve(async (req) => {
           },
           body: JSON.stringify({
             from: 'FloCon <onboarding@resend.dev>',
-            to: user.email,
+            to: recipientEmail,
             subject: `You were mentioned in a comment on ${project_name}`,
             html: emailHtml,
           }),
@@ -107,11 +112,11 @@ serve(async (req) => {
 
         if (!response.ok) {
           console.error(
-            `Failed to send email to ${user.email}:`,
+            `Failed to send email to ${recipientEmail} (original: ${user.email}):`,
             await response.text()
           );
         } else {
-          console.log(`✅ Email sent to ${user.email}`);
+          console.log(`✅ Email sent to ${recipientEmail} (for user: ${user.name})`);
         }
       } catch (emailError) {
         console.error(`Error sending email to ${user.email}:`, emailError);
