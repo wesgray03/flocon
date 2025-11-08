@@ -66,57 +66,33 @@
 
   /* Projects page header mobile adjustments */
   .projects-header {
-    flex-direction: column !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
     gap: 12px !important;
     padding: 12px 16px !important;
-    align-items: stretch !important;
+    align-items: center !important;
   }
 
-  /* Top row: Logo left, Menu right */
-  .projects-header-left {
-    width: auto !important;
-    flex: 1 !important;
-    justify-content: flex-start !important;
-    order: 1 !important;
-  }
-
-  .projects-header-right {
-    width: auto !important;
-    flex: 0 0 auto !important;
-    justify-content: flex-end !important;
-    order: 2 !important;
-  }
-
-  /* Bottom row: Prospects/Projects toggle centered */
-  .projects-header-center {
-    width: 100% !important;
-    flex: none !important;
-    justify-content: center !important;
-    order: 3 !important;
-  }
-
-  /* Make top row flexbox */
-  .projects-header-left,
-  .projects-header-right {
-    display: inline-flex !important;
-  }
-
-  /* Force header to wrap properly */
-  .projects-header {
-    display: flex !important;
-    flex-wrap: wrap !important;
-  }
-
+  /* Top row: Logo left, Menu right - stay on same row */
   .projects-header-left {
     flex: 1 1 auto !important;
+    min-width: 0 !important;
+    order: 1 !important;
+    justify-content: flex-start !important;
   }
 
   .projects-header-right {
     flex: 0 0 auto !important;
+    order: 2 !important;
+    justify-content: flex-end !important;
   }
 
+  /* Bottom row: Prospects/Projects toggle - force to new line and center */
   .projects-header-center {
     flex: 1 1 100% !important;
+    order: 3 !important;
+    justify-content: center !important;
   }
 
   /* Hide email on mobile */
