@@ -248,6 +248,13 @@ export function CommentsSection({
           console.error('Error storing mentions:', mentionsError);
           // Don't block comment posting if mentions fail
         } else {
+          // Fetch project name for notification
+          const { data: projectData } = await supabase
+            .from('projects')
+            .select('name')
+            .eq('id', projectId)
+            .single();
+
           // Send email notifications asynchronously (don't wait for it)
           supabase.functions
             .invoke('notify-mention', {
@@ -255,7 +262,7 @@ export function CommentsSection({
                 comment_id: data.id,
                 mentioned_user_ids: mentionedUserIds,
                 commenter_name: user.name,
-                project_name: projectId, // TODO: Pass actual project name
+                project_name: projectData?.name || 'Project',
                 comment_text: newComment.trim(),
               },
             })
