@@ -1806,618 +1806,590 @@ export default function ProjectDetail() {
                     right: 0,
                     bottom: 0,
                     zIndex: 1001,
-                    background: 'rgba(0,0,0,0.5)',
+                    background: '#fff',
                     display: 'flex',
-                    alignItems: 'flex-end',
-                    justifyContent: 'center',
+                    flexDirection: 'column',
                   }}
-                  onClick={() => setShowModuleMenu(false)}
                 >
+                  {/* Header with horizontal tabs and close button */}
                   <div
                     style={{
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 1002,
                       background: '#fff',
-                      borderTopLeftRadius: 20,
-                      borderTopRightRadius: 20,
-                      width: '100%',
-                      maxHeight: '50vh',
-                      overflowY: 'auto',
-                      padding: 20,
-                      paddingBottom: 40,
+                      borderBottom: '2px solid #e5dfd5',
+                      padding: '12px 20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
                     }}
-                    onClick={(e) => e.stopPropagation()}
                   >
+                    {/* Horizontal tabs with icons only */}
                     <div
                       style={{
-                        textAlign: 'center',
-                        marginBottom: 20,
-                        paddingBottom: 16,
-                        borderBottom: '2px solid #e5dfd5',
+                        display: 'flex',
+                        gap: 8,
                       }}
                     >
-                      <h3
+                      <button
+                        onClick={() => setActiveTab('overview')}
                         style={{
-                          margin: 0,
-                          fontSize: 20,
-                          fontWeight: 600,
-                          color: colors.textPrimary,
+                          padding: '12px 20px',
+                          background:
+                            activeTab === 'overview' ? '#1e3a5f' : '#f0ebe3',
+                          color: activeTab === 'overview' ? '#fff' : '#64748b',
+                          border: '1px solid #e5dfd5',
+                          borderRadius: 8,
+                          fontSize: 24,
+                          cursor: 'pointer',
+                          minWidth: 44,
+                          minHeight: 44,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
-                        Select Module
-                      </h3>
+                        📊
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('billing')}
+                        style={{
+                          padding: '12px 20px',
+                          background:
+                            activeTab === 'billing' ? '#1e3a5f' : '#f0ebe3',
+                          color: activeTab === 'billing' ? '#fff' : '#64748b',
+                          border: '1px solid #e5dfd5',
+                          borderRadius: 8,
+                          fontSize: 24,
+                          cursor: 'pointer',
+                          minWidth: 44,
+                          minHeight: 44,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        💰
+                      </button>
                     </div>
 
-                    <button
-                      onClick={() => {
-                        setActiveTab('overview');
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '18px 20px',
-                        marginBottom: 12,
-                        background:
-                          activeTab === 'overview' ? '#1e3a5f' : '#f0ebe3',
-                        color:
-                          activeTab === 'overview'
-                            ? '#fff'
-                            : colors.textPrimary,
-                        border: '1px solid #e5dfd5',
-                        borderRadius: 12,
-                        textAlign: 'left',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                      }}
-                    >
-                      <span style={{ fontSize: 24 }}>📊</span>
-                      <span>Overview</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setActiveTab('billing');
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '18px 20px',
-                        marginBottom: 12,
-                        background:
-                          activeTab === 'billing' ? '#1e3a5f' : '#f0ebe3',
-                        color:
-                          activeTab === 'billing' ? '#fff' : colors.textPrimary,
-                        border: '1px solid #e5dfd5',
-                        borderRadius: 12,
-                        textAlign: 'left',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                      }}
-                    >
-                      <span style={{ fontSize: 24 }}>💰</span>
-                      <span>Billing</span>
-                    </button>
-
+                    {/* Close button */}
                     <button
                       onClick={() => setShowModuleMenu(false)}
                       style={{
-                        width: '100%',
-                        padding: '14px 20px',
-                        marginTop: 20,
                         background: 'transparent',
+                        border: 'none',
+                        fontSize: 24,
                         color: colors.textSecondary,
-                        border: '1px solid #e5dfd5',
-                        borderRadius: 12,
-                        fontSize: 15,
-                        fontWeight: 600,
                         cursor: 'pointer',
+                        padding: 8,
+                        minWidth: 44,
+                        minHeight: 44,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
-                      Close
+                      ✕
                     </button>
+                  </div>
 
-                    {/* Module Content Display */}
-                    <div
-                      style={{
-                        marginTop: 24,
-                        paddingTop: 24,
-                        borderTop: '2px solid #e5dfd5',
-                      }}
-                    >
-                      {activeTab === 'overview' && (
-                        <>
-                          {/* Financial Overview */}
-                          <div style={styles.cardStyle}>
-                            <h2 style={styles.sectionHeaderStyle}>
-                              Financial Overview
-                            </h2>
+                  {/* Modal Content - scrollable */}
+                  <div
+                    style={{
+                      flex: 1,
+                      overflowY: 'auto',
+                      padding: 20,
+                    }}
+                  >
+                    {activeTab === 'overview' && (
+                      <>
+                        {/* Financial Overview */}
+                        <div style={styles.cardStyle}>
+                          <h2 style={styles.sectionHeaderStyle}>
+                            Financial Overview
+                          </h2>
 
-                            {/* Financial Grid */}
-                            <div
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1fr',
-                                gap: 24,
-                              }}
-                            >
-                              {/* Revenue Column */}
-                              <div>
-                                <h3
-                                  style={{
-                                    fontSize: 18,
-                                    fontWeight: 700,
-                                    margin: '0 0 16px 0',
-                                    color: colors.textPrimary,
-                                  }}
-                                >
-                                  Revenue
-                                </h3>
-                                <table
-                                  style={{
-                                    width: '100%',
-                                    borderCollapse: 'collapse',
-                                  }}
-                                >
-                                  <tbody>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Contract Amount
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(project?.contract_amount || 0)}
-                                      </td>
-                                    </tr>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Billed to Date
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Remaining to Bill
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        % Complete Billed
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        0%
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-
-                              {/* Cost Column */}
-                              <div>
-                                <h3
-                                  style={{
-                                    fontSize: 18,
-                                    fontWeight: 700,
-                                    margin: '0 0 16px 0',
-                                    color: colors.textPrimary,
-                                  }}
-                                >
-                                  Cost
-                                </h3>
-                                <table
-                                  style={{
-                                    width: '100%',
-                                    borderCollapse: 'collapse',
-                                  }}
-                                >
-                                  <tbody>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Total Budget Cost
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Spent to Date
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Remaining Cost
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        % Complete Cost
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        0%
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-
-                                {/* Cash Flow */}
-                                <h3
-                                  style={{
-                                    fontSize: 18,
-                                    fontWeight: 700,
-                                    margin: '32px 0 16px 0',
-                                    color: colors.textPrimary,
-                                  }}
-                                >
-                                  Cash Flow
-                                </h3>
-                                <table
-                                  style={{
-                                    width: '100%',
-                                    borderCollapse: 'collapse',
-                                  }}
-                                >
-                                  <tbody>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Cash In
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Cash Out
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        Net Cash Flow
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 700,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-
-                                {/* Gross Profit */}
-                                <h3
-                                  style={{
-                                    fontSize: 18,
-                                    fontWeight: 700,
-                                    margin: '32px 0 16px 0',
-                                    color: colors.textPrimary,
-                                  }}
-                                >
-                                  Gross Profit
-                                </h3>
-                                <table
-                                  style={{
-                                    width: '100%',
-                                    borderCollapse: 'collapse',
-                                  }}
-                                >
-                                  <tbody>
-                                    <tr
-                                      style={{
-                                        borderBottom: '1px solid #e5dfd5',
-                                      }}
-                                    >
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Projected GP
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        {money(0)}
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          color: colors.textSecondary,
-                                        }}
-                                      >
-                                        Projected GP %
-                                      </td>
-                                      <td
-                                        style={{
-                                          padding: '8px 0',
-                                          fontSize: 14,
-                                          textAlign: 'right',
-                                          fontWeight: 600,
-                                        }}
-                                      >
-                                        0%
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      {/* Billing Tab with Sub-tabs */}
-                      {activeTab === 'billing' && (
-                        <>
-                          {/* Sub-tabs for Billing */}
+                          {/* Financial Grid */}
                           <div
                             style={{
-                              display: 'flex',
-                              gap: 8,
-                              marginBottom: 16,
-                              borderBottom: '2px solid #e5dfd5',
-                              paddingBottom: 8,
+                              display: 'grid',
+                              gridTemplateColumns: '1fr',
+                              gap: 24,
                             }}
                           >
-                            <button
-                              onClick={() => setBillingSubTab('sov')}
-                              style={{
-                                padding: '8px 16px',
-                                background: 'transparent',
-                                border: 'none',
-                                borderBottom:
-                                  billingSubTab === 'sov'
-                                    ? '2px solid #1e3a5f'
-                                    : '2px solid transparent',
-                                cursor: 'pointer',
-                                fontWeight: billingSubTab === 'sov' ? 600 : 400,
-                                fontSize: 14,
-                                color:
-                                  billingSubTab === 'sov'
-                                    ? '#1e3a5f'
-                                    : '#64748b',
-                                marginBottom: -10,
-                              }}
-                            >
-                              Schedule of Values
-                            </button>
-                            <button
-                              onClick={() => setBillingSubTab('payapps')}
-                              style={{
-                                padding: '8px 16px',
-                                background: 'transparent',
-                                border: 'none',
-                                borderBottom:
-                                  billingSubTab === 'payapps'
-                                    ? '2px solid #1e3a5f'
-                                    : '2px solid transparent',
-                                cursor: 'pointer',
-                                fontWeight:
-                                  billingSubTab === 'payapps' ? 600 : 400,
-                                fontSize: 14,
-                                color:
-                                  billingSubTab === 'payapps'
-                                    ? '#1e3a5f'
-                                    : '#64748b',
-                                marginBottom: -10,
-                              }}
-                            >
-                              Pay Applications
-                            </button>
+                            {/* Revenue Column */}
+                            <div>
+                              <h3
+                                style={{
+                                  fontSize: 18,
+                                  fontWeight: 700,
+                                  margin: '0 0 16px 0',
+                                  color: colors.textPrimary,
+                                }}
+                              >
+                                Revenue
+                              </h3>
+                              <table
+                                style={{
+                                  width: '100%',
+                                  borderCollapse: 'collapse',
+                                }}
+                              >
+                                <tbody>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Contract Amount
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(project?.contract_amount || 0)}
+                                    </td>
+                                  </tr>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Billed to Date
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Remaining to Bill
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      % Complete Billed
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      0%
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+
+                            {/* Cost Column */}
+                            <div>
+                              <h3
+                                style={{
+                                  fontSize: 18,
+                                  fontWeight: 700,
+                                  margin: '0 0 16px 0',
+                                  color: colors.textPrimary,
+                                }}
+                              >
+                                Cost
+                              </h3>
+                              <table
+                                style={{
+                                  width: '100%',
+                                  borderCollapse: 'collapse',
+                                }}
+                              >
+                                <tbody>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Total Budget Cost
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Spent to Date
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Remaining Cost
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      % Complete Cost
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      0%
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              {/* Cash Flow */}
+                              <h3
+                                style={{
+                                  fontSize: 18,
+                                  fontWeight: 700,
+                                  margin: '32px 0 16px 0',
+                                  color: colors.textPrimary,
+                                }}
+                              >
+                                Cash Flow
+                              </h3>
+                              <table
+                                style={{
+                                  width: '100%',
+                                  borderCollapse: 'collapse',
+                                }}
+                              >
+                                <tbody>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Cash In
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Cash Out
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      Net Cash Flow
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 700,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              {/* Gross Profit */}
+                              <h3
+                                style={{
+                                  fontSize: 18,
+                                  fontWeight: 700,
+                                  margin: '32px 0 16px 0',
+                                  color: colors.textPrimary,
+                                }}
+                              >
+                                Gross Profit
+                              </h3>
+                              <table
+                                style={{
+                                  width: '100%',
+                                  borderCollapse: 'collapse',
+                                }}
+                              >
+                                <tbody>
+                                  <tr
+                                    style={{
+                                      borderBottom: '1px solid #e5dfd5',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Projected GP
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {money(0)}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      }}
+                                    >
+                                      Projected GP %
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 0',
+                                        fontSize: 14,
+                                        textAlign: 'right',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      0%
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
+                        </div>
+                      </>
+                    )}
 
-                          {/* SOV Sub-tab Content */}
-                          {billingSubTab === 'sov' && id && (
-                            <SOVSection projectId={id} />
-                          )}
+                    {/* Billing Tab with Sub-tabs */}
+                    {activeTab === 'billing' && (
+                      <>
+                        {/* Sub-tabs for Billing */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: 8,
+                            marginBottom: 16,
+                            borderBottom: '2px solid #e5dfd5',
+                            paddingBottom: 8,
+                          }}
+                        >
+                          <button
+                            onClick={() => setBillingSubTab('sov')}
+                            style={{
+                              padding: '8px 16px',
+                              background: 'transparent',
+                              border: 'none',
+                              borderBottom:
+                                billingSubTab === 'sov'
+                                  ? '2px solid #1e3a5f'
+                                  : '2px solid transparent',
+                              cursor: 'pointer',
+                              fontWeight: billingSubTab === 'sov' ? 600 : 400,
+                              fontSize: 14,
+                              color:
+                                billingSubTab === 'sov' ? '#1e3a5f' : '#64748b',
+                              marginBottom: -10,
+                            }}
+                          >
+                            Schedule of Values
+                          </button>
+                          <button
+                            onClick={() => setBillingSubTab('payapps')}
+                            style={{
+                              padding: '8px 16px',
+                              background: 'transparent',
+                              border: 'none',
+                              borderBottom:
+                                billingSubTab === 'payapps'
+                                  ? '2px solid #1e3a5f'
+                                  : '2px solid transparent',
+                              cursor: 'pointer',
+                              fontWeight:
+                                billingSubTab === 'payapps' ? 600 : 400,
+                              fontSize: 14,
+                              color:
+                                billingSubTab === 'payapps'
+                                  ? '#1e3a5f'
+                                  : '#64748b',
+                              marginBottom: -10,
+                            }}
+                          >
+                            Pay Applications
+                          </button>
+                        </div>
 
-                          {/* Pay Apps Sub-tab Content */}
-                          {billingSubTab === 'payapps' && id && (
-                            <PayAppsSection projectId={id} />
-                          )}
-                        </>
-                      )}
-                    </div>
+                        {/* SOV Sub-tab Content */}
+                        {billingSubTab === 'sov' && id && (
+                          <SOVSection projectId={id} />
+                        )}
+
+                        {/* Pay Apps Sub-tab Content */}
+                        {billingSubTab === 'payapps' && id && (
+                          <PayAppsSection projectId={id} />
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               )}
