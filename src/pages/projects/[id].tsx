@@ -798,7 +798,7 @@ export default function ProjectDetail() {
                           disabled={saving}
                           style={{
                             padding: '6px 12px',
-                            background: '#4a5d23',
+                            background: '#1e3a5f',
                             color: '#fff',
                             border: 'none',
                             borderRadius: 6,
