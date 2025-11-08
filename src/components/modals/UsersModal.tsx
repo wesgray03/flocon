@@ -305,7 +305,7 @@ function getAuthStatusBadgeStyle(
     borderRadius: 4,
     fontSize: 12,
     fontWeight: 500,
-    background: authUserId ? '#dcfce7' : '#fee2e2',
+    background: authUserId ? '#e8f0d4' : '#fee2e2',
     color: authUserId ? '#166534' : '#991b1b',
   };
 }

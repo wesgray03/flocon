@@ -1,6 +1,6 @@
 import {
-  Stage as StageType,
-  useProjectTasks,
+    Stage as StageType,
+    useProjectTasks,
 } from '@/lib/hooks/useProjectTasks';
 
 type Project = {
@@ -214,7 +214,7 @@ export default function StageProgressSection({
               List Current Stage Tasks (Read/Write)
             </p>
             {currentTasks.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 14, color: '#16a34a' }}>
+              <p style={{ margin: 0, fontSize: 14, color: '#4a5d23' }}>
                 No tasks
               </p>
             ) : (
@@ -247,7 +247,7 @@ export default function StageProgressSection({
                     <span
                       style={{
                         flex: 1,
-                        color: task.complete ? '#16a34a' : '#0f172a',
+                        color: task.complete ? '#4a5d23' : '#0f172a',
                         textDecoration: task.complete ? 'line-through' : 'none',
                         fontSize: 14,
                         fontWeight: 500,

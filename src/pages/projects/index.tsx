@@ -1097,7 +1097,7 @@ export default function ProjectsPage() {
               display: 'inline-block',
               padding: '10px 12px',
               borderRadius: 8,
-              background: '#2563eb',
+              background: '#1e3a5f',
               color: '#fff',
               textDecoration: 'none',
               fontWeight: 600,
@@ -1615,7 +1615,7 @@ export default function ProjectsPage() {
                         title="Open project folder in SharePoint"
                         style={{
                           marginLeft: 8,
-                          color: '#2563eb',
+                          color: '#1e3a5f',
                           textDecoration: 'none',
                           display: 'inline-flex',
                           verticalAlign: 'middle',
@@ -1634,7 +1634,7 @@ export default function ProjectsPage() {
                   <td style={tdRight}>
                     <Link
                       href={`/change-orders/${r.id}`}
-                      style={{ color: '#2563eb', textDecoration: 'none' }}
+                      style={{ color: '#1e3a5f', textDecoration: 'none' }}
                     >
                       {money(r.co_amt)}
                     </Link>
@@ -1643,7 +1643,7 @@ export default function ProjectsPage() {
                   <td style={tdRight}>
                     <Link
                       href={`/billings/${r.id}`}
-                      style={{ color: '#2563eb', textDecoration: 'none' }}
+                      style={{ color: '#1e3a5f', textDecoration: 'none' }}
                     >
                       {money(r.billed_amt)}
                     </Link>
@@ -1659,7 +1659,7 @@ export default function ProjectsPage() {
                         border: 'none',
                         cursor: 'pointer',
                         padding: 4,
-                        color: '#64748b',
+                        color: '#1e3a5f',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1677,7 +1677,7 @@ export default function ProjectsPage() {
                         border: 'none',
                         cursor: 'pointer',
                         padding: 4,
-                        color: '#ef4444',
+                        color: '#c8102e',
                         marginLeft: 4,
                         display: 'inline-flex',
                         alignItems: 'center',

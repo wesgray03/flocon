@@ -711,7 +711,7 @@ export default function BillingsPage() {
                                     ? '#dbeafe'
                                     : line.category === 'Other'
                                       ? '#fef3c7'
-                                      : '#dcfce7',
+                                      : '#e8f0d4',
                                 color:
                                   line.category === 'Labor'
                                     ? '#1e40af'
@@ -900,13 +900,13 @@ export default function BillingsPage() {
                                 fontWeight: 500,
                                 background:
                                   app.status === 'Paid'
-                                    ? '#dcfce7'
+                                    ? '#e8f0d4'
                                     : app.status === 'Rejected'
                                       ? '#fee2e2'
                                       : '#fef3c7',
                                 color:
                                   app.status === 'Paid'
-                                    ? '#166534'
+                                    ? '#4a5d23'
                                     : app.status === 'Rejected'
                                       ? '#991b1b'
                                       : '#854d0e',

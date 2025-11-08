@@ -108,7 +108,7 @@ export const input: React.CSSProperties = {
 
 export const btnCancel: React.CSSProperties = {
   padding: '8px 12px',
-  border: '1px solid #cbd5e1',
+  border: '1px solid #e5dfd5',
   borderRadius: 6,
   background: '#fff',
   cursor: 'pointer',
@@ -117,7 +117,7 @@ export const btnCancel: React.CSSProperties = {
 export const btnSave: React.CSSProperties = {
   padding: '8px 12px',
   borderRadius: 6,
-  background: '#2563eb',
+  background: '#1e3a5f',
   color: '#fff',
   border: 'none',
   cursor: 'pointer',

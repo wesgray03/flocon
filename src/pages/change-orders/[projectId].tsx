@@ -328,7 +328,7 @@ export default function ChangeOrdersPage() {
                               fontWeight: 500,
                               background:
                                 co.status === 'Approved'
-                                  ? '#dcfce7'
+                                  ? '#e8f0d4'
                                   : co.status === 'Rejected'
                                     ? '#fee2e2'
                                     : '#fef3c7',

@@ -219,7 +219,7 @@ export default function StageTasksModal({
                               textDecoration: task.complete
                                 ? 'line-through'
                                 : 'none',
-                              color: task.complete ? '#16a34a' : '#0f172a',
+                              color: task.complete ? '#4a5d23' : '#0f172a',
                             }}
                           >
                             {task.name}
