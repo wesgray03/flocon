@@ -6,12 +6,12 @@
 // - This file contains: Main ProjectsPage component, MasterDataModal, Popover
 // --------------------------------------------------------------
 
-import { colors } from '@/styles/theme';
 import { ContactsModal } from '@/components/modals/ContactsModal';
 import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectStyles';
+import { colors } from '@/styles/theme';
 import { Folder, Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -265,7 +265,9 @@ function MasterDataModal({
           >
             {loading ? 'Loading…' : `${items.length} item(s)`}
             {loadError ? (
-              <div style={{ color: colors.errorText, marginTop: 8, fontSize: 12 }}>
+              <div
+                style={{ color: colors.errorText, marginTop: 8, fontSize: 12 }}
+              >
                 Error: {loadError}
               </div>
             ) : null}
@@ -1089,7 +1091,13 @@ export default function ProjectsPage() {
           >
             Sign in required
           </h1>
-          <p style={{ marginTop: 0, marginBottom: 16, color: colors.textSecondary }}>
+          <p
+            style={{
+              marginTop: 0,
+              marginBottom: 16,
+              color: colors.textSecondary,
+            }}
+          >
             Please sign in with your Microsoft account to access Projects.
           </p>
           <Link
@@ -1402,319 +1410,450 @@ export default function ProjectsPage() {
       ) : filteredAndSortedRows.length === 0 ? (
         <p style={{ color: colors.textSecondary }}>No projects yet.</p>
       ) : (
-        <div
-          style={{
-            background: '#faf8f5',
-            border: '1px solid #e5dfd5',
-            borderRadius: 12,
-            padding: 16,
-            overflowX: 'auto',
-            overflowY: 'visible',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          <table
-            style={{ width: '100%', fontSize: 14, borderCollapse: 'collapse' }}
+        <>
+          {/* Desktop Table View */}
+          <div
+            className="projects-table-container"
+            style={{
+              background: '#faf8f5',
+              border: '1px solid #e5dfd5',
+              borderRadius: 12,
+              padding: 16,
+              overflowX: 'auto',
+              overflowY: 'visible',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              position: 'relative',
+              zIndex: 1,
+            }}
           >
-            <thead>
-              <tr
-                style={{
-                  background: '#f0ebe3',
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 1,
-                }}
-              >
-                <th style={thQBID} onClick={() => handleSort('qbid')}>
-                  QBID{sortIndicator('qbid')}
-                </th>
-                <th
-                  style={thProjectName}
-                  onClick={() => handleSort('project_name')}
+            <table
+              style={{
+                width: '100%',
+                fontSize: 14,
+                borderCollapse: 'collapse',
+              }}
+            >
+              <thead>
+                <tr
+                  style={{
+                    background: '#f0ebe3',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1,
+                  }}
                 >
-                  Project Name{sortIndicator('project_name')}
-                </th>
-                <th
-                  style={thCustomer}
-                  onClick={() => handleSort('customer_name')}
-                >
-                  Customer{sortIndicator('customer_name')}
-                </th>
-                <th style={thManager} onClick={() => handleSort('manager')}>
-                  Manager{sortIndicator('manager')}
-                </th>
-                <th style={thOwner} onClick={() => handleSort('owner')}>
-                  Owner{sortIndicator('owner')}
-                </th>
-                <th style={thStage} onClick={() => handleSort('stage')}>
-                  Stage{sortIndicator('stage')}
-                </th>
-                <th style={thMoney} onClick={() => handleSort('contract_amt')}>
-                  Contract{sortIndicator('contract_amt')}
-                </th>
-                <th style={thMoney} onClick={() => handleSort('co_amt')}>
-                  Change Orders{sortIndicator('co_amt')}
-                </th>
-                <th style={thMoney} onClick={() => handleSort('total_amt')}>
-                  Total{sortIndicator('total_amt')}
-                </th>
-                <th style={thMoney} onClick={() => handleSort('billed_amt')}>
-                  Billings{sortIndicator('billed_amt')}
-                </th>
-                <th style={thMoney} onClick={() => handleSort('balance')}>
-                  Balance{sortIndicator('balance')}
-                </th>
-                <th style={thDate} onClick={() => handleSort('start_date')}>
-                  Start{sortIndicator('start_date')}
-                </th>
-                <th style={thDate} onClick={() => handleSort('end_date')}>
-                  End{sortIndicator('end_date')}
-                </th>
-                <th style={thActions}>Actions</th>
-              </tr>
-              {/* Filter row */}
-              <tr>
-                <th style={thQBID}>
-                  <MultiFilterInput
-                    values={filters.qbid}
-                    onChangeValues={(vals) =>
-                      setFilters((f) => ({ ...f, qbid: vals }))
-                    }
-                    suggestions={uniqueValues.qbid}
-                    placeholder="Filter QBID..."
-                  />
-                </th>
-                <th style={thProjectName}>
-                  <MultiFilterInput
-                    values={filters.project_name}
-                    onChangeValues={(vals) =>
-                      setFilters((f) => ({ ...f, project_name: vals }))
-                    }
-                    suggestions={uniqueValues.project_name}
-                    placeholder="Filter project name..."
-                  />
-                </th>
-                <th style={thCustomer}>
-                  <MultiFilterInput
-                    values={filters.customer_name}
-                    onChangeValues={(vals) =>
-                      setFilters((f) => ({ ...f, customer_name: vals }))
-                    }
-                    suggestions={uniqueValues.customer_name}
-                    placeholder="Filter customer..."
-                  />
-                </th>
-                <th style={thManager}>
-                  <MultiFilterInput
-                    values={filters.manager}
-                    onChangeValues={(vals) =>
-                      setFilters((f) => ({ ...f, manager: vals }))
-                    }
-                    suggestions={uniqueValues.manager}
-                    placeholder="Filter manager..."
-                  />
-                </th>
-                <th style={thOwner}>
-                  <MultiFilterInput
-                    values={filters.owner}
-                    onChangeValues={(vals) =>
-                      setFilters((f) => ({ ...f, owner: vals }))
-                    }
-                    suggestions={uniqueValues.owner}
-                    placeholder="Filter owner..."
-                  />
-                </th>
-                <th style={thStage}>
-                  <MultiFilterInput
-                    values={filters.stage}
-                    onChangeValues={(vals) =>
-                      setFilters((f) => ({ ...f, stage: vals }))
-                    }
-                    suggestions={uniqueValues.stage}
-                    placeholder="Filter stage..."
-                  />
-                </th>
-                {/* Empty cells for non-filtered columns */}
-                <th style={thMoney}></th>
-                <th style={thMoney}></th>
-                <th style={thMoney}></th>
-                <th style={thMoney}></th>
-                <th style={thMoney}></th>
-                <th style={thDate}></th>
-                <th style={thDate}></th>
-                <th style={thActions}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilters({
-                        qbid: [],
-                        project_name: [],
-                        customer_name: [],
-                        manager: [],
-                        owner: [],
-                        stage: [],
-                      });
+                  <th style={thQBID} onClick={() => handleSort('qbid')}>
+                    QBID{sortIndicator('qbid')}
+                  </th>
+                  <th
+                    style={thProjectName}
+                    onClick={() => handleSort('project_name')}
+                  >
+                    Project Name{sortIndicator('project_name')}
+                  </th>
+                  <th
+                    style={thCustomer}
+                    onClick={() => handleSort('customer_name')}
+                  >
+                    Customer{sortIndicator('customer_name')}
+                  </th>
+                  <th style={thManager} onClick={() => handleSort('manager')}>
+                    Manager{sortIndicator('manager')}
+                  </th>
+                  <th style={thOwner} onClick={() => handleSort('owner')}>
+                    Owner{sortIndicator('owner')}
+                  </th>
+                  <th style={thStage} onClick={() => handleSort('stage')}>
+                    Stage{sortIndicator('stage')}
+                  </th>
+                  <th
+                    style={thMoney}
+                    onClick={() => handleSort('contract_amt')}
+                  >
+                    Contract{sortIndicator('contract_amt')}
+                  </th>
+                  <th style={thMoney} onClick={() => handleSort('co_amt')}>
+                    Change Orders{sortIndicator('co_amt')}
+                  </th>
+                  <th style={thMoney} onClick={() => handleSort('total_amt')}>
+                    Total{sortIndicator('total_amt')}
+                  </th>
+                  <th style={thMoney} onClick={() => handleSort('billed_amt')}>
+                    Billings{sortIndicator('billed_amt')}
+                  </th>
+                  <th style={thMoney} onClick={() => handleSort('balance')}>
+                    Balance{sortIndicator('balance')}
+                  </th>
+                  <th style={thDate} onClick={() => handleSort('start_date')}>
+                    Start{sortIndicator('start_date')}
+                  </th>
+                  <th style={thDate} onClick={() => handleSort('end_date')}>
+                    End{sortIndicator('end_date')}
+                  </th>
+                  <th style={thActions}>Actions</th>
+                </tr>
+                {/* Filter row */}
+                <tr>
+                  <th style={thQBID}>
+                    <MultiFilterInput
+                      values={filters.qbid}
+                      onChangeValues={(vals) =>
+                        setFilters((f) => ({ ...f, qbid: vals }))
+                      }
+                      suggestions={uniqueValues.qbid}
+                      placeholder="Filter QBID..."
+                    />
+                  </th>
+                  <th style={thProjectName}>
+                    <MultiFilterInput
+                      values={filters.project_name}
+                      onChangeValues={(vals) =>
+                        setFilters((f) => ({ ...f, project_name: vals }))
+                      }
+                      suggestions={uniqueValues.project_name}
+                      placeholder="Filter project name..."
+                    />
+                  </th>
+                  <th style={thCustomer}>
+                    <MultiFilterInput
+                      values={filters.customer_name}
+                      onChangeValues={(vals) =>
+                        setFilters((f) => ({ ...f, customer_name: vals }))
+                      }
+                      suggestions={uniqueValues.customer_name}
+                      placeholder="Filter customer..."
+                    />
+                  </th>
+                  <th style={thManager}>
+                    <MultiFilterInput
+                      values={filters.manager}
+                      onChangeValues={(vals) =>
+                        setFilters((f) => ({ ...f, manager: vals }))
+                      }
+                      suggestions={uniqueValues.manager}
+                      placeholder="Filter manager..."
+                    />
+                  </th>
+                  <th style={thOwner}>
+                    <MultiFilterInput
+                      values={filters.owner}
+                      onChangeValues={(vals) =>
+                        setFilters((f) => ({ ...f, owner: vals }))
+                      }
+                      suggestions={uniqueValues.owner}
+                      placeholder="Filter owner..."
+                    />
+                  </th>
+                  <th style={thStage}>
+                    <MultiFilterInput
+                      values={filters.stage}
+                      onChangeValues={(vals) =>
+                        setFilters((f) => ({ ...f, stage: vals }))
+                      }
+                      suggestions={uniqueValues.stage}
+                      placeholder="Filter stage..."
+                    />
+                  </th>
+                  {/* Empty cells for non-filtered columns */}
+                  <th style={thMoney}></th>
+                  <th style={thMoney}></th>
+                  <th style={thMoney}></th>
+                  <th style={thMoney}></th>
+                  <th style={thMoney}></th>
+                  <th style={thDate}></th>
+                  <th style={thDate}></th>
+                  <th style={thActions}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFilters({
+                          qbid: [],
+                          project_name: [],
+                          customer_name: [],
+                          manager: [],
+                          owner: [],
+                          stage: [],
+                        });
+                      }}
+                      style={{
+                        background: '#ebe5db',
+                        color: colors.textPrimary,
+                        border: '1px solid #e5dfd5',
+                        borderRadius: 4,
+                        padding: '4px 10px',
+                        fontSize: 13,
+                        cursor: 'pointer',
+                        margin: 0,
+                        minWidth: 0,
+                        minHeight: 0,
+                        lineHeight: 1.2,
+                      }}
+                      aria-label="Clear all filters"
+                    >
+                      Clear Filters
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAndSortedRows.map((r: Row) => (
+                  <tr
+                    key={r.id}
+                    onClick={(e) => {
+                      // Don't navigate if clicking on links or buttons
+                      const target = e.target as HTMLElement;
+                      if (
+                        target.tagName === 'A' ||
+                        target.tagName === 'BUTTON' ||
+                        target.closest('a') ||
+                        target.closest('button')
+                      ) {
+                        return;
+                      }
+                      router.push(`/projects/${r.id}`);
                     }}
                     style={{
-                      background: '#ebe5db',
-                      color: colors.textPrimary,
-                      border: '1px solid #e5dfd5',
-                      borderRadius: 4,
-                      padding: '4px 10px',
-                      fontSize: 13,
                       cursor: 'pointer',
-                      margin: 0,
-                      minWidth: 0,
-                      minHeight: 0,
-                      lineHeight: 1.2,
+                      transition: 'background-color 0.15s ease',
                     }}
-                    aria-label="Clear all filters"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f0ebe3';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
                   >
-                    Clear Filters
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAndSortedRows.map((r: Row) => (
-                <tr
-                  key={r.id}
-                  onClick={(e) => {
-                    // Don't navigate if clicking on links or buttons
-                    const target = e.target as HTMLElement;
-                    if (
-                      target.tagName === 'A' ||
-                      target.tagName === 'BUTTON' ||
-                      target.closest('a') ||
-                      target.closest('button')
-                    ) {
-                      return;
-                    }
-                    router.push(`/projects/${r.id}`);
-                  }}
-                  style={{
-                    cursor: 'pointer',
-                    transition: 'background-color 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f0ebe3';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  <td style={td}>{r.qbid ?? '—'}</td>
-                  <td style={td}>
-                    <span style={{ color: colors.textPrimary }}>{r.project_name}</span>
-                    {r.sharepoint_folder ? (
-                      <a
-                        href={r.sharepoint_folder}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Open project folder in SharePoint"
-                        style={{
-                          marginLeft: 8,
-                          color: colors.navy,
-                          textDecoration: 'none',
-                          display: 'inline-flex',
-                          verticalAlign: 'middle',
-                        }}
-                        aria-label="Open project folder"
+                    <td style={td}>{r.qbid ?? '—'}</td>
+                    <td style={td}>
+                      <span style={{ color: colors.textPrimary }}>
+                        {r.project_name}
+                      </span>
+                      {r.sharepoint_folder ? (
+                        <a
+                          href={r.sharepoint_folder}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Open project folder in SharePoint"
+                          style={{
+                            marginLeft: 8,
+                            color: colors.navy,
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            verticalAlign: 'middle',
+                          }}
+                          aria-label="Open project folder"
+                        >
+                          <Folder size={16} />
+                        </a>
+                      ) : null}
+                    </td>
+                    <td style={td}>{r.customer_name ?? '—'}</td>
+                    <td style={td}>{r.manager ?? '—'}</td>
+                    <td style={td}>{r.owner ?? '—'}</td>
+                    <td style={td}>{r.stage ?? '—'}</td>
+                    <td style={tdRight}>{money(r.contract_amt)}</td>
+                    <td style={tdRight}>
+                      <Link
+                        href={`/change-orders/${r.id}`}
+                        style={{ color: colors.navy, textDecoration: 'none' }}
                       >
-                        <Folder size={16} />
-                      </a>
-                    ) : null}
-                  </td>
-                  <td style={td}>{r.customer_name ?? '—'}</td>
-                  <td style={td}>{r.manager ?? '—'}</td>
-                  <td style={td}>{r.owner ?? '—'}</td>
-                  <td style={td}>{r.stage ?? '—'}</td>
-                  <td style={tdRight}>{money(r.contract_amt)}</td>
-                  <td style={tdRight}>
-                    <Link
-                      href={`/change-orders/${r.id}`}
-                      style={{ color: colors.navy, textDecoration: 'none' }}
-                    >
-                      {money(r.co_amt)}
-                    </Link>
-                  </td>
-                  <td style={tdRight}>{money(r.total_amt)}</td>
-                  <td style={tdRight}>
-                    <Link
-                      href={`/billings/${r.id}`}
-                      style={{ color: colors.navy, textDecoration: 'none' }}
-                    >
-                      {money(r.billed_amt)}
-                    </Link>
-                  </td>
-                  <td style={tdRight}>{money(r.balance)}</td>
-                  <td style={td}>{dateStr(r.start_date)}</td>
-                  <td style={td}>{dateStr(r.end_date)}</td>
-                  <td style={tdCenter}>
-                    <button
-                      type="button"
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: 4,
-                        color: colors.navy,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                      onClick={() => openForEdit(r)}
-                      title="Edit project"
-                      aria-label="Edit project"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: 4,
-                        color: colors.logoRed,
-                        marginLeft: 4,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                      onClick={async () => {
-                        if (
-                          !confirm(
-                            `Are you sure you want to delete "${r.project_name}"? This action cannot be undone.`
+                        {money(r.co_amt)}
+                      </Link>
+                    </td>
+                    <td style={tdRight}>{money(r.total_amt)}</td>
+                    <td style={tdRight}>
+                      <Link
+                        href={`/billings/${r.id}`}
+                        style={{ color: colors.navy, textDecoration: 'none' }}
+                      >
+                        {money(r.billed_amt)}
+                      </Link>
+                    </td>
+                    <td style={tdRight}>{money(r.balance)}</td>
+                    <td style={td}>{dateStr(r.start_date)}</td>
+                    <td style={td}>{dateStr(r.end_date)}</td>
+                    <td style={tdCenter}>
+                      <button
+                        type="button"
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 4,
+                          color: colors.navy,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                        onClick={() => openForEdit(r)}
+                        title="Edit project"
+                        aria-label="Edit project"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 4,
+                          color: colors.logoRed,
+                          marginLeft: 4,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                        onClick={async () => {
+                          if (
+                            !confirm(
+                              `Are you sure you want to delete "${r.project_name}"? This action cannot be undone.`
+                            )
                           )
-                        )
-                          return;
-                        try {
-                          const { error } = await supabase
-                            .from('projects')
-                            .delete()
-                            .eq('id', r.id);
-                          if (error) throw error;
-                          await loadProjects();
-                        } catch (err) {
-                          const errorMessage =
-                            err instanceof Error ? err.message : String(err);
-                          alert(`Delete failed: ${errorMessage}`);
-                        }
-                      }}
-                      title="Delete project"
-                      aria-label="Delete project"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                            return;
+                          try {
+                            const { error } = await supabase
+                              .from('projects')
+                              .delete()
+                              .eq('id', r.id);
+                            if (error) throw error;
+                            await loadProjects();
+                          } catch (err) {
+                            const errorMessage =
+                              err instanceof Error ? err.message : String(err);
+                            alert(`Delete failed: ${errorMessage}`);
+                          }
+                        }}
+                        title="Delete project"
+                        aria-label="Delete project"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards View */}
+          <div className="projects-mobile-cards" style={{ display: 'none' }}>
+            {filteredAndSortedRows.map((r: Row) => {
+              const money = (val: number | null) =>
+                val != null
+                  ? `$${val.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}`
+                  : '—';
+
+              return (
+                <div
+                  key={r.id}
+                  className="project-card"
+                  onClick={() => router.push(`/projects/${r.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="project-card-header">
+                    <div>
+                      <h3 className="project-card-title">{r.project_name}</h3>
+                      {r.qbid && (
+                        <div className="project-card-qbid">QBID: {r.qbid}</div>
+                      )}
+                    </div>
+                    <div className="project-card-actions">
+                      {r.sharepoint_folder && (
+                        <a
+                          href={r.sharepoint_folder}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            color: colors.navy,
+                            padding: 8,
+                            display: 'flex',
+                          }}
+                        >
+                          <Folder size={20} />
+                        </a>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openForEdit(r);
+                        }}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: colors.navy,
+                          padding: 8,
+                          cursor: 'pointer',
+                          display: 'flex',
+                        }}
+                      >
+                        <Pencil size={20} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="project-card-row">
+                    <span className="project-card-label">Customer</span>
+                    <span className="project-card-value">
+                      {r.customer_name ?? '—'}
+                    </span>
+                  </div>
+
+                  {r.stage && (
+                    <div className="project-card-row">
+                      <span className="project-card-label">Stage</span>
+                      <span className="project-card-stage">{r.stage}</span>
+                    </div>
+                  )}
+
+                  <div className="project-card-row">
+                    <span className="project-card-label">Manager</span>
+                    <span className="project-card-value">
+                      {r.manager ?? '—'}
+                    </span>
+                  </div>
+
+                  <div className="project-card-row">
+                    <span className="project-card-label">Owner</span>
+                    <span className="project-card-value">{r.owner ?? '—'}</span>
+                  </div>
+
+                  <div
+                    className="project-card-row"
+                    style={{
+                      borderTop: '1px solid #e5dfd5',
+                      paddingTop: 12,
+                      marginTop: 8,
+                    }}
+                  >
+                    <span className="project-card-label">Total</span>
+                    <span className="project-card-value project-card-money">
+                      {money(r.total_amt)}
+                    </span>
+                  </div>
+
+                  <div className="project-card-row">
+                    <span className="project-card-label">Billed</span>
+                    <span className="project-card-value">
+                      {money(r.billed_amt)}
+                    </span>
+                  </div>
+
+                  <div className="project-card-row">
+                    <span className="project-card-label">Balance</span>
+                    <span className="project-card-value project-card-money">
+                      {money(r.balance)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {/* Modal */}

@@ -61,4 +61,95 @@
   .sticky-container {
     position: static !important;
   }
+
+  /* ========================= PROJECTS LIST MOBILE ========================= */
+
+  /* Hide the table on mobile */
+  .projects-table-container {
+    display: none !important;
+  }
+
+  /* Show the mobile cards view */
+  .projects-mobile-cards {
+    display: block !important;
+  }
+
+  /* Individual project card */
+  .project-card {
+    background: #fff;
+    border: 1px solid #e5dfd5;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .project-card:active {
+    background: #f0ebe3;
+  }
+
+  .project-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5dfd5;
+  }
+
+  .project-card-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1e3a5f;
+    margin: 0 0 4px 0;
+  }
+
+  .project-card-qbid {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .project-card-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .project-card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+
+  .project-card-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .project-card-value {
+    color: #1e293b;
+    text-align: right;
+  }
+
+  .project-card-stage {
+    display: inline-block;
+    background: #e0e7ee;
+    color: #1e3a5f;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .project-card-money {
+    font-weight: 600;
+    color: #1e3a5f;
+  }
+}
+
+/* Desktop: hide mobile cards, show table */
+@media (min-width: 769px) {
+  .projects-mobile-cards {
+    display: none !important;
+  }
 }
