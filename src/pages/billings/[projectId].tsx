@@ -1,5 +1,6 @@
 // pages/billings/[projectId].tsx
 import { supabase } from '@/lib/supabaseClient';
+import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
@@ -727,9 +728,16 @@ export default function BillingsPage() {
                             <button
                               type="button"
                               onClick={() => openSOVForEdit(line)}
-                              style={btnSmall}
+                              style={{
+                                ...btnSmall,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                              title="Edit line"
+                              aria-label="Edit line"
                             >
-                              Edit
+                              <Pencil size={14} />
                             </button>
                             <button
                               type="button"
@@ -739,9 +747,14 @@ export default function BillingsPage() {
                                 marginLeft: 6,
                                 background: '#fee2e2',
                                 color: '#991b1b',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                               }}
+                              title="Delete line"
+                              aria-label="Delete line"
                             >
-                              Delete
+                              <Trash2 size={14} />
                             </button>
                           </td>
                         </tr>
@@ -907,7 +920,6 @@ export default function BillingsPage() {
                               type="button"
                               onClick={async () => {
                                 setViewingPayApp(app);
-                                // Load continuation sheet data for this pay app
                                 const { data: progressData } = await supabase
                                   .from('sov_line_progress')
                                   .select('*')
@@ -924,10 +936,14 @@ export default function BillingsPage() {
                                 ...btnSmall,
                                 background: '#2563eb',
                                 color: '#fff',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                               }}
-                              title="View AIA G703S format"
+                              title="View G702/G703"
+                              aria-label="View G702/G703"
                             >
-                              View G703S
+                              <ExternalLink size={16} />
                             </button>
                             <button
                               type="button"
@@ -935,9 +951,14 @@ export default function BillingsPage() {
                               style={{
                                 ...btnSmall,
                                 marginLeft: 6,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                               }}
+                              title="Edit"
+                              aria-label="Edit"
                             >
-                              Edit
+                              <Pencil size={14} />
                             </button>
                             <button
                               type="button"
@@ -947,9 +968,14 @@ export default function BillingsPage() {
                                 marginLeft: 6,
                                 background: '#fee2e2',
                                 color: '#991b1b',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                               }}
+                              title="Delete"
+                              aria-label="Delete"
                             >
-                              Delete
+                              <Trash2 size={14} />
                             </button>
                           </td>
                         </tr>

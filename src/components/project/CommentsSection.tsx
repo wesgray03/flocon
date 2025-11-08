@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 type ProjectComment = {
@@ -33,10 +34,73 @@ export function CommentsSection({
 }: CommentsSectionProps) {
   const [newComment, setNewComment] = useState('');
   const [loadingComments, setLoadingComments] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState('');
+
+  // Ensure we have an app-level user record linked to the current auth user
+  // Returns a concrete user row from public.users or null if not available
+  const ensureUser = async (): Promise<User | null> => {
+    try {
+      if (currentUser) return currentUser;
+
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+      if (!authUser) return null;
+
+      // Try to find existing app user by auth_user_id
+      const { data: existingUser, error: findErr } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_user_id', authUser.id)
+        .single();
+
+      if (existingUser && !findErr) return existingUser as unknown as User;
+
+      // If no user row exists, attempt to create one on the fly
+      const nameFromMeta =
+        (authUser.user_metadata &&
+          (authUser.user_metadata.name || authUser.user_metadata.full_name)) ||
+        authUser.email ||
+        'New User';
+
+      const insertPayload = {
+        auth_user_id: authUser.id,
+        name: nameFromMeta as string,
+        email: (authUser.email as string) || '',
+        user_type: 'Admin' as const,
+      };
+
+      const { data: createdUser, error: createErr } = await supabase
+        .from('users')
+        .insert([insertPayload])
+        .select('*')
+        .single();
+
+      if (createErr) {
+        console.warn('Failed to auto-create user row:', createErr.message);
+        return null;
+      }
+
+      return createdUser as unknown as User;
+    } catch (err) {
+      console.error('ensureUser error:', err);
+      return null;
+    }
+  };
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !currentUser) return;
+    if (!newComment.trim()) return;
+
+    // Make sure we have a valid users.id to reference
+    const user = await ensureUser();
+    if (!user) {
+      alert(
+        'Your account is not linked to an app user yet. Please sign out/in, or contact an admin to create a user record.'
+      );
+      return;
+    }
 
     setLoadingComments(true);
     try {
@@ -45,20 +109,11 @@ export function CommentsSection({
         .insert([
           {
             project_id: projectId,
-            user_id: currentUser.id,
+            user_id: user.id,
             comment_text: newComment.trim(),
           },
         ])
-        .select(
-          `
-          id,
-          project_id,
-          user_id,
-          comment_text,
-          created_at,
-          users (name, user_type)
-        `
-        )
+        .select('id, project_id, user_id, comment_text, created_at')
         .single();
 
       if (error) {
@@ -67,15 +122,15 @@ export function CommentsSection({
         return;
       }
 
+      // Use the user object we already have from ensureUser()
       const newCommentObj: ProjectComment = {
         id: data.id,
         project_id: data.project_id,
         user_id: data.user_id,
         comment_text: data.comment_text,
         created_at: data.created_at,
-        user_name: (data.users as any)?.name || currentUser?.name || 'Unknown',
-        user_type:
-          (data.users as any)?.user_type || currentUser?.user_type || 'Unknown',
+        user_name: user.name,
+        user_type: user.user_type,
       };
 
       setComments([newCommentObj, ...comments]);
@@ -107,6 +162,44 @@ export function CommentsSection({
     } catch (err) {
       console.error('Unexpected error:', err);
       alert('Unexpected error deleting comment');
+    }
+  };
+
+  const startEditComment = (comment: ProjectComment) => {
+    setEditingCommentId(comment.id);
+    setEditingText(comment.comment_text);
+  };
+
+  const cancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingText('');
+  };
+
+  const saveEditComment = async (commentId: string) => {
+    if (!editingText.trim()) return;
+
+    try {
+      const { error } = await supabase
+        .from('project_comments')
+        .update({ comment_text: editingText.trim() })
+        .eq('id', commentId);
+
+      if (error) {
+        console.error('Error updating comment:', error);
+        alert('Error updating comment: ' + error.message);
+        return;
+      }
+
+      setComments(
+        comments.map((c) =>
+          c.id === commentId ? { ...c, comment_text: editingText.trim() } : c
+        )
+      );
+      setEditingCommentId(null);
+      setEditingText('');
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      alert('Unexpected error updating comment');
     }
   };
 
@@ -225,17 +318,23 @@ export function CommentsSection({
               No comments yet
             </p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {comments.map((comment) => {
                 const badgeStyle = getBadgeColor(comment.user_type || '');
+                const isOwnComment =
+                  currentUser && comment.user_id === currentUser.id;
+
+                const isEditing = editingCommentId === comment.id;
+
                 return (
                   <div
                     key={comment.id}
                     style={{
-                      padding: 12,
+                      padding: 10,
                       background: '#f8fafc',
-                      borderRadius: 8,
+                      borderRadius: 6,
                       border: '1px solid #e2e8f0',
+                      fontSize: 13,
                     }}
                   >
                     <div
@@ -243,19 +342,19 @@ export function CommentsSection({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        marginBottom: 8,
+                        marginBottom: 6,
                       }}
                     >
                       <div
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 8,
+                          gap: 6,
                         }}
                       >
                         <span
                           style={{
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: 600,
                             color: '#0f172a',
                           }}
@@ -264,52 +363,130 @@ export function CommentsSection({
                         </span>
                         <span
                           style={{
-                            fontSize: 11,
+                            fontSize: 10,
                             fontWeight: 500,
                             background: badgeStyle.bg,
                             color: badgeStyle.color,
                             padding: '2px 6px',
-                            borderRadius: 4,
+                            borderRadius: 3,
                           }}
                         >
                           {comment.user_type}
                         </span>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            color: '#9ca3af',
+                          }}
+                        >
+                          {formatTimestamp(comment.created_at)}
+                        </span>
                       </div>
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#ef4444',
-                          cursor: 'pointer',
-                          fontSize: 18,
-                          padding: 0,
-                        }}
-                        title="Delete comment"
-                      >
-                        🗑️
-                      </button>
+                      {isOwnComment && (
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          {!isEditing && (
+                            <>
+                              <button
+                                onClick={() => startEditComment(comment)}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: '#64748b',
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                                title="Edit comment"
+                                aria-label="Edit comment"
+                              >
+                                <Pencil size={14} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteComment(comment.id)}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: '#ef4444',
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                                title="Delete comment"
+                                aria-label="Delete comment"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <p
-                      style={{
-                        fontSize: 14,
-                        color: '#374151',
-                        margin: '0 0 8px 0',
-                        lineHeight: 1.5,
-                        whiteSpace: 'pre-wrap',
-                      }}
-                    >
-                      {comment.comment_text}
-                    </p>
-                    <p
-                      style={{
-                        fontSize: 12,
-                        color: '#9ca3af',
-                        margin: 0,
-                      }}
-                    >
-                      {formatTimestamp(comment.created_at)}
-                    </p>
+
+                    {isEditing ? (
+                      <div>
+                        <textarea
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: 8,
+                            border: '1px solid #cbd5e1',
+                            borderRadius: 4,
+                            fontSize: 13,
+                            fontFamily: 'inherit',
+                            resize: 'vertical',
+                            minHeight: 60,
+                          }}
+                        />
+                        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                          <button
+                            onClick={() => saveEditComment(comment.id)}
+                            style={{
+                              padding: '4px 12px',
+                              background: '#2563eb',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: 4,
+                              fontSize: 12,
+                              cursor: 'pointer',
+                              fontWeight: 500,
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            style={{
+                              padding: '4px 12px',
+                              background: '#e5e7eb',
+                              color: '#0f172a',
+                              border: 'none',
+                              borderRadius: 4,
+                              fontSize: 12,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p
+                        style={{
+                          fontSize: 13,
+                          color: '#374151',
+                          margin: 0,
+                          lineHeight: 1.4,
+                          whiteSpace: 'pre-wrap',
+                        }}
+                      >
+                        {comment.comment_text}
+                      </p>
+                    )}
                   </div>
                 );
               })}

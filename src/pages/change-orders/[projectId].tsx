@@ -1,5 +1,6 @@
 // pages/change-orders/[projectId].tsx
 import { supabase } from '@/lib/supabaseClient';
+import { Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
@@ -347,9 +348,16 @@ export default function ChangeOrdersPage() {
                           <button
                             type="button"
                             onClick={() => openForEdit(co)}
-                            style={btnSmall}
+                            style={{
+                              ...btnSmall,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                            title="Edit change order"
+                            aria-label="Edit change order"
                           >
-                            Edit
+                            <Pencil size={14} />
                           </button>
                           <button
                             type="button"
@@ -359,9 +367,14 @@ export default function ChangeOrdersPage() {
                               marginLeft: 8,
                               background: '#fee2e2',
                               color: '#991b1b',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
                             }}
+                            title="Delete change order"
+                            aria-label="Delete change order"
                           >
-                            Delete
+                            <Trash2 size={14} />
                           </button>
                         </td>
                       </tr>

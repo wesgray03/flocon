@@ -112,3 +112,170 @@ export const successButtonStyle: React.CSSProperties = {
   fontSize: 14,
   cursor: 'pointer',
 };
+
+// Label Styles
+export const labelStyle: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: '#475569',
+  marginBottom: 4,
+  letterSpacing: '.25px',
+  textTransform: 'uppercase',
+};
+
+// Layout Styles
+export const pageContainerStyle: React.CSSProperties = {
+  minHeight: '100vh',
+  background: '#f8fafc',
+  fontFamily: 'system-ui',
+};
+
+export const headerStyle: React.CSSProperties = {
+  background: '#fff',
+  borderBottom: '1px solid #e2e8f0',
+  padding: '16px 24px',
+};
+
+export const contentWrapperStyle: React.CSSProperties = {
+  maxWidth: 1800,
+  margin: '0 auto',
+  padding: 24,
+};
+
+export const threeColumnLayoutStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 24,
+  alignItems: 'flex-start',
+};
+
+export const leftSidebarStyle: React.CSSProperties = {
+  flex: '0 0 20%',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 20,
+};
+
+export const stickyContainerStyle: React.CSSProperties = {
+  position: 'sticky',
+  top: 24,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 20,
+};
+
+export const mainContentStyle: React.CSSProperties = {
+  flex: '0 0 55%',
+};
+
+export const rightSidebarStyle: React.CSSProperties = {
+  flex: '0 0 25%',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 20,
+};
+
+export const projectInfoCardStyle: React.CSSProperties = {
+  background: '#fff',
+  borderRadius: 8,
+  padding: 20,
+  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+};
+
+export const statusCardStyle: React.CSSProperties = {
+  background: '#fff',
+  borderRadius: 8,
+  padding: 16,
+  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  border: '1px solid #e2e8f0',
+};
+
+export const editFormContainerStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 12,
+  background: '#f1f5f9',
+  padding: 12,
+  borderRadius: 8,
+  border: '1px solid #e2e8f0',
+};
+
+export const formFieldStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+// Tab Styles
+export const tabContainerStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 8,
+  marginBottom: 12,
+  borderBottom: '1px solid #e2e8f0',
+};
+
+export const getTabStyle = (isActive: boolean): React.CSSProperties => ({
+  padding: '8px 12px',
+  border: 'none',
+  background: 'transparent',
+  borderBottom: isActive ? '3px solid #2563eb' : '3px solid transparent',
+  color: isActive ? '#0f172a' : '#64748b',
+  fontWeight: isActive ? 700 : 600,
+  cursor: 'pointer',
+});
+
+// Toast Styles
+export const getToastStyle = (
+  type: 'success' | 'error' | 'info'
+): React.CSSProperties => ({
+  position: 'fixed',
+  right: 20,
+  bottom: 20,
+  background:
+    type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6',
+  color: '#fff',
+  padding: '10px 14px',
+  borderRadius: 8,
+  boxShadow: '0 10px 20px rgba(0,0,0,0.15)',
+  fontSize: 14,
+  zIndex: 9999,
+  maxWidth: 320,
+});
+
+// Text Styles
+export const titleStyle: React.CSSProperties = {
+  fontSize: 28,
+  fontWeight: 700,
+  margin: 0,
+  color: '#0f172a',
+};
+
+export const subtitleStyle: React.CSSProperties = {
+  color: '#64748b',
+  margin: '4px 0 0',
+  fontSize: 16,
+};
+
+export const detailLabelStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: 12,
+  color: '#64748b',
+  fontWeight: 500,
+};
+
+export const detailValueStyle: React.CSSProperties = {
+  margin: '2px 0 0',
+  fontSize: 14,
+  color: '#0f172a',
+};
+
+export const sectionDividerStyle: React.CSSProperties = {
+  borderTop: '1px solid #e5e7eb',
+  paddingTop: 16,
+  marginTop: 4,
+};
+
+export const sectionTitleStyle: React.CSSProperties = {
+  margin: '0 0 12px 0',
+  fontSize: 13,
+  fontWeight: 600,
+  color: '#0f172a',
+};

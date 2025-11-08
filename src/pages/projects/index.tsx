@@ -11,6 +11,7 @@ import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectStyles';
+import { Folder, Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -1581,9 +1582,12 @@ export default function ProjectsPage() {
                           marginLeft: 8,
                           color: '#2563eb',
                           textDecoration: 'none',
+                          display: 'inline-flex',
+                          verticalAlign: 'middle',
                         }}
+                        aria-label="Open project folder"
                       >
-                        🔗
+                        <Folder size={16} />
                       </a>
                     ) : null}
                   </td>
@@ -1619,14 +1623,17 @@ export default function ProjectsPage() {
                         background: 'transparent',
                         border: 'none',
                         cursor: 'pointer',
-                        fontSize: 18,
                         padding: 4,
                         color: '#64748b',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                       onClick={() => openForEdit(r)}
                       title="Edit project"
+                      aria-label="Edit project"
                     >
-                      ✏️
+                      <Pencil size={16} />
                     </button>
                     <button
                       type="button"
@@ -1634,10 +1641,12 @@ export default function ProjectsPage() {
                         background: 'transparent',
                         border: 'none',
                         cursor: 'pointer',
-                        fontSize: 18,
                         padding: 4,
                         color: '#ef4444',
                         marginLeft: 4,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                       onClick={async () => {
                         if (
@@ -1660,8 +1669,9 @@ export default function ProjectsPage() {
                         }
                       }}
                       title="Delete project"
+                      aria-label="Delete project"
                     >
-                      🗑️
+                      <Trash2 size={16} />
                     </button>
                   </td>
                 </tr>

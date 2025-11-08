@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface Contact {
@@ -292,15 +293,28 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
                         ...styles.btnSmall,
                         background: '#3b82f6',
                         marginRight: 4,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
+                      title="Edit contact"
+                      aria-label="Edit contact"
                     >
-                      Edit
+                      <Pencil size={14} />
                     </button>
                     <button
                       onClick={() => remove(contact.id)}
-                      style={{ ...styles.btnSmall, background: '#ef4444' }}
+                      style={{
+                        ...styles.btnSmall,
+                        background: '#ef4444',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      title="Delete contact"
+                      aria-label="Delete contact"
                     >
-                      Del
+                      <Trash2 size={14} />
                     </button>
                   </td>
                 </tr>
