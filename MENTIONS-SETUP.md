@@ -54,39 +54,25 @@ supabase functions deploy notify-mention
 
 ### 3. Configure Environment Variables
 
-In Supabase Dashboard → Project Settings → Edge Functions, set:
+In Supabase Dashboard → Project Settings → Edge Functions → Secrets, add:
 
 ```
-RESEND_API_KEY=re_xxxxxxxxxxxxx
+RESEND_API_KEY=re_UJ1319zW_BRqiboiSyQofzpxTGX5Dzjwm
 APP_URL=https://floconapp.com
 ```
 
-### 4. Set up Email Service (Choose one)
+**Note**: Store this API key securely. The key above is your production Resend API key.
 
-#### Option A: Resend (Recommended)
+### 4. Set up Email Service
 
-1. Sign up at https://resend.com
-2. Get API key from dashboard
-3. Verify your domain or use resend's testing domain
-4. Uncomment Resend code in `supabase/functions/notify-mention/index.ts`
+**Production Configuration** (Using Resend with verified domain):
 
-#### Option B: SendGrid
+1. Domain: `floorsunlimitedusa.com` (verified in Resend)
+2. Sender: `FloCon <notifications@floorsunlimitedusa.com>`
+3. DNS records configured for domain verification
+4. API Key stored in Supabase Edge Function secrets
 
-```typescript
-const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-  method: 'POST',
-  headers: {
-    Authorization: `Bearer ${Deno.env.get('SENDGRID_API_KEY')}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    personalizations: [{ to: [{ email: user.email }] }],
-    from: { email: 'notifications@floconapp.com' },
-    subject: `You were mentioned in a comment`,
-    content: [{ type: 'text/html', value: emailHtml }],
-  }),
-});
-```
+Email notifications are fully configured and operational in production.
 
 ## Usage
 
