@@ -85,7 +85,7 @@ export default function StageProgressSection({
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: '#64748b',
+                color: {colors.textSecondary},
                 fontWeight: 600,
               }}
             >
@@ -99,7 +99,7 @@ export default function StageProgressSection({
                   margin: '4px 0 0',
                   fontSize: 16,
                   fontWeight: 600,
-                  color: '#6b7280',
+                  color: {colors.gray},
                   background: 'transparent',
                   border: 'none',
                   cursor: advancing ? 'not-allowed' : 'pointer',
@@ -121,7 +121,7 @@ export default function StageProgressSection({
               style={{
                 margin: '0 0 8px 0',
                 fontSize: 13,
-                color: '#64748b',
+                color: {colors.textSecondary},
                 fontStyle: 'italic',
               }}
             >
@@ -140,7 +140,7 @@ export default function StageProgressSection({
                       display: 'flex',
                       alignItems: 'center',
                       fontSize: 14,
-                      color: '#64748b',
+                      color: {colors.textSecondary},
                     }}
                   >
                     <input
@@ -269,7 +269,7 @@ export default function StageProgressSection({
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: '#64748b',
+                color: {colors.textSecondary},
                 fontWeight: 600,
               }}
             >
@@ -305,7 +305,7 @@ export default function StageProgressSection({
               style={{
                 margin: '0 0 8px 0',
                 fontSize: 13,
-                color: '#64748b',
+                color: {colors.textSecondary},
                 fontStyle: 'italic',
               }}
             >
@@ -324,7 +324,7 @@ export default function StageProgressSection({
                       display: 'flex',
                       alignItems: 'center',
                       fontSize: 14,
-                      color: '#64748b',
+                      color: {colors.textSecondary},
                     }}
                   >
                     <input

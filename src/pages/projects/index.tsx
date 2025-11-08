@@ -259,12 +259,12 @@ function MasterDataModal({
               background: '#f0ebe3',
               padding: 8,
               fontSize: 12,
-              color: '#334155',
+              color: {colors.textMuted},
             }}
           >
             {loading ? 'Loading…' : `${items.length} item(s)`}
             {loadError ? (
-              <div style={{ color: '#b91c1c', marginTop: 8, fontSize: 12 }}>
+              <div style={{ color: {colors.errorText}, marginTop: 8, fontSize: 12 }}>
                 Error: {loadError}
               </div>
             ) : null}
@@ -296,7 +296,7 @@ function MasterDataModal({
                         style={{
                           marginLeft: 8,
                           fontSize: '0.875rem',
-                          color: '#6b7280',
+                          color: {colors.gray},
                         }}
                       >
                         ({it.stage_name})
@@ -1088,7 +1088,7 @@ export default function ProjectsPage() {
           >
             Sign in required
           </h1>
-          <p style={{ marginTop: 0, marginBottom: 16, color: '#475569' }}>
+          <p style={{ marginTop: 0, marginBottom: 16, color: {colors.textMuted} }}>
             Please sign in with your Microsoft account to access Projects.
           </p>
           <Link
@@ -1168,7 +1168,7 @@ export default function ProjectsPage() {
             style={{
               padding: '6px 18px',
               background: '#faf8f5',
-              color: '#8b7d6b',
+              color: {colors.textMuted},
               border: 'none',
               borderRadius: 6,
               fontSize: 13,
@@ -1207,7 +1207,7 @@ export default function ProjectsPage() {
           }}
         >
           {sessionEmail && (
-            <span style={{ color: '#64748b', fontSize: 14 }}>
+            <span style={{ color: {colors.textSecondary}, fontSize: 14 }}>
               {sessionEmail}
             </span>
           )}
@@ -1371,7 +1371,7 @@ export default function ProjectsPage() {
                     style={{
                       ...menuItemButton,
                       background: '#fee2e2',
-                      color: '#991b1b',
+                      color: {colors.errorText},
                       fontWeight: 600,
                     }}
                     onMouseEnter={(e) => {
@@ -1397,9 +1397,9 @@ export default function ProjectsPage() {
 
       {/* Body */}
       {loading ? (
-        <p style={{ color: '#475569' }}>Loading…</p>
+        <p style={{ color: {colors.textMuted} }}>Loading…</p>
       ) : filteredAndSortedRows.length === 0 ? (
-        <p style={{ color: '#475569' }}>No projects yet.</p>
+        <p style={{ color: {colors.textMuted} }}>No projects yet.</p>
       ) : (
         <div
           style={{
@@ -1558,7 +1558,7 @@ export default function ProjectsPage() {
                     }}
                     style={{
                       background: '#ebe5db',
-                      color: '#334155',
+                      color: {colors.textMuted},
                       border: '1px solid #e5dfd5',
                       borderRadius: 4,
                       padding: '4px 10px',
@@ -1677,7 +1677,7 @@ export default function ProjectsPage() {
                         border: 'none',
                         cursor: 'pointer',
                         padding: 4,
-                        color: '#c8102e',
+                        color: {colors.logoRed},
                         marginLeft: 4,
                         display: 'inline-flex',
                         alignItems: 'center',

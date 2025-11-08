@@ -150,7 +150,7 @@ export default function ProjectStatusBlock({
               margin: 0,
               fontSize: 12,
               fontWeight: 700,
-              color: '#6b7280',
+              color: {colors.gray},
             }}
           >
             Previous Stage
@@ -264,7 +264,7 @@ export default function ProjectStatusBlock({
       {/* Next Stage name only with action */}
       <div>
         <p
-          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#6b7280' }}
+          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: {colors.gray} }}
         >
           Next Stage
         </p>

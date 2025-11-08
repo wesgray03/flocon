@@ -154,7 +154,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
         <h2 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>
           Schedule of Values
         </h2>
-        <div style={{ fontSize: 14, color: '#334155' }}>
+        <div style={{ fontSize: 14, color: {colors.textMuted} }}>
           <b>Materials:</b> {money(totals.materials)} &nbsp;|&nbsp;{' '}
           <b>Labor:</b> {money(totals.labor)} &nbsp;|&nbsp; <b>Other:</b>{' '}
           {money(totals.other)} &nbsp;|&nbsp; <b>Total:</b>{' '}
@@ -163,9 +163,9 @@ export default function SOVSection({ projectId }: { projectId: string }) {
       </div>
 
       {loading ? (
-        <p style={{ color: '#64748b' }}>Loading…</p>
+        <p style={{ color: {colors.textSecondary} }}>Loading…</p>
       ) : lines.length === 0 ? (
-        <p style={{ color: '#64748b' }}>No SOV lines yet.</p>
+        <p style={{ color: {colors.textSecondary} }}>No SOV lines yet.</p>
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table

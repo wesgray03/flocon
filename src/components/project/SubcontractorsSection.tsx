@@ -196,7 +196,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#c8102e',
+                    color: {colors.logoRed},
                     cursor: 'pointer',
                     padding: 0,
                     display: 'inline-flex',
@@ -210,7 +210,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
                 </button>
               </div>
               {ps.work_order_number && (
-                <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: {colors.textSecondary}, marginTop: 2 }}>
                   WO: {ps.work_order_number}
                 </div>
               )}

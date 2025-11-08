@@ -45,7 +45,7 @@ export default function LoginPage() {
           background: '#faf8f5',
         }}
       >
-        <p style={{ color: '#64748b' }}>Checking authentication...</p>
+        <p style={{ color: {colors.textSecondary} }}>Checking authentication...</p>
       </div>
     );
   }
@@ -83,7 +83,7 @@ export default function LoginPage() {
         >
           Sign in
         </h1>
-        <p style={{ marginTop: 0, marginBottom: 16, color: '#475569' }}>
+        <p style={{ marginTop: 0, marginBottom: 16, color: {colors.textMuted} }}>
           Use your Microsoft (Azure AD) account to continue.
         </p>
         <button

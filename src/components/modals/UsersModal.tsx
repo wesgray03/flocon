@@ -204,8 +204,8 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
           </div>
         )}
 
-        {loading && <p style={{ color: '#64748b' }}>Loading...</p>}
-        {loadError && <p style={{ color: '#c8102e' }}>Error: {loadError}</p>}
+        {loading && <p style={{ color: {colors.textSecondary} }}>Loading...</p>}
+        {loadError && <p style={{ color: {colors.logoRed} }}>Error: {loadError}</p>}
 
         <div style={{ maxHeight: 720, overflowY: 'auto' }}>
           <table style={styles.table}>
@@ -253,7 +253,7 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
                       onClick={() => remove(user.id)}
                       style={{
                         ...styles.btnSmall,
-                        background: '#c8102e',
+                        background: {colors.logoRed},
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -269,7 +269,7 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
             </tbody>
           </table>
           {users.length === 0 && !loading && (
-            <p style={{ textAlign: 'center', color: '#94a3b8', padding: 20 }}>
+            <p style={{ textAlign: 'center', color: {colors.textMuted}, padding: 20 }}>
               No users found
             </p>
           )}
@@ -306,7 +306,7 @@ function getAuthStatusBadgeStyle(
     fontSize: 12,
     fontWeight: 500,
     background: authUserId ? '#d4f0e8' : '#fee2e2',
-    color: authUserId ? '#166534' : '#991b1b',
+    color: authUserId ? '#166534' : {colors.errorText},
   };
 }
 

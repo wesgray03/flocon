@@ -91,7 +91,7 @@ export default function ProspectsPage() {
             style={{
               padding: '6px 18px',
               background: '#faf8f5',
-              color: '#8b7d6b',
+              color: {colors.textMuted},
               border: 'none',
               borderRadius: 6,
               fontSize: 13,
@@ -117,7 +117,7 @@ export default function ProspectsPage() {
           }}
         >
           {sessionEmail && (
-            <span style={{ color: '#64748b', fontSize: 14 }}>
+            <span style={{ color: {colors.textSecondary}, fontSize: 14 }}>
               {sessionEmail}
             </span>
           )}
@@ -136,7 +136,7 @@ export default function ProspectsPage() {
                 cursor: 'pointer',
                 fontSize: 14,
                 fontWeight: 600,
-                color: '#334155',
+                color: {colors.textMuted},
               }}
             >
               ⚙️ Menu
@@ -166,7 +166,7 @@ export default function ProspectsPage() {
                     border: 'none',
                     cursor: 'pointer',
                     fontSize: 14,
-                    color: '#c8102e',
+                    color: {colors.logoRed},
                     fontWeight: 600,
                   }}
                 >
@@ -202,7 +202,7 @@ export default function ProspectsPage() {
         <p
           style={{
             fontSize: 24,
-            color: '#64748b',
+            color: {colors.textSecondary},
             fontWeight: 600,
             marginBottom: 32,
           }}
@@ -212,7 +212,7 @@ export default function ProspectsPage() {
         <p
           style={{
             fontSize: 16,
-            color: '#94a3b8',
+            color: {colors.textMuted},
             maxWidth: 500,
             margin: '0 auto',
           }}

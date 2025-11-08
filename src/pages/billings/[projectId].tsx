@@ -494,9 +494,9 @@ export default function BillingsPage() {
       </div>
 
       {loading ? (
-        <p style={{ color: '#475569' }}>Loading…</p>
+        <p style={{ color: {colors.textMuted} }}>Loading…</p>
       ) : !project ? (
-        <p style={{ color: '#475569' }}>Project not found.</p>
+        <p style={{ color: {colors.textMuted} }}>Project not found.</p>
       ) : (
         <>
           <div
@@ -512,11 +512,11 @@ export default function BillingsPage() {
             <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 8 }}>
               Billings / Pay Applications
             </h1>
-            <p style={{ color: '#475569', marginBottom: 4 }}>
+            <p style={{ color: {colors.textMuted}, marginBottom: 4 }}>
               Project: <strong>{project.name}</strong>
             </p>
             {project.qbid && (
-              <p style={{ color: '#475569', marginBottom: 0 }}>
+              <p style={{ color: {colors.textMuted}, marginBottom: 0 }}>
                 QBID: {project.qbid}
               </p>
             )}
@@ -553,7 +553,7 @@ export default function BillingsPage() {
                 cursor: 'pointer',
                 fontWeight: activeTab === 'sov' ? 600 : 400,
                 fontSize: 14,
-                color: activeTab === 'sov' ? '#0f172a' : '#64748b',
+                color: activeTab === 'sov' ? '#0f172a' : {colors.textSecondary},
                 marginBottom: -1,
                 position: 'relative',
                 bottom: -1,
@@ -579,7 +579,7 @@ export default function BillingsPage() {
                 cursor: 'pointer',
                 fontWeight: activeTab === 'payapps' ? 600 : 400,
                 fontSize: 14,
-                color: activeTab === 'payapps' ? '#0f172a' : '#64748b',
+                color: activeTab === 'payapps' ? '#0f172a' : {colors.textSecondary},
                 marginBottom: -1,
                 position: 'relative',
                 bottom: -1,
@@ -613,7 +613,7 @@ export default function BillingsPage() {
                   <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
                     Schedule of Values
                   </h2>
-                  <p style={{ color: '#475569', fontSize: 14, marginTop: 4 }}>
+                  <p style={{ color: {colors.textMuted}, fontSize: 14, marginTop: 4 }}>
                     Total Contract Amount: {money(sovTotal)}
                   </p>
                 </div>
@@ -647,14 +647,14 @@ export default function BillingsPage() {
                 >
                   <p
                     style={{
-                      color: '#64748b',
+                      color: {colors.textSecondary},
                       fontSize: 16,
                       margin: '0 0 8px',
                     }}
                   >
                     No SOV line items yet
                   </p>
-                  <p style={{ color: '#94a3b8', fontSize: 14, margin: 0 }}>
+                  <p style={{ color: {colors.textMuted}, fontSize: 14, margin: 0 }}>
                     Add line items to build your Schedule of Values before
                     creating pay applications
                   </p>
@@ -746,7 +746,7 @@ export default function BillingsPage() {
                                 ...btnSmall,
                                 marginLeft: 6,
                                 background: '#fee2e2',
-                                color: '#991b1b',
+                                color: {colors.errorText},
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -811,7 +811,7 @@ export default function BillingsPage() {
                   <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
                     Pay Applications ({payApps.length})
                   </h2>
-                  <p style={{ color: '#475569', fontSize: 14, marginTop: 4 }}>
+                  <p style={{ color: {colors.textMuted}, fontSize: 14, marginTop: 4 }}>
                     Total Billed: {money(totalAmount)}
                   </p>
                 </div>
@@ -835,7 +835,7 @@ export default function BillingsPage() {
 
               {payApps.length === 0 ? (
                 <p
-                  style={{ color: '#475569', textAlign: 'center', padding: 24 }}
+                  style={{ color: {colors.textMuted}, textAlign: 'center', padding: 24 }}
                 >
                   No pay applications yet. Click "+ New Pay App" to add one.
                 </p>
@@ -914,7 +914,7 @@ export default function BillingsPage() {
                                   app.status === 'Paid'
                                     ? '#2d5a1e'
                                     : app.status === 'Rejected'
-                                      ? '#991b1b'
+                                      ? {colors.errorText}
                                       : '#854d0e',
                               }}
                             >
@@ -973,7 +973,7 @@ export default function BillingsPage() {
                                 ...btnSmall,
                                 marginLeft: 6,
                                 background: '#fee2e2',
-                                color: '#991b1b',
+                                color: {colors.errorText},
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -1219,7 +1219,7 @@ export default function BillingsPage() {
                       <label
                         style={{
                           fontSize: 12,
-                          color: '#475569',
+                          color: {colors.textMuted},
                           marginBottom: 4,
                           display: 'block',
                         }}
@@ -1238,7 +1238,7 @@ export default function BillingsPage() {
                       <label
                         style={{
                           fontSize: 12,
-                          color: '#475569',
+                          color: {colors.textMuted},
                           marginBottom: 4,
                           display: 'block',
                         }}
@@ -1265,7 +1265,7 @@ export default function BillingsPage() {
                       <label
                         style={{
                           fontSize: 12,
-                          color: '#475569',
+                          color: {colors.textMuted},
                           marginBottom: 4,
                           display: 'block',
                         }}
@@ -1284,7 +1284,7 @@ export default function BillingsPage() {
                       <label
                         style={{
                           fontSize: 12,
-                          color: '#475569',
+                          color: {colors.textMuted},
                           marginBottom: 4,
                           display: 'block',
                         }}
@@ -1303,7 +1303,7 @@ export default function BillingsPage() {
                       <label
                         style={{
                           fontSize: 12,
-                          color: '#475569',
+                          color: {colors.textMuted},
                           marginBottom: 4,
                           display: 'block',
                         }}
@@ -1489,7 +1489,7 @@ export default function BillingsPage() {
                 <p
                   style={{
                     fontSize: 12,
-                    color: '#64748b',
+                    color: {colors.textSecondary},
                     margin: 0,
                   }}
                 >
@@ -1533,7 +1533,7 @@ export default function BillingsPage() {
             <p
               style={{
                 fontSize: 13,
-                color: '#64748b',
+                color: {colors.textSecondary},
                 marginBottom: 16,
                 fontStyle: 'italic',
               }}
@@ -1603,7 +1603,7 @@ export default function BillingsPage() {
                               width: 100,
                               textAlign: 'right',
                               background: '#faf8f5',
-                              color: '#64748b',
+                              color: {colors.textSecondary},
                               cursor: 'not-allowed',
                             }}
                             title="Auto-filled from previous pay application"
@@ -2014,7 +2014,7 @@ export default function BillingsPage() {
                           style={{
                             ...td,
                             textAlign: 'center',
-                            color: '#64748b',
+                            color: {colors.textSecondary},
                             padding: 20,
                           }}
                         >
@@ -2284,7 +2284,7 @@ const input: React.CSSProperties = {
 
 const labelStyle: React.CSSProperties = {
   fontSize: 12,
-  color: '#475569',
+  color: {colors.textMuted},
   marginBottom: 4,
   display: 'block',
   fontWeight: 500,

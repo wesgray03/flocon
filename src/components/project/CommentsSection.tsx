@@ -227,7 +227,7 @@ export function CommentsSection({
       case 'Foreman':
         return { bg: '#ebe5db', color: '#9a3412' };
       default:
-        return { bg: '#f0ebe3', color: '#64748b' };
+        return { bg: '#f0ebe3', color: {colors.textSecondary} };
     }
   };
 
@@ -391,7 +391,7 @@ export function CommentsSection({
                                 style={{
                                   background: 'transparent',
                                   border: 'none',
-                                  color: '#64748b',
+                                  color: {colors.textSecondary},
                                   cursor: 'pointer',
                                   padding: 0,
                                   display: 'inline-flex',
@@ -408,7 +408,7 @@ export function CommentsSection({
                                 style={{
                                   background: 'transparent',
                                   border: 'none',
-                                  color: '#c8102e',
+                                  color: {colors.logoRed},
                                   cursor: 'pointer',
                                   padding: 0,
                                   display: 'inline-flex',

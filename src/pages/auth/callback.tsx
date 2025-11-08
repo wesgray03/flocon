@@ -174,7 +174,7 @@ export default function AuthCallback() {
         >
           Authenticating...
         </h1>
-        <p style={{ marginTop: 0, color: '#475569' }}>{status}</p>
+        <p style={{ marginTop: 0, color: {colors.textMuted} }}>{status}</p>
         <div
           style={{
             marginTop: 16,

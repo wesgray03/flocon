@@ -146,7 +146,7 @@ export default function StageTasksModal({
           </button>
         </div>
         {loading ? (
-          <p style={{ fontSize: 14, color: '#64748b' }}>Loading tasks…</p>
+          <p style={{ fontSize: 14, color: {colors.textSecondary} }}>Loading tasks…</p>
         ) : (
           <div
             style={{
@@ -182,7 +182,7 @@ export default function StageTasksModal({
                     {s.order}. {s.name}
                   </h3>
                   {sts.length === 0 ? (
-                    <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>
+                    <p style={{ margin: 0, fontSize: 13, color: {colors.textSecondary} }}>
                       No tasks yet.
                     </p>
                   ) : (
@@ -268,7 +268,7 @@ const closeBtnStyle: React.CSSProperties = {
   border: 'none',
   fontSize: 20,
   cursor: 'pointer',
-  color: '#64748b',
+  color: {colors.textSecondary},
   padding: 4,
   lineHeight: 1,
 };

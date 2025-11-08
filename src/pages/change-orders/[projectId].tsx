@@ -219,9 +219,9 @@ export default function ChangeOrdersPage() {
       </div>
 
       {loading ? (
-        <p style={{ color: '#475569' }}>Loading…</p>
+        <p style={{ color: {colors.textMuted} }}>Loading…</p>
       ) : !project ? (
-        <p style={{ color: '#475569' }}>Project not found.</p>
+        <p style={{ color: {colors.textMuted} }}>Project not found.</p>
       ) : (
         <>
           <div
@@ -237,11 +237,11 @@ export default function ChangeOrdersPage() {
             <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 8 }}>
               Change Orders
             </h1>
-            <p style={{ color: '#475569', marginBottom: 4 }}>
+            <p style={{ color: {colors.textMuted}, marginBottom: 4 }}>
               Project: <strong>{project.name}</strong>
             </p>
             {project.qbid && (
-              <p style={{ color: '#475569', marginBottom: 0 }}>
+              <p style={{ color: {colors.textMuted}, marginBottom: 0 }}>
                 QBID: {project.qbid}
               </p>
             )}
@@ -268,7 +268,7 @@ export default function ChangeOrdersPage() {
                 <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
                   Change Orders ({changeOrders.length})
                 </h2>
-                <p style={{ color: '#475569', fontSize: 14, marginTop: 4 }}>
+                <p style={{ color: {colors.textMuted}, fontSize: 14, marginTop: 4 }}>
                   Total: {money(totalAmount)}
                 </p>
               </div>
@@ -291,7 +291,7 @@ export default function ChangeOrdersPage() {
             </div>
 
             {changeOrders.length === 0 ? (
-              <p style={{ color: '#475569', textAlign: 'center', padding: 24 }}>
+              <p style={{ color: {colors.textMuted}, textAlign: 'center', padding: 24 }}>
                 No change orders yet. Click "+ New Change Order" to add one.
               </p>
             ) : (
@@ -342,7 +342,7 @@ export default function ChangeOrdersPage() {
                                 co.status === 'Approved'
                                   ? '#2d5a1e'
                                   : co.status === 'Rejected'
-                                    ? '#991b1b'
+                                    ? {colors.errorText}
                                     : '#854d0e',
                             }}
                           >
@@ -372,7 +372,7 @@ export default function ChangeOrdersPage() {
                               ...btnSmall,
                               marginLeft: 8,
                               background: '#fee2e2',
-                              color: '#991b1b',
+                              color: {colors.errorText},
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
