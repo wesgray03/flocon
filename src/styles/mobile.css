@@ -72,13 +72,22 @@
     align-items: stretch !important;
   }
 
+  /* Top row: Logo left, Menu right */
   .projects-header-left {
-    width: 100% !important;
-    flex: none !important;
-    justify-content: center !important;
+    width: auto !important;
+    flex: 1 !important;
+    justify-content: flex-start !important;
     order: 1 !important;
   }
 
+  .projects-header-right {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    justify-content: flex-end !important;
+    order: 2 !important;
+  }
+
+  /* Bottom row: Prospects/Projects toggle centered */
   .projects-header-center {
     width: 100% !important;
     flex: none !important;
@@ -86,11 +95,28 @@
     order: 3 !important;
   }
 
+  /* Make top row flexbox */
+  .projects-header-left,
   .projects-header-right {
-    width: 100% !important;
-    flex: none !important;
-    justify-content: flex-end !important;
-    order: 2 !important;
+    display: inline-flex !important;
+  }
+
+  /* Force header to wrap properly */
+  .projects-header {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+
+  .projects-header-left {
+    flex: 1 1 auto !important;
+  }
+
+  .projects-header-right {
+    flex: 0 0 auto !important;
+  }
+
+  .projects-header-center {
+    flex: 1 1 100% !important;
   }
 
   /* Hide email on mobile */
