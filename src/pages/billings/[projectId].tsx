@@ -904,6 +904,12 @@ export default function BillingsPage() {
                                     : app.status === 'Rejected'
                                       ? '#fee2e2'
                                       : '#fef3c7',
+                                border:
+                                  app.status === 'Paid'
+                                    ? '1px solid #a8c070'
+                                    : app.status === 'Rejected'
+                                      ? '1px solid #f5c2c7'
+                                      : '1px solid #fde68a',
                                 color:
                                   app.status === 'Paid'
                                     ? '#4a5d23'

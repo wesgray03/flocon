@@ -187,7 +187,7 @@ export default function AuthCallback() {
           <div
             style={{
               height: '100%',
-              background: '#2563eb',
+              background: '#1e3a5f',
               borderRadius: 2,
               animation: 'loading 2s ease-in-out infinite',
               width: '50%',

@@ -474,7 +474,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
             type="button"
             onClick={openForNew}
             style={{
-              background: '#2563eb',
+              background: '#1e3a5f',
               color: '#fff',
               padding: '8px 12px',
               borderRadius: 6,
@@ -543,7 +543,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                       </span>
                     </td>
                     <td style={tdRight}>
-                      <strong style={{ color: '#2563eb', fontSize: 15 }}>
+                      <strong style={{ color: '#1e3a5f', fontSize: 15 }}>
                         {money(app.current_payment_due || app.amount || 0)}
                       </strong>
                     </td>
@@ -600,7 +600,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           ...btnSmall,
                           background: 'transparent',
                           border: 'none',
-                          color: '#2563eb',
+                          color: '#1e3a5f',
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -970,7 +970,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                         style={{
                           textAlign: 'right',
                           fontWeight: 600,
-                          color: '#3b82f6',
+                          color: '#1e3a5f',
                         }}
                       >
                         $
@@ -1093,7 +1093,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   onClick={() => setG703Tab('summary')}
                   style={{
                     ...btnSmall,
-                    background: g703Tab === 'summary' ? '#1d4ed8' : '#e2e8f0',
+                    background: g703Tab === 'summary' ? '#152d4a' : '#e2e8f0',
                     color: g703Tab === 'summary' ? '#fff' : '#0f172a',
                   }}
                 >
@@ -1105,7 +1105,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   style={{
                     ...btnSmall,
                     background:
-                      g703Tab === 'continuation' ? '#1d4ed8' : '#e2e8f0',
+                      g703Tab === 'continuation' ? '#152d4a' : '#e2e8f0',
                     color: g703Tab === 'continuation' ? '#fff' : '#0f172a',
                   }}
                 >
@@ -1239,7 +1239,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           padding: 8,
                           textAlign: 'right',
                           fontWeight: 700,
-                          color: '#2563eb',
+                          color: '#1e3a5f',
                         }}
                       >
                         {money(Math.max(0, currentPaymentDueG702))}
@@ -1421,7 +1421,7 @@ const btnCancel: React.CSSProperties = {
 const btnSave: React.CSSProperties = {
   padding: '8px 16px',
   borderRadius: 6,
-  background: '#2563eb',
+  background: '#1e3a5f',
   color: '#fff',
   border: 'none',
   cursor: 'pointer',

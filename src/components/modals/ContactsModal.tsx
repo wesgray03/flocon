@@ -291,7 +291,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
                       onClick={() => startEdit(contact)}
                       style={{
                         ...styles.btnSmall,
-                        background: '#3b82f6',
+                        background: '#1e3a5f',
                         marginRight: 4,
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -401,7 +401,7 @@ const styles = {
   btnSave: {
     padding: '8px 12px',
     borderRadius: 6,
-    background: '#2563eb',
+    background: '#1e3a5f',
     color: '#fff',
     border: 'none',
     cursor: 'pointer',

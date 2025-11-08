@@ -273,7 +273,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
             type="submit"
             style={{
               padding: '8px 16px',
-              background: '#2563eb',
+              background: '#1e3a5f',
               color: '#fff',
               border: 'none',
               borderRadius: 6,

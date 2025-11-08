@@ -140,7 +140,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
           onClick={() => setShowAdd(true)}
           style={{
             padding: '4px 8px',
-            background: '#2563eb',
+            background: '#1e3a5f',
             color: '#fff',
             border: 'none',
             borderRadius: 4,
@@ -349,7 +349,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
             <button
               onClick={handleAdd}
               style={{
-                background: '#2563eb',
+                background: '#1e3a5f',
                 color: '#fff',
                 border: 'none',
                 padding: '6px 14px',

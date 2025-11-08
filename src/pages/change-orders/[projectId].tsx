@@ -332,9 +332,15 @@ export default function ChangeOrdersPage() {
                                   : co.status === 'Rejected'
                                     ? '#fee2e2'
                                     : '#fef3c7',
+                              border:
+                                co.status === 'Approved'
+                                  ? '1px solid #a8c070'
+                                  : co.status === 'Rejected'
+                                    ? '1px solid #f5c2c7'
+                                    : '1px solid #fde68a',
                               color:
                                 co.status === 'Approved'
-                                  ? '#166534'
+                                  ? '#4a5d23'
                                   : co.status === 'Rejected'
                                     ? '#991b1b'
                                     : '#854d0e',
