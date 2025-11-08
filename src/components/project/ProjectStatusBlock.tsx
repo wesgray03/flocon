@@ -178,14 +178,14 @@ export default function ProjectStatusBlock({
       <div
         style={{
           marginBottom: 12,
-          background: '#f0fdf4',
-          border: '1px solid #86efac',
+          background: '#e8f0d4',
+          border: '1px solid #a8c070',
           borderRadius: 8,
           padding: 12,
         }}
       >
         <p
-          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#059669' }}
+          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#4a5d23' }}
         >
           Current Stage
         </p>
@@ -194,7 +194,7 @@ export default function ProjectStatusBlock({
             margin: '4px 0 8px 0',
             fontSize: 16,
             fontWeight: 700,
-            color: '#059669',
+            color: '#4a5d23',
           }}
         >
           {project?.stage_order
@@ -276,7 +276,7 @@ export default function ProjectStatusBlock({
               padding: 0,
               background: 'transparent',
               border: 'none',
-              color: '#0369a1',
+              color: '#1e3a5f',
               textDecoration: 'underline',
               cursor: advancing ? 'not-allowed' : 'pointer',
               fontSize: 14,

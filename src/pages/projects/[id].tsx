@@ -758,7 +758,7 @@ export default function ProjectDetail() {
                         onClick={startEdit}
                         style={{
                           padding: '6px 8px',
-                          background: '#2563eb',
+                          background: '#1e3a5f',
                           color: '#fff',
                           border: 'none',
                           borderRadius: 6,
