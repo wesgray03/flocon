@@ -15,6 +15,7 @@ interface MentionNotification {
   mentioned_user_ids: string[];
   commenter_name: string;
   project_name: string;
+  project_id: string;
   comment_text: string;
 }
 
@@ -55,6 +56,7 @@ serve(async (req) => {
       mentioned_user_ids,
       commenter_name,
       project_name,
+      project_id,
       comment_text,
     } = parsedBody;
 
@@ -86,6 +88,9 @@ serve(async (req) => {
 
     // Send email to each mentioned user
     const emailPromises = users.map(async (user) => {
+      const appUrl = Deno.env.get('APP_URL') || 'https://floconapp.com';
+      const projectUrl = `${appUrl}/projects/${project_id}`;
+      
       const emailHtml = `
         <html>
           <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -97,6 +102,9 @@ serve(async (req) => {
               <blockquote style="background: white; padding: 15px; border-left: 4px solid #1e3a5f; margin: 15px 0;">
                 ${comment_text}
               </blockquote>
+              <div style="margin-top: 20px;">
+                <a href="${projectUrl}" style="background: #1e3a5f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Project</a>
+              </div>
             </div>
           </body>
         </html>

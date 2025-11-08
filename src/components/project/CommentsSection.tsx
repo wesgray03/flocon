@@ -264,6 +264,7 @@ export function CommentsSection({
                 mentioned_user_ids: mentionedUserIds,
                 commenter_name: user.name,
                 project_name: projectData?.name || 'Project',
+                project_id: projectId,
                 comment_text: newComment.trim(),
               },
             })
