@@ -461,6 +461,7 @@ export default function ProjectsPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingProject, setEditingProject] = useState<Row | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>('none');
@@ -1412,75 +1413,56 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      {/* Mobile Filters */}
+      {/* Mobile Filters Button */}
       <div className="projects-mobile-filters" style={{ display: 'none' }}>
-        <div className="mobile-filter-group">
-          <label className="mobile-filter-label">Project Name</label>
-          <MultiFilterInput
-            values={filters.project_name}
-            onChangeValues={(vals) =>
-              setFilters((f) => ({ ...f, project_name: vals }))
-            }
-            suggestions={uniqueValues.project_name}
-            placeholder="Filter projects..."
-          />
-        </div>
-        <div className="mobile-filter-group">
-          <label className="mobile-filter-label">Customer</label>
-          <MultiFilterInput
-            values={filters.customer_name}
-            onChangeValues={(vals) =>
-              setFilters((f) => ({ ...f, customer_name: vals }))
-            }
-            suggestions={uniqueValues.customer_name}
-            placeholder="Filter customers..."
-          />
-        </div>
-        <div className="mobile-filter-group">
-          <label className="mobile-filter-label">Stage</label>
-          <MultiFilterInput
-            values={filters.stage}
-            onChangeValues={(vals) =>
-              setFilters((f) => ({ ...f, stage: vals }))
-            }
-            suggestions={uniqueValues.stage}
-            placeholder="Filter stages..."
-          />
-        </div>
-        {(filters.project_name.length > 0 ||
-          filters.customer_name.length > 0 ||
-          filters.stage.length > 0 ||
-          filters.manager.length > 0 ||
-          filters.owner.length > 0 ||
-          filters.qbid.length > 0) && (
-          <button
-            type="button"
-            onClick={() => {
-              setFilters({
-                qbid: [],
-                project_name: [],
-                customer_name: [],
-                manager: [],
-                owner: [],
-                stage: [],
-              });
-            }}
-            style={{
-              width: '100%',
-              marginTop: 12,
-              background: '#ebe5db',
-              color: colors.textPrimary,
-              border: '1px solid #e5dfd5',
-              borderRadius: 8,
-              padding: '10px 16px',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            Clear All Filters
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setShowFiltersModal(true)}
+          style={{
+            width: '100%',
+            background: '#1e3a5f',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            padding: '12px 16px',
+            fontSize: 16,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
+        >
+          🔍 Filters
+          {(filters.project_name.length > 0 ||
+            filters.customer_name.length > 0 ||
+            filters.stage.length > 0 ||
+            filters.manager.length > 0 ||
+            filters.owner.length > 0 ||
+            filters.qbid.length > 0) && (
+            <span
+              style={{
+                background: '#c8102e',
+                color: '#fff',
+                borderRadius: '50%',
+                width: 20,
+                height: 20,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 12,
+              }}
+            >
+              {filters.project_name.length +
+                filters.customer_name.length +
+                filters.stage.length +
+                filters.manager.length +
+                filters.owner.length +
+                filters.qbid.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Body */}
@@ -1933,6 +1915,181 @@ export default function ProjectsPage() {
             })}
           </div>
         </>
+      )}
+
+      {/* Filters Modal */}
+      {showFiltersModal && (
+        <div style={styles.overlay} onClick={() => setShowFiltersModal(false)}>
+          <div
+            style={{
+              ...styles.modal,
+              maxWidth: '90%',
+              width: 400,
+              maxHeight: '80vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="filters-modal-title"
+          >
+            <h2
+              id="filters-modal-title"
+              style={{
+                fontSize: 18,
+                fontWeight: 600,
+                marginBottom: 16,
+                color: colors.textPrimary,
+              }}
+            >
+              Filter Projects
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.textPrimary,
+                    marginBottom: 6,
+                  }}
+                >
+                  Project Name
+                </label>
+                <MultiFilterInput
+                  values={filters.project_name}
+                  onChangeValues={(vals) =>
+                    setFilters((f) => ({ ...f, project_name: vals }))
+                  }
+                  suggestions={uniqueValues.project_name}
+                  placeholder="Filter projects..."
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.textPrimary,
+                    marginBottom: 6,
+                  }}
+                >
+                  Customer
+                </label>
+                <MultiFilterInput
+                  values={filters.customer_name}
+                  onChangeValues={(vals) =>
+                    setFilters((f) => ({ ...f, customer_name: vals }))
+                  }
+                  suggestions={uniqueValues.customer_name}
+                  placeholder="Filter customers..."
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.textPrimary,
+                    marginBottom: 6,
+                  }}
+                >
+                  Owner
+                </label>
+                <MultiFilterInput
+                  values={filters.owner}
+                  onChangeValues={(vals) =>
+                    setFilters((f) => ({ ...f, owner: vals }))
+                  }
+                  suggestions={uniqueValues.owner}
+                  placeholder="Filter owners..."
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.textPrimary,
+                    marginBottom: 6,
+                  }}
+                >
+                  Stage
+                </label>
+                <MultiFilterInput
+                  values={filters.stage}
+                  onChangeValues={(vals) =>
+                    setFilters((f) => ({ ...f, stage: vals }))
+                  }
+                  suggestions={uniqueValues.stage}
+                  placeholder="Filter stages..."
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: 12,
+                marginTop: 20,
+                paddingTop: 16,
+                borderTop: '1px solid #e5dfd5',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setFilters({
+                    qbid: [],
+                    project_name: [],
+                    customer_name: [],
+                    manager: [],
+                    owner: [],
+                    stage: [],
+                  });
+                }}
+                style={{
+                  flex: 1,
+                  background: '#ebe5db',
+                  color: colors.textPrimary,
+                  border: '1px solid #e5dfd5',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Clear All
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowFiltersModal(false)}
+                style={{
+                  flex: 1,
+                  background: '#1e3a5f',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modal */}
