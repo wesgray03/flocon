@@ -205,3 +205,40 @@ body {
 .td-right {
   text-align: right;
 }
+
+/* === Mobile Responsive Styles === */
+@media (max-width: 768px) {
+  /* Make tables horizontally scrollable */
+  .table-wrap {
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    box-shadow: inset -10px 0 10px -10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Increase touch target sizes */
+  button,
+  a,
+  input[type='checkbox'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Larger input fields */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    padding: 12px !important;
+  }
+
+  /* Adjust table cell padding */
+  .table th,
+  .table td {
+    padding: 12px 8px;
+  }
+
+  /* Stack layouts */
+  .three-column-layout {
+    flex-direction: column !important;
+  }
+}

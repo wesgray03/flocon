@@ -2,6 +2,9 @@
 import React from 'react';
 import { colors } from './theme';
 
+// Mobile breakpoint check
+const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 768;
+
 // Table header styles
 export const th: React.CSSProperties = {
   textAlign: 'left',
@@ -73,7 +76,7 @@ export const td: React.CSSProperties = {
 export const tdRight: React.CSSProperties = { ...td, textAlign: 'right' };
 export const tdCenter: React.CSSProperties = { ...td, textAlign: 'center' };
 
-// Modal styles
+// Modal styles (responsive)
 export const overlay: React.CSSProperties = {
   position: 'fixed',
   top: 0,
@@ -85,8 +88,24 @@ export const overlay: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 1000,
+  padding: isMobile() ? 8 : 0,
 };
 
+export const getModalStyles = (): React.CSSProperties => {
+  const mobile = isMobile();
+  return {
+    background: colors.white,
+    borderRadius: mobile ? 8 : 12,
+    padding: mobile ? 16 : 24,
+    maxWidth: mobile ? '100%' : 1200,
+    width: mobile ? '95vw' : '90%',
+    maxHeight: mobile ? '95vh' : '90vh',
+    overflowY: 'auto',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+  };
+};
+
+// Legacy modal export (use getModalStyles() for responsive)
 export const modal: React.CSSProperties = {
   background: colors.white,
   borderRadius: 12,
@@ -98,40 +117,48 @@ export const modal: React.CSSProperties = {
   boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
 };
 
-// Input and button styles
+// Input and button styles (with proper touch targets)
 export const input: React.CSSProperties = {
-  padding: 8,
+  padding: isMobile() ? 12 : 8,
   border: `1px solid ${colors.border}`,
   borderRadius: 6,
   width: '100%',
   background: colors.cardBackground,
+  fontSize: isMobile() ? 16 : 14, // Prevent zoom on iOS
+  minHeight: 44, // Touch target
 };
 
 export const btnCancel: React.CSSProperties = {
-  padding: '8px 12px',
+  padding: '10px 16px',
   border: `1px solid ${colors.border}`,
   borderRadius: 6,
   background: colors.white,
   cursor: 'pointer',
+  minHeight: 44, // Touch target
+  minWidth: 44,
 };
 
 export const btnSave: React.CSSProperties = {
-  padding: '8px 12px',
+  padding: '10px 16px',
   borderRadius: 6,
   background: colors.navy,
   color: colors.white,
   border: 'none',
   cursor: 'pointer',
+  minHeight: 44, // Touch target
+  minWidth: 44,
 };
 
 export const btnSmall: React.CSSProperties = {
-  padding: '4px 8px',
+  padding: '8px 12px',
   fontSize: 12,
   background: colors.textPrimary,
   color: colors.white,
   border: 'none',
   borderRadius: 4,
   cursor: 'pointer',
+  minHeight: 40, // Slightly smaller but still touchable
+  minWidth: 40,
 };
 
 export const menuItemButton: React.CSSProperties = {
@@ -147,9 +174,9 @@ export const menuItemButton: React.CSSProperties = {
   cursor: 'pointer',
 };
 
-// Additional button variants
+// Additional button variants (with proper touch targets)
 export const btnPrimary: React.CSSProperties = {
-  padding: '8px 16px',
+  padding: '10px 16px',
   borderRadius: 6,
   background: colors.navy,
   color: colors.white,
@@ -157,10 +184,12 @@ export const btnPrimary: React.CSSProperties = {
   cursor: 'pointer',
   fontSize: 14,
   fontWeight: 500,
+  minHeight: 44,
+  minWidth: 44,
 };
 
 export const btnSuccess: React.CSSProperties = {
-  padding: '8px 16px',
+  padding: '10px 16px',
   borderRadius: 6,
   background: colors.grayBlueDark,
   color: colors.white,
@@ -168,10 +197,12 @@ export const btnSuccess: React.CSSProperties = {
   cursor: 'pointer',
   fontSize: 14,
   fontWeight: 500,
+  minHeight: 44,
+  minWidth: 44,
 };
 
 export const btnDanger: React.CSSProperties = {
-  padding: '8px 16px',
+  padding: '10px 16px',
   borderRadius: 6,
   background: colors.logoRed,
   color: colors.white,
@@ -179,6 +210,8 @@ export const btnDanger: React.CSSProperties = {
   cursor: 'pointer',
   fontSize: 14,
   fontWeight: 500,
+  minHeight: 44,
+  minWidth: 44,
 };
 
 // Link styles
