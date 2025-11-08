@@ -16,6 +16,19 @@
     max-width: 100% !important;
   }
 
+  /* Reorder sections on mobile: Project Info -> Status -> Main Content -> Comments */
+  .left-sidebar {
+    order: 1 !important;
+  }
+
+  .right-sidebar {
+    order: 2 !important;
+  }
+
+  .main-content {
+    order: 3 !important;
+  }
+
   /* Larger checkboxes for touch */
   input[type='checkbox'] {
     width: 22px !important;
