@@ -214,6 +214,12 @@ export default function ProjectDetail() {
         data: { session },
       } = await supabase.auth.getSession();
 
+      // If no session, redirect to login with return URL
+      if (!session) {
+        router.push(`/login?redirect=/projects/${id}`);
+        return;
+      }
+
       if (session?.user) {
         // Get the user record linked to this auth user
         // Use limit(1) to get just one record even if there are duplicates
