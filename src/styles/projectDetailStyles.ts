@@ -139,7 +139,7 @@ export const headerStyle: React.CSSProperties = {
 };
 
 export const contentWrapperStyle: React.CSSProperties = {
-  maxWidth: 1800,
+  maxWidth: 1600,
   margin: '0 auto',
   padding: 24,
 };

@@ -1527,7 +1527,7 @@ export default function BillingsPage() {
       {/* Continuation Sheet Modal */}
       {showContinuationSheet && (
         <div style={overlay}>
-          <div style={{ ...modal, maxWidth: 1200 }}>
+          <div style={{ ...modal, maxWidth: 1000 }}>
             <h2 style={{ fontSize: 20, marginBottom: 8, fontWeight: 600 }}>
               Continuation Sheet - Work Completed This Period
             </h2>
@@ -1795,7 +1795,7 @@ export default function BillingsPage() {
           <div
             style={{
               ...modal,
-              maxWidth: 1400,
+              maxWidth: 1200,
               maxHeight: '90vh',
               overflow: 'auto',
             }}

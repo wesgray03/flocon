@@ -695,7 +695,7 @@ export default function ProjectDetail() {
       {toast && <Toast message={toast.message} type={toast.type} />}
       {/* Header */}
       <div style={styles.headerStyle}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1600, margin: '0 auto' }}>
           <Link
             href="/projects"
             style={{

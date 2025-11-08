@@ -663,7 +663,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
       {showModal && (
         <div style={overlay}>
           <div
-            style={{ ...modal, maxWidth: 1600 }}
+            style={{ ...modal, maxWidth: 1400 }}
             role="dialog"
             aria-modal="true"
           >

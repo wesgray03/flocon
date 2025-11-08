@@ -91,7 +91,7 @@ export const modal: React.CSSProperties = {
   background: colors.white,
   borderRadius: 12,
   padding: 24,
-  maxWidth: 1400,
+  maxWidth: 1200,
   width: '90%',
   maxHeight: '90vh',
   overflowY: 'auto',
