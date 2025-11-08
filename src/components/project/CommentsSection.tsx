@@ -1,7 +1,7 @@
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { Pencil, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type ProjectComment = {
   id: string;
@@ -38,7 +38,113 @@ export function CommentsSection({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState('');
 
-  // Ensure we have an app-level user record linked to the current auth user
+  // Mention functionality state
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionSearch, setMentionSearch] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load all users for mentions
+  useEffect(() => {
+    const loadUsers = async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, name, email, user_type')
+        .order('name');
+
+      if (!error && data) {
+        setAllUsers(data as User[]);
+      }
+    };
+    loadUsers();
+  }, []);
+
+  // Detect @ mentions in text
+  const handleCommentChange = (
+    value: string,
+    textarea?: HTMLTextAreaElement
+  ) => {
+    setNewComment(value);
+
+    const cursorPos = textarea?.selectionStart ?? value.length;
+
+    // Find the last @ before cursor
+    const textBeforeCursor = value.substring(0, cursorPos);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+
+    if (lastAtIndex !== -1) {
+      const textAfterAt = textBeforeCursor.substring(lastAtIndex + 1);
+
+      // Check if we're still in the same word (no spaces after @)
+      if (!textAfterAt.includes(' ') && !textAfterAt.includes('\n')) {
+        setMentionSearch(textAfterAt);
+        setShowMentions(true);
+        return;
+      }
+    }
+
+    setShowMentions(false);
+    setMentionSearch('');
+  };
+
+  // Filter users based on mention search
+  const filteredUsers = allUsers.filter((user) =>
+    user.name.toLowerCase().includes(mentionSearch.toLowerCase())
+  );
+
+  // Insert mention into text
+  const insertMention = (user: User) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const text = newComment;
+    const cursorPos = textarea.selectionStart;
+
+    // Find the @ symbol before cursor
+    const textBeforeCursor = text.substring(0, cursorPos);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+
+    if (lastAtIndex !== -1) {
+      const beforeAt = text.substring(0, lastAtIndex);
+      const afterCursor = text.substring(cursorPos);
+      const newText = `${beforeAt}@${user.name} ${afterCursor}`;
+
+      setNewComment(newText);
+      setShowMentions(false);
+      setMentionSearch('');
+
+      // Set cursor position after the mention
+      setTimeout(() => {
+        const newCursorPos = lastAtIndex + user.name.length + 2;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+        textarea.focus();
+      }, 0);
+    }
+  };
+
+  // Extract mentioned users from comment text
+  const extractMentions = (text: string): string[] => {
+    const mentionRegex = /@(\w+(?:\s+\w+)*)/g;
+    const matches = text.matchAll(mentionRegex);
+    const mentionedNames: string[] = [];
+
+    for (const match of matches) {
+      mentionedNames.push(match[1]);
+    }
+
+    return mentionedNames;
+  };
+
+  // Get user IDs from names
+  const getUserIdsByNames = (names: string[]): string[] => {
+    return names
+      .map((name) => {
+        const user = allUsers.find((u) => u.name === name);
+        return user?.id;
+      })
+      .filter((id): id is string => id !== undefined);
+  };
+
   // Returns a concrete user row from public.users or null if not available
   const ensureUser = async (): Promise<User | null> => {
     try {
@@ -105,6 +211,10 @@ export function CommentsSection({
 
     setLoadingComments(true);
     try {
+      // Extract mentions from comment text
+      const mentionedNames = extractMentions(newComment);
+      const mentionedUserIds = getUserIdsByNames(mentionedNames);
+
       const { data, error } = await supabase
         .from('project_comments')
         .insert([
@@ -121,6 +231,36 @@ export function CommentsSection({
         console.error('Error adding comment:', error);
         alert('Error adding comment: ' + error.message);
         return;
+      }
+
+      // Store mentions in comment_mentions table
+      if (mentionedUserIds.length > 0) {
+        const mentionsToInsert = mentionedUserIds.map((userId) => ({
+          comment_id: data.id,
+          mentioned_user_id: userId,
+        }));
+
+        const { error: mentionsError } = await supabase
+          .from('comment_mentions')
+          .insert(mentionsToInsert);
+
+        if (mentionsError) {
+          console.error('Error storing mentions:', mentionsError);
+          // Don't block comment posting if mentions fail
+        } else {
+          // Send email notifications asynchronously (don't wait for it)
+          supabase.functions
+            .invoke('notify-mention', {
+              body: {
+                comment_id: data.id,
+                mentioned_user_ids: mentionedUserIds,
+                commenter_name: user.name,
+                project_name: projectId, // TODO: Pass actual project name
+                comment_text: newComment.trim(),
+              },
+            })
+            .catch((err) => console.error('Email notification error:', err));
+        }
       }
 
       // Use the user object we already have from ensureUser()
@@ -232,6 +372,48 @@ export function CommentsSection({
     }
   };
 
+  // Render comment text with highlighted mentions
+  const renderCommentWithMentions = (text: string) => {
+    const mentionRegex = /@(\w+(?:\s+\w+)*)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+
+    const matches = text.matchAll(mentionRegex);
+    for (const match of matches) {
+      const matchIndex = match.index!;
+
+      // Add text before mention
+      if (matchIndex > lastIndex) {
+        parts.push(text.substring(lastIndex, matchIndex));
+      }
+
+      // Add highlighted mention
+      parts.push(
+        <span
+          key={matchIndex}
+          style={{
+            background: '#e0e7ee',
+            color: '#1e40af',
+            padding: '2px 4px',
+            borderRadius: 3,
+            fontWeight: 600,
+          }}
+        >
+          {match[0]}
+        </span>
+      );
+
+      lastIndex = matchIndex + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
+  };
+
   return (
     <div style={{ flex: '0 0 25%' }}>
       <div
@@ -263,12 +445,28 @@ export function CommentsSection({
         {/* Add Comment Form */}
         <form
           onSubmit={handleAddComment}
-          style={{ marginBottom: 16, flexShrink: 0 }}
+          style={{ marginBottom: 16, flexShrink: 0, position: 'relative' }}
         >
           <textarea
+            ref={textareaRef}
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Add a comment..."
+            onChange={(e) => handleCommentChange(e.target.value, e.target)}
+            onKeyDown={(e) => {
+              // Close mentions dropdown on Escape
+              if (e.key === 'Escape' && showMentions) {
+                setShowMentions(false);
+                e.preventDefault();
+              }
+              // Navigate mentions with arrow keys
+              if (
+                showMentions &&
+                (e.key === 'ArrowDown' || e.key === 'ArrowUp')
+              ) {
+                e.preventDefault();
+                // TODO: Add keyboard navigation
+              }
+            }}
+            placeholder="Add a comment... (use @ to mention someone)"
             disabled={loadingComments}
             style={{
               width: '100%',
@@ -282,6 +480,64 @@ export function CommentsSection({
               marginBottom: 8,
             }}
           />
+
+          {/* Mentions Dropdown */}
+          {showMentions && filteredUsers.length > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: 0,
+                right: 0,
+                marginBottom: 4,
+                background: '#fff',
+                border: '1px solid #e5dfd5',
+                borderRadius: 6,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                maxHeight: 200,
+                overflowY: 'auto',
+                zIndex: 1000,
+              }}
+            >
+              {filteredUsers.slice(0, 5).map((user) => (
+                <div
+                  key={user.id}
+                  onClick={() => insertMention(user)}
+                  style={{
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderBottom: '1px solid #f0ebe3',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#f0ebe3';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <span style={{ fontWeight: 600, fontSize: 13 }}>
+                    {user.name}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 500,
+                      background: '#e0e7ee',
+                      color: '#1e40af',
+                      padding: '2px 6px',
+                      borderRadius: 3,
+                    }}
+                  >
+                    {user.user_type}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loadingComments || !newComment.trim()}
@@ -485,7 +741,7 @@ export function CommentsSection({
                           whiteSpace: 'pre-wrap',
                         }}
                       >
-                        {comment.comment_text}
+                        {renderCommentWithMentions(comment.comment_text)}
                       </p>
                     )}
                   </div>
