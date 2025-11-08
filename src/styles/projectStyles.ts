@@ -100,9 +100,10 @@ export const modal: React.CSSProperties = {
 // Input and button styles
 export const input: React.CSSProperties = {
   padding: 8,
-  border: '1px solid #e5e7eb',
+  border: '1px solid #e5dfd5',
   borderRadius: 6,
   width: '100%',
+  background: '#faf8f5',
 };
 
 export const btnCancel: React.CSSProperties = {
