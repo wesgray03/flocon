@@ -1188,68 +1188,136 @@ export default function ProjectDetail() {
                     justifyContent: 'center',
                   }}
                 >
-                  {showModuleMenu ? '✕' : '☰'}
+                  ☰
                 </button>
 
                 {showModuleMenu && (
                   <div
                     style={{
                       position: 'fixed',
-                      bottom: 85,
-                      right: 20,
-                      zIndex: 1000,
-                      background: '#fff',
-                      border: '1px solid #e5dfd5',
-                      borderRadius: 12,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      minWidth: 200,
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      zIndex: 1001,
+                      background: 'rgba(0,0,0,0.5)',
+                      display: 'flex',
+                      alignItems: 'flex-end',
+                      justifyContent: 'center',
                     }}
+                    onClick={() => setShowModuleMenu(false)}
                   >
-                    <button
-                      onClick={() => {
-                        setActiveTab('overview');
-                        setShowModuleMenu(false);
-                      }}
+                    <div
                       style={{
+                        background: '#fff',
+                        borderTopLeftRadius: 20,
+                        borderTopRightRadius: 20,
                         width: '100%',
-                        padding: '14px 16px',
-                        background:
-                          activeTab === 'overview' ? '#f0ebe3' : 'transparent',
-                        color: colors.textPrimary,
-                        border: 'none',
-                        borderBottom: '1px solid #e5dfd5',
-                        textAlign: 'left',
-                        fontSize: 15,
-                        fontWeight: activeTab === 'overview' ? 600 : 400,
-                        cursor: 'pointer',
-                        borderTopLeftRadius: 12,
-                        borderTopRightRadius: 12,
+                        maxHeight: '50vh',
+                        overflowY: 'auto',
+                        padding: 20,
+                        paddingBottom: 40,
                       }}
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      📊 Overview
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveTab('billing');
-                        setShowModuleMenu(false);
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '14px 16px',
-                        background:
-                          activeTab === 'billing' ? '#f0ebe3' : 'transparent',
-                        color: colors.textPrimary,
-                        border: 'none',
-                        textAlign: 'left',
-                        fontSize: 15,
-                        fontWeight: activeTab === 'billing' ? 600 : 400,
-                        cursor: 'pointer',
-                        borderBottomLeftRadius: 12,
-                        borderBottomRightRadius: 12,
-                      }}
-                    >
-                      💰 Billing
-                    </button>
+                      <div
+                        style={{
+                          textAlign: 'center',
+                          marginBottom: 20,
+                          paddingBottom: 16,
+                          borderBottom: '2px solid #e5dfd5',
+                        }}
+                      >
+                        <h3
+                          style={{
+                            margin: 0,
+                            fontSize: 20,
+                            fontWeight: 600,
+                            color: colors.textPrimary,
+                          }}
+                        >
+                          Select Module
+                        </h3>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setActiveTab('overview');
+                          setShowModuleMenu(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '18px 20px',
+                          marginBottom: 12,
+                          background:
+                            activeTab === 'overview' ? '#1e3a5f' : '#f0ebe3',
+                          color:
+                            activeTab === 'overview'
+                              ? '#fff'
+                              : colors.textPrimary,
+                          border: '1px solid #e5dfd5',
+                          borderRadius: 12,
+                          textAlign: 'left',
+                          fontSize: 16,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                        }}
+                      >
+                        <span style={{ fontSize: 24 }}>📊</span>
+                        <span>Overview</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setActiveTab('billing');
+                          setShowModuleMenu(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '18px 20px',
+                          marginBottom: 12,
+                          background:
+                            activeTab === 'billing' ? '#1e3a5f' : '#f0ebe3',
+                          color:
+                            activeTab === 'billing'
+                              ? '#fff'
+                              : colors.textPrimary,
+                          border: '1px solid #e5dfd5',
+                          borderRadius: 12,
+                          textAlign: 'left',
+                          fontSize: 16,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                        }}
+                      >
+                        <span style={{ fontSize: 24 }}>💰</span>
+                        <span>Billing</span>
+                      </button>
+
+                      <button
+                        onClick={() => setShowModuleMenu(false)}
+                        style={{
+                          width: '100%',
+                          padding: '14px 20px',
+                          marginTop: 20,
+                          background: 'transparent',
+                          color: colors.textSecondary,
+                          border: '1px solid #e5dfd5',
+                          borderRadius: 12,
+                          fontSize: 15,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
