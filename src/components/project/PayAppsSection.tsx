@@ -563,7 +563,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           fontWeight: 500,
                           background:
                             app.status === 'Paid'
-                              ? '#d4f0e8'
+                              ? '#e0e7ee'
                               : app.status === 'Rejected'
                                 ? '#fee2e2'
                                 : '#ebe5db',
@@ -1116,7 +1116,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  style={{ ...btnSmall, background: '#2d5a1e', color: '#fff' }}
+                  style={{ ...btnSmall, background: '#475569', color: '#fff' }}
                 >
                   Print
                 </button>

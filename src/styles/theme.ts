@@ -6,11 +6,10 @@ export const colors = {
   navy: '#1e3a5f',
   navyHover: '#152d4a',
   
-  // Avocado Green (from logo) - matches navy depth
-  avocadoDark: '#2d5a1e',
-  avocado: '#3d7a28',
-  avocadoLight: '#70b35a',
-  avocadoLightest: '#d4f0e8',
+  // Grayish Blue (replacing green)
+  grayBlueDark: '#475569',
+  grayBlue: '#64748b',
+  grayBlueLight: '#e0e7ee',
   
   // Logo Red
   logoRed: '#c8102e',
@@ -30,6 +29,12 @@ export const colors = {
   gray: '#6b7280',
   grayLight: '#e5e7eb',
   
+  // Legacy aliases (for compatibility)
+  avocadoDark: '#475569',      // Now grayish blue
+  avocado: '#475569',
+  avocadoLight: '#64748b',
+  avocadoLightest: '#e0e7ee',
+  
   // Status Colors
   warning: '#fef3c7',
   warningBorder: '#fbbf24',
@@ -39,9 +44,9 @@ export const colors = {
   errorBorder: '#f5c2c7',
   errorText: '#991b1b',
   
-  success: '#d4f0e8',
-  successBorder: '#70b35a',
-  successText: '#2d5a1e',
+  success: '#e0e7ee',          // Now grayish blue
+  successBorder: '#64748b',
+  successText: '#475569',
   
   // Legacy/Fallback (gradually remove these)
   white: '#fff',
@@ -55,9 +60,9 @@ export const buttonStyles = {
     hover: colors.navyHover,
   },
   success: {
-    background: colors.avocadoDark,
+    background: colors.grayBlueDark,
     color: colors.white,
-    hover: '#245018',
+    hover: '#334155',
   },
   danger: {
     background: colors.logoRed,

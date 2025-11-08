@@ -709,10 +709,10 @@ export default function BillingsPage() {
                                 fontSize: 12,
                                 background:
                                   line.category === 'Labor'
-                                    ? '#d4f0e8'
+                                    ? '#e0e7ee'
                                     : line.category === 'Other'
                                       ? '#ebe5db'
-                                      : '#d4f0e8',
+                                      : '#e0e7ee',
                                 color:
                                   line.category === 'Labor'
                                     ? '#1e40af'
@@ -901,19 +901,19 @@ export default function BillingsPage() {
                                 fontWeight: 500,
                                 background:
                                   app.status === 'Paid'
-                                    ? '#d4f0e8'
+                                    ? '#e0e7ee'
                                     : app.status === 'Rejected'
                                       ? '#fee2e2'
                                       : '#ebe5db',
                                 border:
                                   app.status === 'Paid'
-                                    ? '1px solid #70b35a'
+                                    ? '1px solid #64748b'
                                     : app.status === 'Rejected'
                                       ? '1px solid #f5c2c7'
                                       : '1px solid #fde68a',
                                 color:
                                   app.status === 'Paid'
-                                    ? '#2d5a1e'
+                                    ? '#475569'
                                     : app.status === 'Rejected'
                                       ? '#991b1b'
                                       : '#854d0e',

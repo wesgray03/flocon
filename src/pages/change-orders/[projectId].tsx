@@ -329,19 +329,19 @@ export default function ChangeOrdersPage() {
                               fontWeight: 500,
                               background:
                                 co.status === 'Approved'
-                                  ? '#d4f0e8'
+                                  ? '#e0e7ee'
                                   : co.status === 'Rejected'
                                     ? '#fee2e2'
                                     : '#ebe5db',
                               border:
                                 co.status === 'Approved'
-                                  ? '1px solid #70b35a'
+                                  ? '1px solid #64748b'
                                   : co.status === 'Rejected'
                                     ? '1px solid #f5c2c7'
                                     : '1px solid #fde68a',
                               color:
                                 co.status === 'Approved'
-                                  ? '#2d5a1e'
+                                  ? '#475569'
                                   : co.status === 'Rejected'
                                     ? '#991b1b'
                                     : '#854d0e',

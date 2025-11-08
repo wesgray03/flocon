@@ -162,7 +162,7 @@ export const btnPrimary: React.CSSProperties = {
 export const btnSuccess: React.CSSProperties = {
   padding: '8px 16px',
   borderRadius: 6,
-  background: colors.avocadoDark,
+  background: colors.grayBlueDark,
   color: colors.white,
   border: 'none',
   cursor: 'pointer',

@@ -5,7 +5,7 @@ const path = require('path');
 const colorMappings = {
   '#0f172a': 'colors.textPrimary',
   '#64748b': 'colors.textSecondary',
-  '#475569': 'colors.textSecondary', // Close enough to textSecondary
+  '#475569': 'colors.grayBlueDark',
   '#9ca3af': 'colors.textMuted',
   '#334155': 'colors.textPrimary', // Dark text
   '#6b7280': 'colors.gray',
@@ -19,9 +19,7 @@ const colorMappings = {
   '#ebe5db': 'colors.toggleBackground',
   '#f0ebe3': 'colors.tableHeader',
   '#e5dfd5': 'colors.border',
-  '#2d5a1e': 'colors.avocadoDark',
-  '#70b35a': 'colors.avocadoLight',
-  '#d4f0e8': 'colors.avocadoLightest',
+  '#e0e7ee': 'colors.grayBlueLight',
   '#fee2e2': 'colors.error',
   '#cbd5e1': 'colors.border', // Similar border color
 };

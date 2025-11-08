@@ -225,7 +225,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
           style={{
             marginTop: 12,
             padding: 12,
-            background: '#d4f0e8',
+            background: '#e0e7ee',
             border: '1px solid #93c5fd',
             borderRadius: 6,
             display: 'flex',

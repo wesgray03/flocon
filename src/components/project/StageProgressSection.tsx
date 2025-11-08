@@ -173,7 +173,7 @@ export default function StageProgressSection({
         {/* Current Stage */}
         <div
           style={{
-            background: '#d4f0e8',
+            background: '#e0e7ee',
             padding: 16,
             borderRadius: 8,
             border: '2px solid #86efac',
@@ -248,7 +248,7 @@ export default function StageProgressSection({
                     <span
                       style={{
                         flex: 1,
-                        color: task.complete ? '#2d5a1e' : '#0f172a',
+                        color: task.complete ? '#475569' : '#0f172a',
                         textDecoration: task.complete ? 'line-through' : 'none',
                         fontSize: 14,
                         fontWeight: 500,

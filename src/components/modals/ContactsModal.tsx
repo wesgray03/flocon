@@ -334,7 +334,7 @@ function getContactTypeBadgeStyle(type: string): React.CSSProperties {
     borderRadius: 4,
     fontSize: 12,
     fontWeight: 500,
-    background: '#d4f0e8',
+    background: '#e0e7ee',
     color: '#1e40af',
   };
 }

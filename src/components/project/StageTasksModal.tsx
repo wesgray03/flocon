@@ -169,7 +169,7 @@ export default function StageTasksModal({
                     border: '1px solid #e5dfd5',
                     borderRadius: 8,
                     padding: 16,
-                    background: isCurrent ? '#d4f0e8' : '#faf8f5',
+                    background: isCurrent ? '#e0e7ee' : '#faf8f5',
                   }}
                 >
                   <h3
@@ -177,7 +177,7 @@ export default function StageTasksModal({
                       margin: '0 0 12px 0',
                       fontSize: 16,
                       fontWeight: 600,
-                      color: isCurrent ? '#2d5a1e' : '#0f172a',
+                      color: isCurrent ? '#475569' : '#0f172a',
                     }}
                   >
                     {s.order}. {s.name}
@@ -220,7 +220,7 @@ export default function StageTasksModal({
                               textDecoration: task.complete
                                 ? 'line-through'
                                 : 'none',
-                              color: task.complete ? '#2d5a1e' : '#0f172a',
+                              color: task.complete ? '#475569' : '#0f172a',
                             }}
                           >
                             {task.name}
