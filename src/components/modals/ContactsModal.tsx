@@ -1,5 +1,5 @@
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -259,7 +259,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
           </div>
         )}
 
-        {loadError && <p style={{ color: {colors.logoRed} }}>Error: {loadError}</p>}
+        {loadError && <p style={{ color: colors.logoRed }}>Error: {loadError}</p>}
 
         <div style={{ maxHeight: 720, overflowY: 'auto' }}>
           <table style={styles.table}>
@@ -307,7 +307,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
                       onClick={() => remove(contact.id)}
                       style={{
                         ...styles.btnSmall,
-                        background: {colors.logoRed},
+                        background: colors.logoRed,
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',

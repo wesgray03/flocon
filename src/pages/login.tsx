@@ -1,5 +1,5 @@
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -46,7 +46,7 @@ export default function LoginPage() {
           background: '#faf8f5',
         }}
       >
-        <p style={{ color: {colors.textSecondary} }}>Checking authentication...</p>
+        <p style={{ color: colors.textSecondary }}>Checking authentication...</p>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function LoginPage() {
         >
           Sign in
         </h1>
-        <p style={{ marginTop: 0, marginBottom: 16, color: {colors.textMuted} }}>
+        <p style={{ marginTop: 0, marginBottom: 16, color: colors.textMuted }}>
           Use your Microsoft (Azure AD) account to continue.
         </p>
         <button

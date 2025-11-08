@@ -1,5 +1,5 @@
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -175,7 +175,7 @@ export default function AuthCallback() {
         >
           Authenticating...
         </h1>
-        <p style={{ marginTop: 0, color: {colors.textMuted} }}>{status}</p>
+        <p style={{ marginTop: 0, color: colors.textMuted }}>{status}</p>
         <div
           style={{
             marginTop: 16,

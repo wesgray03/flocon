@@ -1,5 +1,5 @@
-import { colors } from '@/styles/theme';
 import { cn } from '@/lib/utils';
+import { colors } from '@/styles/theme';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { Input } from './input';
@@ -160,7 +160,7 @@ export function MultiFilterInput({
         onFocus={() => setShowSuggestions(true)}
         className={cn('w-full', className)}
         placeholder={props.placeholder}
-        style={{ background: '#faf8f5', bordercolor: colors.border }}
+        style={{ background: '#faf8f5', borderColor: colors.border }}
         {...props}
       />
       {showSuggestions &&

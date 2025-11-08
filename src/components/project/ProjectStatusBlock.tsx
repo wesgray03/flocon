@@ -1,9 +1,9 @@
-import { colors } from '@/styles/theme';
 import {
   ProjectTask,
   Stage as StageType,
   useProjectTasks,
 } from '@/lib/hooks/useProjectTasks';
+import { colors } from '@/styles/theme';
 import { AlertTriangle, Pencil } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import StageTasksModal from './StageTasksModal';
