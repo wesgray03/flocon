@@ -124,7 +124,8 @@ export function CommentsSection({
 
   // Extract mentioned users from comment text
   const extractMentions = (text: string): string[] => {
-    const mentionRegex = /@(\w+(?:\s+\w+)*)/g;
+    // Match @FirstName LastName (up to 2 words, stops at non-word chars except space)
+    const mentionRegex = /@(\w+(?:\s\w+)?)\b/g;
     const matches = text.matchAll(mentionRegex);
     const mentionedNames: string[] = [];
 
@@ -381,7 +382,8 @@ export function CommentsSection({
 
   // Render comment text with highlighted mentions
   const renderCommentWithMentions = (text: string) => {
-    const mentionRegex = /@(\w+(?:\s+\w+)*)/g;
+    // Match @FirstName LastName (up to 2 words, stops at non-word chars except space)
+    const mentionRegex = /@(\w+(?:\s\w+)?)\b/g;
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
 
