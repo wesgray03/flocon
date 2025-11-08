@@ -1,14 +1,15 @@
 // Shared styles for the Projects page
 import React from 'react';
+import { colors } from './theme';
 
 // Table header styles
 export const th: React.CSSProperties = {
   textAlign: 'left',
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: `1px solid ${colors.border}`,
   whiteSpace: 'nowrap',
   cursor: 'pointer',
-  background: '#f1f5f9',
+  background: colors.tableHeader,
 };
 
 export const thRight: React.CSSProperties = { ...th, textAlign: 'right' };
@@ -65,7 +66,7 @@ export const thActions: React.CSSProperties = {
 // Table cell styles
 export const td: React.CSSProperties = {
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: `1px solid ${colors.border}`,
   whiteSpace: 'nowrap',
 };
 
@@ -87,7 +88,7 @@ export const overlay: React.CSSProperties = {
 };
 
 export const modal: React.CSSProperties = {
-  background: '#fff',
+  background: colors.white,
   borderRadius: 12,
   padding: 24,
   maxWidth: 1400,
@@ -100,25 +101,25 @@ export const modal: React.CSSProperties = {
 // Input and button styles
 export const input: React.CSSProperties = {
   padding: 8,
-  border: '1px solid #e5dfd5',
+  border: `1px solid ${colors.border}`,
   borderRadius: 6,
   width: '100%',
-  background: '#faf8f5',
+  background: colors.cardBackground,
 };
 
 export const btnCancel: React.CSSProperties = {
   padding: '8px 12px',
-  border: '1px solid #e5dfd5',
+  border: `1px solid ${colors.border}`,
   borderRadius: 6,
-  background: '#fff',
+  background: colors.white,
   cursor: 'pointer',
 };
 
 export const btnSave: React.CSSProperties = {
   padding: '8px 12px',
   borderRadius: 6,
-  background: '#1e3a5f',
-  color: '#fff',
+  background: colors.navy,
+  color: colors.white,
   border: 'none',
   cursor: 'pointer',
 };
@@ -126,8 +127,8 @@ export const btnSave: React.CSSProperties = {
 export const btnSmall: React.CSSProperties = {
   padding: '4px 8px',
   fontSize: 12,
-  background: '#0f172a',
-  color: '#fff',
+  background: colors.textPrimary,
+  color: colors.white,
   border: 'none',
   borderRadius: 4,
   cursor: 'pointer',
@@ -137,11 +138,56 @@ export const menuItemButton: React.CSSProperties = {
   display: 'block',
   width: '100%',
   padding: '10px 12px',
-  color: '#0f172a',
+  color: colors.textPrimary,
   background: 'transparent',
   border: 'none',
   textAlign: 'left',
   fontSize: 14,
-  borderBottom: '1px solid #f1f5f9',
+  borderBottom: `1px solid ${colors.tableHeader}`,
   cursor: 'pointer',
+};
+
+// Additional button variants
+export const btnPrimary: React.CSSProperties = {
+  padding: '8px 16px',
+  borderRadius: 6,
+  background: colors.navy,
+  color: colors.white,
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: 14,
+  fontWeight: 500,
+};
+
+export const btnSuccess: React.CSSProperties = {
+  padding: '8px 16px',
+  borderRadius: 6,
+  background: colors.avocadoDark,
+  color: colors.white,
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: 14,
+  fontWeight: 500,
+};
+
+export const btnDanger: React.CSSProperties = {
+  padding: '8px 16px',
+  borderRadius: 6,
+  background: colors.logoRed,
+  color: colors.white,
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: 14,
+  fontWeight: 500,
+};
+
+// Link styles
+export const linkPrimary: React.CSSProperties = {
+  color: colors.navy,
+  textDecoration: 'none',
+};
+
+export const linkDanger: React.CSSProperties = {
+  color: colors.logoRed,
+  textDecoration: 'none',
 };

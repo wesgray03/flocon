@@ -166,7 +166,7 @@ export default function ProspectsPage() {
                     border: 'none',
                     cursor: 'pointer',
                     fontSize: 14,
-                    color: '#dc2626',
+                    color: '#c8102e',
                     fontWeight: 600,
                   }}
                 >

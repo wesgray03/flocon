@@ -538,7 +538,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                       {money(app.total_completed_and_stored || 0)}
                     </td>
                     <td style={tdRight}>
-                      <span style={{ color: '#dc2626' }}>
+                      <span style={{ color: '#c8102e' }}>
                         {money(app.total_retainage || 0)}
                       </span>
                     </td>
@@ -638,7 +638,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           marginLeft: 6,
                           background: 'transparent',
                           border: 'none',
-                          color: '#ef4444',
+                          color: '#c8102e',
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -901,7 +901,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                                 ${balance.toLocaleString()}
                               </td>
                               <td style={tdRight}>
-                                <span style={{ color: '#dc2626' }}>
+                                <span style={{ color: '#c8102e' }}>
                                   ${retainage.toLocaleString()}
                                 </span>
                               </td>
@@ -1321,7 +1321,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           <td style={tdRight}>{percentComplete.toFixed(1)}%</td>
                           <td style={tdRight}>${balance.toLocaleString()}</td>
                           <td style={tdRight}>
-                            <span style={{ color: '#dc2626' }}>
+                            <span style={{ color: '#c8102e' }}>
                               ${retainage.toLocaleString()}
                             </span>
                           </td>

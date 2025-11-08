@@ -205,7 +205,7 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
         )}
 
         {loading && <p style={{ color: '#64748b' }}>Loading...</p>}
-        {loadError && <p style={{ color: '#ef4444' }}>Error: {loadError}</p>}
+        {loadError && <p style={{ color: '#c8102e' }}>Error: {loadError}</p>}
 
         <div style={{ maxHeight: 720, overflowY: 'auto' }}>
           <table style={styles.table}>
@@ -253,7 +253,7 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
                       onClick={() => remove(user.id)}
                       style={{
                         ...styles.btnSmall,
-                        background: '#ef4444',
+                        background: '#c8102e',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',

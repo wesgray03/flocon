@@ -196,7 +196,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#ef4444',
+                    color: '#c8102e',
                     cursor: 'pointer',
                     padding: 0,
                     display: 'inline-flex',

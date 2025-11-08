@@ -1,9 +1,10 @@
 import React from 'react';
+import { colors } from './theme';
 
 // Card Styles
 export const cardStyle: React.CSSProperties = {
-  background: '#faf8f5',
-  border: '1px solid #e5dfd5',
+  background: colors.cardBackground,
+  border: `1px solid ${colors.border}`,
   borderRadius: 12,
   padding: 24,
   marginBottom: 24,
@@ -15,7 +16,7 @@ export const sectionHeaderStyle: React.CSSProperties = {
   fontSize: 20,
   fontWeight: 600,
   margin: '0 0 16px 0',
-  color: '#0f172a',
+  color: colors.textPrimary,
 };
 
 export const subsectionHeaderStyle: React.CSSProperties = {
@@ -28,10 +29,11 @@ export const subsectionHeaderStyle: React.CSSProperties = {
 // Input Styles
 export const inputStyle: React.CSSProperties = {
   padding: '8px 12px',
-  border: '1px solid #d1d5db',
+  border: `1px solid ${colors.border}`,
   borderRadius: 6,
   fontSize: 14,
   width: '100%',
+  background: colors.cardBackground,
 };
 
 // Table Styles
@@ -39,9 +41,9 @@ export const thLeft: React.CSSProperties = {
   padding: '12px 8px',
   textAlign: 'left',
   fontWeight: 600,
-  borderBottom: '2px solid #e5dfd5',
+  borderBottom: `2px solid ${colors.border}`,
   fontSize: 13,
-  color: '#64748b',
+  color: colors.textSecondary,
 };
 
 export const thCenter: React.CSSProperties = {
