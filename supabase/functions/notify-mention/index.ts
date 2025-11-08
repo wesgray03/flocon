@@ -27,11 +27,24 @@ serve(async (req) => {
   try {
     // Parse request body
     const requestBody = await req.text();
+    console.log('Request body length:', requestBody.length);
     console.log('Request body:', requestBody);
 
     if (!requestBody || requestBody.trim() === '') {
       console.error('Empty request body received');
       return new Response(JSON.stringify({ error: 'Empty request body' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+
+    let parsedBody: MentionNotification;
+    try {
+      parsedBody = JSON.parse(requestBody);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Attempted to parse:', requestBody);
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       });
@@ -43,7 +56,7 @@ serve(async (req) => {
       commenter_name,
       project_name,
       comment_text,
-    } = JSON.parse(requestBody) as MentionNotification;
+    } = parsedBody;
 
     if (!mentioned_user_ids || mentioned_user_ids.length === 0) {
       console.log('No mentions to notify');
