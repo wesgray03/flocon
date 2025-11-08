@@ -87,8 +87,12 @@
 
   /* ========================= PROJECT DETAIL MOBILE ========================= */
 
-  /* Hide desktop tabs, show mobile floating button */
+  /* Hide desktop tabs and main content on mobile */
   .desktop-tabs {
+    display: none !important;
+  }
+
+  .main-content {
     display: none !important;
   }
 
