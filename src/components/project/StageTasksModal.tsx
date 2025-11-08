@@ -68,6 +68,19 @@ export default function StageTasksModal({
     loadAll();
   }, [open, stages, projectId]);
 
+  // Auto-scroll to current stage section when modal opens and data is loaded
+  useEffect(() => {
+    if (!open || loading) return;
+    if (!currentStageId) return;
+    // Defer to next paint to ensure elements exist
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`stage-block-${currentStageId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }, [open, loading, currentStageId, tasksByStage]);
+
   if (!open) return null;
 
   const toggleTask = async (task: ProjectTask) => {
@@ -150,6 +163,7 @@ export default function StageTasksModal({
               return (
                 <div
                   key={s.id}
+                  id={`stage-block-${s.id}`}
                   style={{
                     border: '1px solid #e2e8f0',
                     borderRadius: 8,
