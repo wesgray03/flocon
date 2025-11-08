@@ -25,10 +25,17 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    // Parse request body
+    const requestBody = await req.text();
+    console.log('Request body:', requestBody);
+
+    if (!requestBody || requestBody.trim() === '') {
+      console.error('Empty request body received');
+      return new Response(JSON.stringify({ error: 'Empty request body' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
 
     const {
       comment_id,
@@ -36,7 +43,23 @@ serve(async (req) => {
       commenter_name,
       project_name,
       comment_text,
-    } = (await req.json()) as MentionNotification;
+    } = JSON.parse(requestBody) as MentionNotification;
+
+    if (!mentioned_user_ids || mentioned_user_ids.length === 0) {
+      console.log('No mentions to notify');
+      return new Response(
+        JSON.stringify({ success: true, notifications_sent: 0 }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
     // Fetch mentioned users' email addresses
     const { data: users, error: usersError } = await supabase
