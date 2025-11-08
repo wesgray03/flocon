@@ -73,47 +73,49 @@ serve(async (req) => {
 
     // Send email to each mentioned user
     const emailPromises = users.map(async (user) => {
-      // TODO: Uncomment and configure email service (Resend/SendGrid) below
-      // Example email template:
-      /*
       const emailHtml = `
         <html>
           <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: #1e3a5f; color: white; padding: 20px;">
-              <h2>You were mentioned in a comment</h2>
+            <div style="background: #1e3a5f; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+              <h2 style="margin: 0;">You were mentioned in a comment</h2>
             </div>
-            <div style="padding: 20px; background: #faf8f5;">
-              <p><strong>${commenter_name}</strong> mentioned you on project <strong>${project_name}</strong></p>
-              <blockquote style="background: white; padding: 15px;">
+            <div style="padding: 20px; background: #faf8f5; border: 1px solid #e5dfd5; border-radius: 0 0 8px 8px;">
+              <p><strong>${commenter_name}</strong> mentioned you in a comment on project <strong>${project_name}</strong>:</p>
+              <blockquote style="background: white; padding: 15px; border-left: 4px solid #1e3a5f; margin: 15px 0;">
                 ${comment_text}
               </blockquote>
             </div>
           </body>
         </html>
-      `
+      `;
 
-      const resendApiKey = Deno.env.get('RESEND_API_KEY')
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'FloCon <notifications@floconapp.com>',
-          to: user.email,
-          subject: `You were mentioned in a comment on ${project_name}`,
-          html: emailHtml,
-        }),
-      })
+      try {
+        const resendApiKey = Deno.env.get('RESEND_API_KEY');
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'FloCon <onboarding@resend.dev>',
+            to: user.email,
+            subject: `You were mentioned in a comment on ${project_name}`,
+            html: emailHtml,
+          }),
+        });
 
-      if (!response.ok) {
-        console.error(`Failed to send email to ${user.email}`)
+        if (!response.ok) {
+          console.error(
+            `Failed to send email to ${user.email}:`,
+            await response.text()
+          );
+        } else {
+          console.log(`✅ Email sent to ${user.email}`);
+        }
+      } catch (emailError) {
+        console.error(`Error sending email to ${user.email}:`, emailError);
       }
-      */
-
-      // For now, just log
-      console.log(`Would send email to ${user.email} (${user.name})`);
 
       // Update mention record to mark as notified
       await supabase
