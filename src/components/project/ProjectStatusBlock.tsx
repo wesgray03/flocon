@@ -179,7 +179,7 @@ export default function ProjectStatusBlock({
         style={{
           marginBottom: 12,
           background: '#d4f0e8',
-          border: '1px solid #70b35a',
+          border: '1px solid #e5dfd5',
           borderRadius: 8,
           padding: 12,
         }}
