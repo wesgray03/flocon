@@ -1132,6 +1132,7 @@ export default function ProjectsPage() {
     >
       {/* Header */}
       <div
+        className="projects-header"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -1145,6 +1146,7 @@ export default function ProjectsPage() {
       >
         {/* Left: FloCon Logo */}
         <div
+          className="projects-header-left"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -1163,6 +1165,7 @@ export default function ProjectsPage() {
 
         {/* Center: Prospects | Projects Toggle */}
         <div
+          className="projects-header-center"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -1207,6 +1210,7 @@ export default function ProjectsPage() {
 
         {/* Right: Actions and User Info */}
         <div
+          className="projects-header-right"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -1216,7 +1220,10 @@ export default function ProjectsPage() {
           }}
         >
           {sessionEmail && (
-            <span style={{ color: colors.textSecondary, fontSize: 14 }}>
+            <span
+              className="projects-header-email"
+              style={{ color: colors.textSecondary, fontSize: 14 }}
+            >
               {sessionEmail}
             </span>
           )}
@@ -1402,6 +1409,77 @@ export default function ProjectsPage() {
             </Popover>
           </div>
         </div>
+      </div>
+
+      {/* Mobile Filters */}
+      <div className="projects-mobile-filters" style={{ display: 'none' }}>
+        <div className="mobile-filter-group">
+          <label className="mobile-filter-label">Project Name</label>
+          <MultiFilterInput
+            values={filters.project_name}
+            onChangeValues={(vals) =>
+              setFilters((f) => ({ ...f, project_name: vals }))
+            }
+            suggestions={uniqueValues.project_name}
+            placeholder="Filter projects..."
+          />
+        </div>
+        <div className="mobile-filter-group">
+          <label className="mobile-filter-label">Customer</label>
+          <MultiFilterInput
+            values={filters.customer_name}
+            onChangeValues={(vals) =>
+              setFilters((f) => ({ ...f, customer_name: vals }))
+            }
+            suggestions={uniqueValues.customer_name}
+            placeholder="Filter customers..."
+          />
+        </div>
+        <div className="mobile-filter-group">
+          <label className="mobile-filter-label">Stage</label>
+          <MultiFilterInput
+            values={filters.stage}
+            onChangeValues={(vals) =>
+              setFilters((f) => ({ ...f, stage: vals }))
+            }
+            suggestions={uniqueValues.stage}
+            placeholder="Filter stages..."
+          />
+        </div>
+        {(filters.project_name.length > 0 ||
+          filters.customer_name.length > 0 ||
+          filters.stage.length > 0 ||
+          filters.manager.length > 0 ||
+          filters.owner.length > 0 ||
+          filters.qbid.length > 0) && (
+          <button
+            type="button"
+            onClick={() => {
+              setFilters({
+                qbid: [],
+                project_name: [],
+                customer_name: [],
+                manager: [],
+                owner: [],
+                stage: [],
+              });
+            }}
+            style={{
+              width: '100%',
+              marginTop: 12,
+              background: '#ebe5db',
+              color: colors.textPrimary,
+              border: '1px solid #e5dfd5',
+              borderRadius: 8,
+              padding: '10px 16px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Clear All Filters
+          </button>
+        )}
       </div>
 
       {/* Body */}

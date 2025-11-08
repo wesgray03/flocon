@@ -64,6 +64,61 @@
 
   /* ========================= PROJECTS LIST MOBILE ========================= */
 
+  /* Projects page header mobile adjustments */
+  .projects-header {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 12px 16px !important;
+  }
+
+  .projects-header-left {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .projects-header-center {
+    width: 100% !important;
+    justify-content: center !important;
+    order: 3 !important;
+  }
+
+  .projects-header-right {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  /* Hide email on mobile */
+  .projects-header-email {
+    display: none !important;
+  }
+
+  /* Mobile filters */
+  .projects-mobile-filters {
+    display: block !important;
+    background: #faf8f5;
+    border: 1px solid #e5dfd5;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .mobile-filter-group {
+    margin-bottom: 12px;
+  }
+
+  .mobile-filter-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .mobile-filter-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e3a5f;
+    margin-bottom: 6px;
+  }
+
   /* Hide the table on mobile */
   .projects-table-container {
     display: none !important;
@@ -147,9 +202,13 @@
   }
 }
 
-/* Desktop: hide mobile cards, show table */
+/* Desktop: hide mobile cards and filters, show table */
 @media (min-width: 769px) {
   .projects-mobile-cards {
+    display: none !important;
+  }
+
+  .projects-mobile-filters {
     display: none !important;
   }
 }
