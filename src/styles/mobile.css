@@ -29,6 +29,16 @@
     order: 3 !important;
   }
 
+  /* Move comments to the very bottom */
+  .comments-section {
+    order: 4 !important;
+  }
+
+  /* Keep status card before comments */
+  .status-card {
+    order: 1 !important;
+  }
+
   /* Larger checkboxes for touch */
   input[type='checkbox'] {
     width: 22px !important;
