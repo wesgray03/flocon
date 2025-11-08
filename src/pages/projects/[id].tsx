@@ -15,8 +15,8 @@ const SOVSection = dynamic(() => import('@/components/project/SOVSection'), {
   loading: () => (
     <div
       style={{
-        background: '#fff',
-        border: '1px solid #e2e8f0',
+        background: '#faf8f5',
+        border: '1px solid #e5dfd5',
         borderRadius: 12,
         padding: 24,
         marginBottom: 24,
@@ -34,8 +34,8 @@ const PayAppsSection = dynamic(
     loading: () => (
       <div
         style={{
-          background: '#fff',
-          border: '1px solid #e2e8f0',
+          background: '#faf8f5',
+          border: '1px solid #e5dfd5',
           borderRadius: 12,
           padding: 24,
           marginBottom: 24,

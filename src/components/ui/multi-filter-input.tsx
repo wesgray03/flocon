@@ -169,7 +169,7 @@ export function MultiFilterInput({
           <div
             ref={portalRef}
             style={{
-              background: '#fff',
+              background: '#faf8f5',
               boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
               maxHeight: 240,
               overflow: 'auto',
@@ -185,7 +185,7 @@ export function MultiFilterInput({
                   padding: '8px 12px',
                   cursor: 'pointer',
                   borderRadius: 4,
-                  background: hoverIndex === index ? '#eef2ff' : 'transparent',
+                  background: hoverIndex === index ? '#ebe5db' : 'transparent',
                 }}
                 onMouseDown={(e) => e.preventDefault()}
                 onMouseEnter={() => setHoverIndex(index)}

@@ -1071,8 +1071,8 @@ export default function ProjectsPage() {
       >
         <div
           style={{
-            background: '#fff',
-            border: '1px solid #e5e7eb',
+            background: '#faf8f5',
+            border: '1px solid #e5dfd5',
             borderRadius: 12,
             padding: 24,
             width: 420,
@@ -1115,7 +1115,7 @@ export default function ProjectsPage() {
       style={{
         width: '100%',
         minHeight: '100vh',
-        background: '#f1f5f9',
+        background: '#f5f1ea',
         padding: 24,
         fontFamily: 'system-ui',
         position: 'relative',
@@ -1128,38 +1128,73 @@ export default function ProjectsPage() {
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: 24,
-          background: '#fff',
-          padding: '16px 24px',
+          background: '#faf8f5',
+          padding: '12px 20px',
           borderRadius: 12,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         }}
       >
-        {/* Left: Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+        {/* Left: FloCon Logo */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flex: 1,
+          }}
+        >
           <Image
-            src="/Logo.png"
-            alt="Logo"
-            width={64}
-            height={48}
-            style={{ height: 48, width: 'auto' }}
+            src="/flocon-logo-v2.png"
+            alt="FloCon"
+            width={150}
+            height={45}
+            style={{ height: 'auto', maxHeight: 45, width: 'auto' }}
+            priority
           />
         </div>
 
-        {/* Center: Title */}
-        <h1
+        {/* Center: Prospects | Projects Toggle */}
+        <div
           style={{
-            fontSize: 28,
-            fontWeight: 700,
-            margin: 0,
-            color: '#1e40af',
-            flex: 1,
-            textAlign: 'center',
-            fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
-            letterSpacing: '-0.02em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0,
+            background: '#ebe5db',
+            borderRadius: 8,
+            padding: 3,
           }}
         >
-          FloCon | Projects
-        </h1>
+          <Link
+            href="/prospects"
+            style={{
+              padding: '6px 18px',
+              background: '#faf8f5',
+              color: '#8b7d6b',
+              border: 'none',
+              borderRadius: 6,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Prospects
+          </Link>
+          <div
+            style={{
+              padding: '6px 18px',
+              background: '#1e3a5f',
+              color: '#fff',
+              borderRadius: 6,
+              fontSize: 13,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Projects
+          </div>
+        </div>
 
         {/* Right: Actions and User Info */}
         <div
@@ -1368,8 +1403,8 @@ export default function ProjectsPage() {
       ) : (
         <div
           style={{
-            background: '#fff',
-            border: '1px solid #e5e7eb',
+            background: '#faf8f5',
+            border: '1px solid #e5dfd5',
             borderRadius: 12,
             padding: 16,
             overflowX: 'auto',
@@ -1385,7 +1420,7 @@ export default function ProjectsPage() {
             <thead>
               <tr
                 style={{
-                  background: '#f1f5f9',
+                  background: '#f0ebe3',
                   position: 'sticky',
                   top: 0,
                   zIndex: 1,

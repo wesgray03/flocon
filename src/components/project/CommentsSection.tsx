@@ -235,10 +235,10 @@ export function CommentsSection({
     <div style={{ flex: '0 0 25%' }}>
       <div
         style={{
-          background: '#fff',
+          background: '#faf8f5',
           borderRadius: 8,
           padding: 20,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
           position: 'sticky',
           top: 24,
           maxHeight: 'calc(100vh - 48px)',
@@ -252,7 +252,7 @@ export function CommentsSection({
             fontWeight: 700,
             margin: '0 0 16px 0',
             color: '#0f172a',
-            borderBottom: '2px solid #2563eb',
+            borderBottom: '2px solid #1e3a5f',
             paddingBottom: 12,
           }}
         >
@@ -273,7 +273,7 @@ export function CommentsSection({
               width: '100%',
               minHeight: 80,
               padding: 12,
-              border: '1px solid #d1d5db',
+              border: '1px solid #e5dfd5',
               borderRadius: 6,
               fontSize: 14,
               fontFamily: 'inherit',
@@ -288,7 +288,7 @@ export function CommentsSection({
               width: '100%',
               padding: '8px 16px',
               background:
-                loadingComments || !newComment.trim() ? '#9ca3af' : '#2563eb',
+                loadingComments || !newComment.trim() ? '#9ca3af' : '#1e3a5f',
               color: '#fff',
               border: 'none',
               borderRadius: 6,
@@ -331,9 +331,9 @@ export function CommentsSection({
                     key={comment.id}
                     style={{
                       padding: 10,
-                      background: '#f8fafc',
+                      background: '#f0ebe3',
                       borderRadius: 6,
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid #e5dfd5',
                       fontSize: 13,
                     }}
                   >
@@ -434,7 +434,7 @@ export function CommentsSection({
                           style={{
                             width: '100%',
                             padding: 8,
-                            border: '1px solid #cbd5e1',
+                            border: '1px solid #e5dfd5',
                             borderRadius: 4,
                             fontSize: 13,
                             fontFamily: 'inherit',
@@ -447,7 +447,7 @@ export function CommentsSection({
                             onClick={() => saveEditComment(comment.id)}
                             style={{
                               padding: '4px 12px',
-                              background: '#2563eb',
+                              background: '#1e3a5f',
                               color: '#fff',
                               border: 'none',
                               borderRadius: 4,
@@ -462,7 +462,7 @@ export function CommentsSection({
                             onClick={cancelEdit}
                             style={{
                               padding: '4px 12px',
-                              background: '#e5e7eb',
+                              background: '#ebe5db',
                               color: '#0f172a',
                               border: 'none',
                               borderRadius: 4,

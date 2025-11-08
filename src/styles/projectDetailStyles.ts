@@ -2,8 +2,8 @@ import React from 'react';
 
 // Card Styles
 export const cardStyle: React.CSSProperties = {
-  background: '#fff',
-  border: '1px solid #e2e8f0',
+  background: '#faf8f5',
+  border: '1px solid #e5dfd5',
   borderRadius: 12,
   padding: 24,
   marginBottom: 24,
@@ -39,7 +39,7 @@ export const thLeft: React.CSSProperties = {
   padding: '12px 8px',
   textAlign: 'left',
   fontWeight: 600,
-  borderBottom: '2px solid #e2e8f0',
+  borderBottom: '2px solid #e5dfd5',
   fontSize: 13,
   color: '#64748b',
 };
@@ -56,7 +56,7 @@ export const thRight: React.CSSProperties = {
 
 export const tdLeft: React.CSSProperties = {
   padding: '12px 8px',
-  borderBottom: '1px solid #f1f5f9',
+  borderBottom: '1px solid #ebe5db',
   fontSize: 14,
   color: '#1e293b',
 };
@@ -85,9 +85,9 @@ export const primaryButtonStyle: React.CSSProperties = {
 
 export const secondaryButtonStyle: React.CSSProperties = {
   padding: '8px 16px',
-  border: '1px solid #d1d5db',
+  border: '1px solid #d9cfc1',
   borderRadius: 6,
-  background: '#fff',
+  background: '#faf8f5',
   color: '#374151',
   fontSize: 14,
   cursor: 'pointer',
@@ -126,13 +126,13 @@ export const labelStyle: React.CSSProperties = {
 // Layout Styles
 export const pageContainerStyle: React.CSSProperties = {
   minHeight: '100vh',
-  background: '#f8fafc',
+  background: '#f5f1ea',
   fontFamily: 'system-ui',
 };
 
 export const headerStyle: React.CSSProperties = {
-  background: '#fff',
-  borderBottom: '1px solid #e2e8f0',
+  background: '#faf8f5',
+  borderBottom: '1px solid #e5dfd5',
   padding: '16px 24px',
 };
 
@@ -175,28 +175,28 @@ export const rightSidebarStyle: React.CSSProperties = {
 };
 
 export const projectInfoCardStyle: React.CSSProperties = {
-  background: '#fff',
+  background: '#faf8f5',
   borderRadius: 8,
   padding: 20,
-  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
 };
 
 export const statusCardStyle: React.CSSProperties = {
-  background: '#fff',
+  background: '#faf8f5',
   borderRadius: 8,
   padding: 16,
-  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-  border: '1px solid #e2e8f0',
+  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+  border: '1px solid #e5dfd5',
 };
 
 export const editFormContainerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   gap: 12,
-  background: '#f1f5f9',
+  background: '#f0ebe3',
   padding: 12,
   borderRadius: 8,
-  border: '1px solid #e2e8f0',
+  border: '1px solid #e5dfd5',
 };
 
 export const formFieldStyle: React.CSSProperties = {
@@ -209,7 +209,7 @@ export const tabContainerStyle: React.CSSProperties = {
   display: 'flex',
   gap: 8,
   marginBottom: 12,
-  borderBottom: '1px solid #e2e8f0',
+  borderBottom: '1px solid #e5dfd5',
 };
 
 export const getTabStyle = (isActive: boolean): React.CSSProperties => ({
