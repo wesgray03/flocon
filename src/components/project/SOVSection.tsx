@@ -150,16 +150,28 @@ export default function SOVSection({ projectId }: { projectId: string }) {
           alignItems: 'center',
           justifyContent: 'space-between',
           marginBottom: 16,
+          flexWrap: 'wrap',
         }}
       >
         <h2 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>
           Schedule of Values
         </h2>
-        <div style={{ fontSize: 14, color: colors.textMuted }}>
-          <b>Materials:</b> {money(totals.materials)} &nbsp;|&nbsp;{' '}
-          <b>Labor:</b> {money(totals.labor)} &nbsp;|&nbsp; <b>Other:</b>{' '}
-          {money(totals.other)} &nbsp;|&nbsp; <b>Total:</b>{' '}
-          {money(totals.total)}
+        <div
+          className="sov-totals"
+          style={{ fontSize: 14, color: colors.textMuted }}
+        >
+          <div>
+            <b>Materials:</b> {money(totals.materials)}
+          </div>
+          <div>
+            <b>Labor:</b> {money(totals.labor)}
+          </div>
+          <div>
+            <b>Other:</b> {money(totals.other)}
+          </div>
+          <div>
+            <b>Total:</b> {money(totals.total)}
+          </div>
         </div>
       </div>
 
@@ -168,7 +180,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
       ) : lines.length === 0 ? (
         <p style={{ color: colors.textSecondary }}>No SOV lines yet.</p>
       ) : (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="sov-table-container" style={{ overflowX: 'auto' }}>
           <table
             style={{ width: '100%', fontSize: 14, borderCollapse: 'collapse' }}
           >
@@ -205,6 +217,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
           Add New Line
         </h3>
         <div
+          className="sov-add-form"
           style={{
             display: 'grid',
             gridTemplateColumns: '120px 1fr 90px 100px 120px 140px 100px',

@@ -1,6 +1,6 @@
 // components/project/PayAppsSection.tsx
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { ExternalLink, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 
@@ -243,7 +243,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
       const previousPayApp = sortedPayApps[0];
 
       // Load previous pay app's continuation sheet data
-      let previousProgressMap = new Map<string, number>();
+      const previousProgressMap = new Map<string, number>();
       if (previousPayApp) {
         const { data: prevProgress } = await supabase
           .from('sov_line_progress')
@@ -447,7 +447,9 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
   if (loading) {
     return (
       <div style={cardStyle}>
-        <p style={{ margin: 0, color: colors.textSecondary }}>Loading pay applications…</p>
+        <p style={{ margin: 0, color: colors.textSecondary }}>
+          Loading pay applications…
+        </p>
       </div>
     );
   }
@@ -467,7 +469,13 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
             <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
               Pay Applications ({payApps.length})
             </h2>
-            <p style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}>
+            <p
+              style={{
+                color: colors.textSecondary,
+                fontSize: 14,
+                marginTop: 4,
+              }}
+            >
               Total Billed: {money(totalAmount)}
             </p>
           </div>
@@ -495,11 +503,20 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
         </div>
 
         {payApps.length === 0 ? (
-          <p style={{ color: colors.textSecondary, textAlign: 'center', padding: 24 }}>
-            No pay applications yet. Click "+ New Pay App" to add one.
+          <p
+            style={{
+              color: colors.textSecondary,
+              textAlign: 'center',
+              padding: 24,
+            }}
+          >
+            No pay applications yet. Click &quot;+ New Pay App&quot; to add one.
           </p>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
+          <div
+            className="payapps-table-container"
+            style={{ overflowX: 'auto' }}
+          >
             <table
               style={{
                 width: '100%',
@@ -525,7 +542,9 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                 {payApps.map((app) => (
                   <tr key={app.id}>
                     <td style={td}>
-                      <span style={{ fontWeight: 600, color: colors.textPrimary }}>
+                      <span
+                        style={{ fontWeight: 600, color: colors.textPrimary }}
+                      >
                         {app.pay_app_number ?? '—'}
                       </span>
                     </td>
@@ -663,6 +682,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
       {showModal && (
         <div style={overlay}>
           <div
+            className="payapp-modal"
             style={{ ...modal, maxWidth: 1400 }}
             role="dialog"
             aria-modal="true"
@@ -670,7 +690,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
             <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
               {editingPayApp ? 'Edit Pay Application' : 'New Pay Application'}
             </h2>
-            <form onSubmit={savePayApp}>
+            <form onSubmit={savePayApp} className="payapp-form">
               {/* Basic Information */}
               <div style={{ marginBottom: 24 }}>
                 <h3
@@ -1262,7 +1282,10 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
 
             {/* Continuation Sheet Table (G703) */}
             {g703Tab === 'continuation' && (
-              <div style={{ overflowX: 'auto', margin: '0 20px 16px' }}>
+              <div
+                className="g703s-continuation"
+                style={{ overflowX: 'auto', margin: '0 20px 16px' }}
+              >
                 <table
                   style={{
                     width: '100%',
@@ -1333,7 +1356,13 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                 </table>
               </div>
             )}
-            <div style={{ fontSize: 12, color: colors.textSecondary, marginTop: 8 }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: colors.textSecondary,
+                marginTop: 8,
+              }}
+            >
               Retainage calculated per line at its retainage percent.
             </div>
           </div>
@@ -1399,7 +1428,7 @@ const input: React.CSSProperties = {
   border: '1px solid #e5dfd5',
   borderRadius: 6,
   width: '100%',
-  fontSize: 14,
+  fontSize: 16, // Prevent iOS zoom on mobile
 };
 
 const labelStyle: React.CSSProperties = {
