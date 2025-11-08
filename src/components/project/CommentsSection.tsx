@@ -249,26 +249,31 @@ export function CommentsSection({
           console.error('Error storing mentions:', mentionsError);
           // Don't block comment posting if mentions fail
         } else {
-          // Fetch project name for notification
-          const { data: projectData } = await supabase
-            .from('projects')
-            .select('name')
-            .eq('id', projectId)
-            .single();
-
           // Send email notifications asynchronously (don't wait for it)
-          supabase.functions
-            .invoke('notify-mention', {
-              body: {
-                comment_id: data.id,
-                mentioned_user_ids: mentionedUserIds,
-                commenter_name: user.name,
-                project_name: projectData?.name || 'Project',
-                project_id: projectId,
-                comment_text: newComment.trim(),
-              },
-            })
-            .catch((err) => console.error('Email notification error:', err));
+          // Only send if we have a valid project ID
+          if (projectId && projectId !== 'undefined') {
+            // Fetch project name for notification
+            const { data: projectData } = await supabase
+              .from('projects')
+              .select('name')
+              .eq('id', projectId)
+              .single();
+
+            supabase.functions
+              .invoke('notify-mention', {
+                body: {
+                  comment_id: data.id,
+                  mentioned_user_ids: mentionedUserIds,
+                  commenter_name: user.name,
+                  project_name: projectData?.name || 'Project',
+                  project_id: projectId,
+                  comment_text: newComment.trim(),
+                },
+              })
+              .catch((err) => console.error('Email notification error:', err));
+          } else {
+            console.warn('Skipping mention notification: invalid project ID', projectId);
+          }
         }
       }
 
