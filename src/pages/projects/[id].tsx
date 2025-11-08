@@ -23,7 +23,7 @@ const SOVSection = dynamic(() => import('@/components/project/SOVSection'), {
         marginBottom: 24,
       }}
     >
-  <p style={{ margin: 0, color: colors.textSecondary }}>Loading SOV…</p>
+      <p style={{ margin: 0, color: colors.textSecondary }}>Loading SOV…</p>
     </div>
   ),
 });
@@ -42,7 +42,9 @@ const PayAppsSection = dynamic(
           marginBottom: 24,
         }}
       >
-  <p style={{ margin: 0, color: colors.textSecondary }}>Loading Pay Apps…</p>
+        <p style={{ margin: 0, color: colors.textSecondary }}>
+          Loading Pay Apps…
+        </p>
       </div>
     ),
   }
@@ -725,14 +727,23 @@ export default function ProjectDetail() {
       </div>
 
       {loading || !project ? null : (
-        <div style={styles.contentWrapperStyle}>
+        <div style={styles.contentWrapperStyle} className="content-wrapper">
           {/* 3-Column Layout: Project Info + Main Content + Comments */}
-          <div style={styles.threeColumnLayoutStyle}>
+          <div
+            style={styles.threeColumnLayoutStyle}
+            className="three-column-layout"
+          >
             {/* Left Sidebar - Project Information (20%) */}
-            <div style={styles.leftSidebarStyle}>
-              <div style={styles.stickyContainerStyle}>
+            <div style={styles.leftSidebarStyle} className="left-sidebar">
+              <div
+                style={styles.stickyContainerStyle}
+                className="sticky-container"
+              >
                 {/* Project Information Card */}
-                <div style={styles.projectInfoCardStyle}>
+                <div
+                  style={styles.projectInfoCardStyle}
+                  className="project-info-card"
+                >
                   {/* Header with Edit/Save/Cancel Buttons */}
                   <div
                     style={{
@@ -1134,7 +1145,7 @@ export default function ProjectDetail() {
             </div>
 
             {/* Main Content - 55% */}
-            <div style={styles.mainContentStyle}>
+            <div style={styles.mainContentStyle} className="main-content">
               {/* Tabs for Main Content */}
               <div style={styles.tabContainerStyle}>
                 {(
@@ -1760,9 +1771,9 @@ export default function ProjectDetail() {
             </div>
 
             {/* Right Sidebar: Project Status above Comments */}
-            <div style={styles.rightSidebarStyle}>
+            <div style={styles.rightSidebarStyle} className="right-sidebar">
               {!editMode && (
-                <div style={styles.statusCardStyle}>
+                <div style={styles.statusCardStyle} className="status-card">
                   <ProjectStatusBlock
                     project={project}
                     stages={stages}
@@ -1773,12 +1784,14 @@ export default function ProjectDetail() {
                 </div>
               )}
               {id && (
-                <CommentsSection
-                  comments={comments}
-                  setComments={setComments}
-                  currentUser={currentUser}
-                  projectId={id}
-                />
+                <div className="comments-section">
+                  <CommentsSection
+                    comments={comments}
+                    setComments={setComments}
+                    currentUser={currentUser}
+                    projectId={id}
+                  />
+                </div>
               )}
             </div>
           </div>

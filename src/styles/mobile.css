@@ -1,0 +1,64 @@
+/* Mobile-specific layout fixes */
+
+@media (max-width: 768px) {
+  /* Force three-column layout to stack vertically */
+  .three-column-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Make all sidebars and content full width */
+  .left-sidebar,
+  .main-content,
+  .right-sidebar {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Larger checkboxes for touch */
+  input[type='checkbox'] {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    cursor: pointer;
+  }
+
+  /* Adjust card padding on mobile */
+  .project-info-card,
+  .status-card {
+    padding: 16px !important;
+  }
+
+  /* Make financial overview table more readable */
+  .financial-overview {
+    font-size: 13px !important;
+  }
+
+  /* Comments section adjustments */
+  .comments-section {
+    padding: 12px !important;
+  }
+
+  /* Post comment button full width on mobile */
+  button[style*='Post Comment'] {
+    width: 100% !important;
+  }
+
+  /* Reduce header padding */
+  header,
+  .page-header {
+    padding: 12px 16px !important;
+  }
+
+  /* Content wrapper padding */
+  .content-wrapper {
+    padding: 16px !important;
+  }
+
+  /* Make sticky elements not sticky on mobile */
+  .sticky-container {
+    position: static !important;
+  }
+}
