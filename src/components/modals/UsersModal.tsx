@@ -1,5 +1,5 @@
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

@@ -1,6 +1,6 @@
 // pages/billings/[projectId].tsx
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
