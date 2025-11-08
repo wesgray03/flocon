@@ -6,11 +6,11 @@ export const colors = {
   navy: '#1e3a5f',
   navyHover: '#152d4a',
   
-  // Avocado Green (from logo)
-  avocadoDark: '#4a5d23',
-  avocado: '#6b8e23',
-  avocadoLight: '#a8c070',
-  avocadoLightest: '#e8f0d4',
+  // Avocado Green (from logo) - matches navy depth
+  avocadoDark: '#2d5a1e',
+  avocado: '#3d7a28',
+  avocadoLight: '#70b35a',
+  avocadoLightest: '#d4f0e8',
   
   // Logo Red
   logoRed: '#c8102e',
@@ -39,9 +39,9 @@ export const colors = {
   errorBorder: '#f5c2c7',
   errorText: '#991b1b',
   
-  success: '#e8f0d4',
-  successBorder: '#a8c070',
-  successText: '#4a5d23',
+  success: '#d4f0e8',
+  successBorder: '#70b35a',
+  successText: '#2d5a1e',
   
   // Legacy/Fallback (gradually remove these)
   white: '#fff',
@@ -57,7 +57,7 @@ export const buttonStyles = {
   success: {
     background: colors.avocadoDark,
     color: colors.white,
-    hover: '#3d4d1c',
+    hover: '#245018',
   },
   danger: {
     background: colors.logoRed,

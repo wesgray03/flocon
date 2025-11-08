@@ -289,9 +289,9 @@ function getUserTypeBadgeStyle(userType: string): React.CSSProperties {
   };
 
   if (userType === 'Owner') {
-    return { ...baseStyle, background: '#e8f0d4', color: '#1e40af' };
+    return { ...baseStyle, background: '#d4f0e8', color: '#1e40af' };
   } else if (userType === 'Admin') {
-    return { ...baseStyle, background: '#e8f0d4', color: '#5b21b6' };
+    return { ...baseStyle, background: '#d4f0e8', color: '#5b21b6' };
   } else {
     return { ...baseStyle, background: '#ebe5db', color: '#9a3412' };
   }
@@ -305,7 +305,7 @@ function getAuthStatusBadgeStyle(
     borderRadius: 4,
     fontSize: 12,
     fontWeight: 500,
-    background: authUserId ? '#e8f0d4' : '#fee2e2',
+    background: authUserId ? '#d4f0e8' : '#fee2e2',
     color: authUserId ? '#166534' : '#991b1b',
   };
 }

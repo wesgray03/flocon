@@ -10,8 +10,13 @@ const colorMappings = {
   '#ffffff': '#faf8f5',  // White → Card background
   
   // Green backgrounds
-  '#f0fdf4': '#e8f0d4',  // Light green → Avocado lightest
-  '#eff6ff': '#e8f0d4',  // Light blue → Avocado lightest
+  '#f0fdf4': '#d4f0e8',  // Light green → New avocado lightest
+  '#eff6ff': '#d4f0e8',  // Light blue → New avocado lightest
+  '#e8f0d4': '#d4f0e8',  // Old avocado light → New avocado lightest
+  
+  // Green text/borders
+  '#4a5d23': '#2d5a1e',  // Old avocado dark → New avocado dark
+  '#a8c070': '#70b35a',  // Old avocado light → New avocado light
   
   // Yellow/Warning
   '#fef3c7': '#ebe5db',  // Yellow → Toggle background
@@ -25,12 +30,12 @@ const colorMappings = {
   '#3b82f6': '#1e3a5f',  // Light blue → Navy
   
   // Badge backgrounds
-  '#dbeafe': '#e8f0d4',  // Blue badge → Avocado lightest
-  '#ede9fe': '#e8f0d4',  // Purple badge → Avocado lightest
+  '#dbeafe': '#d4f0e8',  // Blue badge → New avocado lightest
+  '#ede9fe': '#d4f0e8',  // Purple badge → New avocado lightest
   '#fed7aa': '#ebe5db',  // Orange badge → Toggle background
   
   // Stray colors
-  '#059669': '#4a5d23',  // Bright green → Avocado dark
+  '#059669': '#2d5a1e',  // Bright green → New avocado dark
 };
 
 function replaceColorsInFile(filePath) {

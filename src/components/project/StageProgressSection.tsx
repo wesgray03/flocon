@@ -172,7 +172,7 @@ export default function StageProgressSection({
         {/* Current Stage */}
         <div
           style={{
-            background: '#e8f0d4',
+            background: '#d4f0e8',
             padding: 16,
             borderRadius: 8,
             border: '2px solid #86efac',
@@ -183,7 +183,7 @@ export default function StageProgressSection({
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: '#4a5d23',
+                color: '#2d5a1e',
                 fontWeight: 600,
               }}
             >
@@ -194,7 +194,7 @@ export default function StageProgressSection({
                 margin: '4px 0 0',
                 fontSize: 18,
                 fontWeight: 700,
-                color: '#4a5d23',
+                color: '#2d5a1e',
               }}
             >
               {project?.stage_order
@@ -207,14 +207,14 @@ export default function StageProgressSection({
               style={{
                 margin: '0 0 8px 0',
                 fontSize: 13,
-                color: '#4a5d23',
+                color: '#2d5a1e',
                 fontWeight: 600,
               }}
             >
               List Current Stage Tasks (Read/Write)
             </p>
             {currentTasks.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 14, color: '#4a5d23' }}>
+              <p style={{ margin: 0, fontSize: 14, color: '#2d5a1e' }}>
                 No tasks
               </p>
             ) : (
@@ -247,7 +247,7 @@ export default function StageProgressSection({
                     <span
                       style={{
                         flex: 1,
-                        color: task.complete ? '#4a5d23' : '#0f172a',
+                        color: task.complete ? '#2d5a1e' : '#0f172a',
                         textDecoration: task.complete ? 'line-through' : 'none',
                         fontSize: 14,
                         fontWeight: 500,
