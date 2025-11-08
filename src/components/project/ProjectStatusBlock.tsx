@@ -179,14 +179,19 @@ export default function ProjectStatusBlock({
       <div
         style={{
           marginBottom: 12,
-          background: '#e8f0d4',
-          border: '1px solid #a8c070',
+          background: colors.grayBlueLight,
+          border: `1px solid ${colors.textSecondary}`,
           borderRadius: 8,
           padding: 12,
         }}
       >
         <p
-          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: colors.textPrimary }}
+          style={{
+            margin: 0,
+            fontSize: 12,
+            fontWeight: 700,
+            color: colors.textPrimary,
+          }}
         >
           Current Stage
         </p>
@@ -204,7 +209,9 @@ export default function ProjectStatusBlock({
         </p>
 
         {tasksState.length === 0 ? (
-          <p style={{ margin: 0, fontSize: 14, color: '#4a5d23' }}>No tasks</p>
+          <p style={{ margin: 0, fontSize: 14, color: colors.textMuted }}>
+            No tasks
+          </p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {tasksState.map((task) => (
@@ -251,7 +258,9 @@ export default function ProjectStatusBlock({
                 <span
                   style={{
                     textDecoration: task.complete ? 'line-through' : 'none',
-                    color: task.complete ? '#4a5d23' : '#0f172a',
+                    color: task.complete
+                      ? colors.textMuted
+                      : colors.textPrimary,
                   }}
                 >
                   {task.name}
@@ -265,7 +274,12 @@ export default function ProjectStatusBlock({
       {/* Next Stage name only with action */}
       <div>
         <p
-          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: colors.gray }}
+          style={{
+            margin: 0,
+            fontSize: 12,
+            fontWeight: 700,
+            color: colors.gray,
+          }}
         >
           Next Stage
         </p>
@@ -287,7 +301,9 @@ export default function ProjectStatusBlock({
             {nextStage.order}. {nextStage.name}
           </button>
         ) : (
-          <p style={{ margin: 0, fontSize: 14, color: colors.textMuted }}>Complete</p>
+          <p style={{ margin: 0, fontSize: 14, color: colors.textMuted }}>
+            Complete
+          </p>
         )}
       </div>
 
