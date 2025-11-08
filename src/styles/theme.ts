@@ -21,12 +21,14 @@ export const colors = {
   toggleBackground: '#ebe5db',
   tableHeader: '#f0ebe3',
   border: '#e5dfd5',
+  rowAlternate: '#f0ebe3', // Alternating table rows
   
   // Neutrals
   textPrimary: '#0f172a',
   textSecondary: '#64748b',
   textMuted: '#9ca3af',
   gray: '#6b7280',
+  grayLight: '#e5e7eb',
   
   // Status Colors
   warning: '#fef3c7',

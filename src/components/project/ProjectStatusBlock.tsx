@@ -100,7 +100,7 @@ export default function ProjectStatusBlock({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                background: '#fef3c7',
+                background: '#ebe5db',
                 border: '1px solid #fbbf24',
                 borderRadius: 4,
                 padding: '4px 8px',

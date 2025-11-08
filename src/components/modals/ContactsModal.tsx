@@ -333,7 +333,7 @@ function getContactTypeBadgeStyle(type: string): React.CSSProperties {
     borderRadius: 4,
     fontSize: 12,
     fontWeight: 500,
-    background: '#dbeafe',
+    background: '#e8f0d4',
     color: '#1e40af',
   };
 }
@@ -373,11 +373,11 @@ const styles = {
     color: '#0f172a',
   },
   formContainer: {
-    border: '1px solid #e2e8f0',
+    border: '1px solid #e5dfd5',
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
-    background: '#f8fafc',
+    background: '#faf8f5',
   },
   formGrid: {
     display: 'grid',
@@ -387,7 +387,7 @@ const styles = {
   },
   input: {
     padding: 8,
-    border: '1px solid #e5e7eb',
+    border: '1px solid #e5dfd5',
     borderRadius: 6,
     width: '100%',
   },
@@ -420,7 +420,7 @@ const styles = {
     borderCollapse: 'collapse' as const,
   },
   headerRow: {
-    borderBottom: '2px solid #e2e8f0',
+    borderBottom: '2px solid #e5dfd5',
   },
   th: {
     padding: 8,
@@ -436,7 +436,7 @@ const styles = {
     width: 120,
   },
   tableRow: {
-    borderBottom: '1px solid #e2e8f0',
+    borderBottom: '1px solid #e5dfd5',
   },
   td: {
     padding: 8,

@@ -74,12 +74,12 @@ export default function StageProgressSection({
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr',
           gap: 16,
-          borderTop: '1px solid #e2e8f0',
+          borderTop: '1px solid #e5dfd5',
           paddingTop: 16,
         }}
       >
         {/* Previous Stage */}
-        <div style={{ borderRight: '1px solid #e2e8f0', paddingRight: 16 }}>
+        <div style={{ borderRight: '1px solid #e5dfd5', paddingRight: 16 }}>
           <div style={{ marginBottom: 16 }}>
             <p
               style={{
@@ -172,7 +172,7 @@ export default function StageProgressSection({
         {/* Current Stage */}
         <div
           style={{
-            background: '#f0fdf4',
+            background: '#e8f0d4',
             padding: 16,
             borderRadius: 8,
             border: '2px solid #86efac',
@@ -183,7 +183,7 @@ export default function StageProgressSection({
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: '#059669',
+                color: '#4a5d23',
                 fontWeight: 600,
               }}
             >
@@ -194,7 +194,7 @@ export default function StageProgressSection({
                 margin: '4px 0 0',
                 fontSize: 18,
                 fontWeight: 700,
-                color: '#059669',
+                color: '#4a5d23',
               }}
             >
               {project?.stage_order
@@ -207,7 +207,7 @@ export default function StageProgressSection({
               style={{
                 margin: '0 0 8px 0',
                 fontSize: 13,
-                color: '#059669',
+                color: '#4a5d23',
                 fontWeight: 600,
               }}
             >
@@ -226,7 +226,7 @@ export default function StageProgressSection({
                       display: 'flex',
                       alignItems: 'center',
                       padding: 8,
-                      background: '#ffffff',
+                      background: '#faf8f5',
                       borderRadius: 4,
                       border: '1px solid #86efac',
                     }}
@@ -263,7 +263,7 @@ export default function StageProgressSection({
         </div>
 
         {/* Next Stage */}
-        <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: 16 }}>
+        <div style={{ borderLeft: '1px solid #e5dfd5', paddingLeft: 16 }}>
           <div style={{ marginBottom: 16 }}>
             <p
               style={{

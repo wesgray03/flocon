@@ -479,7 +479,7 @@ export default function BillingsPage() {
       style={{
         width: '100%',
         minHeight: '100vh',
-        background: '#f1f5f9',
+        background: '#f5f1ea',
         padding: 24,
         fontFamily: 'system-ui',
       }}
@@ -487,7 +487,7 @@ export default function BillingsPage() {
       <div style={{ marginBottom: 16 }}>
         <Link
           href="/projects"
-          style={{ color: '#2563eb', textDecoration: 'none' }}
+          style={{ color: '#1e3a5f', textDecoration: 'none' }}
         >
           ← Back to Projects
         </Link>
@@ -502,7 +502,7 @@ export default function BillingsPage() {
           <div
             style={{
               background: '#fff',
-              border: '1px solid #e5e7eb',
+              border: '1px solid #e5dfd5',
               borderRadius: 12,
               padding: 24,
               marginBottom: 16,
@@ -526,7 +526,7 @@ export default function BillingsPage() {
           <div
             style={{
               background: '#fff',
-              border: '1px solid #e5e7eb',
+              border: '1px solid #e5dfd5',
               borderTopLeftRadius: 12,
               borderTopRightRadius: 12,
               padding: '12px 16px 0',
@@ -542,7 +542,7 @@ export default function BillingsPage() {
                 background: activeTab === 'sov' ? '#fff' : 'transparent',
                 border:
                   activeTab === 'sov'
-                    ? '1px solid #e5e7eb'
+                    ? '1px solid #e5dfd5'
                     : '1px solid transparent',
                 borderBottom:
                   activeTab === 'sov'
@@ -568,7 +568,7 @@ export default function BillingsPage() {
                 background: activeTab === 'payapps' ? '#fff' : 'transparent',
                 border:
                   activeTab === 'payapps'
-                    ? '1px solid #e5e7eb'
+                    ? '1px solid #e5dfd5'
                     : '1px solid transparent',
                 borderBottom:
                   activeTab === 'payapps'
@@ -594,7 +594,7 @@ export default function BillingsPage() {
             <div
               style={{
                 background: '#fff',
-                border: '1px solid #e5e7eb',
+                border: '1px solid #e5dfd5',
                 borderRadius: 12,
                 borderTopLeftRadius: 0,
                 padding: 16,
@@ -621,7 +621,7 @@ export default function BillingsPage() {
                   type="button"
                   onClick={openSOVForNew}
                   style={{
-                    background: '#2563eb',
+                    background: '#1e3a5f',
                     color: '#fff',
                     padding: '8px 16px',
                     borderRadius: 6,
@@ -640,9 +640,9 @@ export default function BillingsPage() {
                   style={{
                     padding: 48,
                     textAlign: 'center',
-                    background: '#fafbfc',
+                    background: '#faf8f5',
                     borderRadius: 8,
-                    border: '2px dashed #e5e7eb',
+                    border: '2px dashed #e5dfd5',
                   }}
                 >
                   <p
@@ -669,7 +669,7 @@ export default function BillingsPage() {
                     }}
                   >
                     <thead>
-                      <tr style={{ background: '#f1f5f9' }}>
+                      <tr style={{ background: '#f0ebe3' }}>
                         <th style={th}>Item</th>
                         <th style={th}>Description</th>
                         <th style={th}>Division</th>
@@ -708,9 +708,9 @@ export default function BillingsPage() {
                                 fontSize: 12,
                                 background:
                                   line.category === 'Labor'
-                                    ? '#dbeafe'
+                                    ? '#e8f0d4'
                                     : line.category === 'Other'
-                                      ? '#fef3c7'
+                                      ? '#ebe5db'
                                       : '#e8f0d4',
                                 color:
                                   line.category === 'Labor'
@@ -761,7 +761,7 @@ export default function BillingsPage() {
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr style={{ background: '#f8fafc', fontWeight: 700 }}>
+                      <tr style={{ background: '#faf8f5', fontWeight: 700 }}>
                         <td
                           colSpan={6}
                           style={{ padding: 12, textAlign: 'right' }}
@@ -792,7 +792,7 @@ export default function BillingsPage() {
             <div
               style={{
                 background: '#fff',
-                border: '1px solid #e5e7eb',
+                border: '1px solid #e5dfd5',
                 borderRadius: 12,
                 borderTopLeftRadius: 0,
                 padding: 16,
@@ -819,7 +819,7 @@ export default function BillingsPage() {
                   type="button"
                   onClick={openForNew}
                   style={{
-                    background: '#2563eb',
+                    background: '#1e3a5f',
                     color: '#fff',
                     padding: '8px 16px',
                     borderRadius: 6,
@@ -849,7 +849,7 @@ export default function BillingsPage() {
                     }}
                   >
                     <thead>
-                      <tr style={{ background: '#f1f5f9' }}>
+                      <tr style={{ background: '#f0ebe3' }}>
                         <th style={th}>App #</th>
                         <th style={th}>Description</th>
                         <th style={th}>Period</th>
@@ -884,7 +884,7 @@ export default function BillingsPage() {
                             </span>
                           </td>
                           <td style={tdRight}>
-                            <strong style={{ color: '#2563eb', fontSize: 15 }}>
+                            <strong style={{ color: '#1e3a5f', fontSize: 15 }}>
                               {money(
                                 app.current_payment_due || app.amount || 0
                               )}
@@ -903,7 +903,7 @@ export default function BillingsPage() {
                                     ? '#e8f0d4'
                                     : app.status === 'Rejected'
                                       ? '#fee2e2'
-                                      : '#fef3c7',
+                                      : '#ebe5db',
                                 border:
                                   app.status === 'Paid'
                                     ? '1px solid #a8c070'
@@ -940,7 +940,7 @@ export default function BillingsPage() {
                               }}
                               style={{
                                 ...btnSmall,
-                                background: '#2563eb',
+                                background: '#1e3a5f',
                                 color: '#fff',
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -1118,7 +1118,7 @@ export default function BillingsPage() {
                 style={{
                   marginTop: 16,
                   padding: 12,
-                  background: '#f8fafc',
+                  background: '#faf8f5',
                   borderRadius: 6,
                   fontSize: 14,
                 }}
@@ -1330,11 +1330,11 @@ export default function BillingsPage() {
               {/* Continuation Sheet Button */}
               <div
                 style={{
-                  background: '#f8fafc',
+                  background: '#faf8f5',
                   padding: 16,
                   borderRadius: 8,
                   marginBottom: 16,
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid #e5dfd5',
                 }}
               >
                 <div
@@ -1473,7 +1473,7 @@ export default function BillingsPage() {
                       setShowContinuationSheet(true);
                     }}
                     style={{
-                      background: '#3b82f6',
+                      background: '#1e3a5f',
                       color: 'white',
                       border: 'none',
                       borderRadius: 6,
@@ -1552,7 +1552,7 @@ export default function BillingsPage() {
                 }}
               >
                 <thead>
-                  <tr style={{ background: '#f8fafc' }}>
+                  <tr style={{ background: '#faf8f5' }}>
                     <th style={th}>Item</th>
                     <th style={th}>Description</th>
                     <th style={thRight}>Scheduled Value (C)</th>
@@ -1602,7 +1602,7 @@ export default function BillingsPage() {
                               ...input,
                               width: 100,
                               textAlign: 'right',
-                              background: '#f8fafc',
+                              background: '#faf8f5',
                               color: '#64748b',
                               cursor: 'not-allowed',
                             }}
@@ -1656,7 +1656,7 @@ export default function BillingsPage() {
             {/* Summary Preview */}
             <div
               style={{
-                background: '#f8fafc',
+                background: '#faf8f5',
                 padding: 16,
                 borderRadius: 8,
                 marginBottom: 16,
@@ -1705,7 +1705,7 @@ export default function BillingsPage() {
                   style={{
                     textAlign: 'right',
                     fontWeight: 600,
-                    color: '#3b82f6',
+                    color: '#1e3a5f',
                   }}
                 >
                   $
@@ -1758,7 +1758,7 @@ export default function BillingsPage() {
                 }}
                 style={{
                   padding: '8px 16px',
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid #e5dfd5',
                   background: 'white',
                   borderRadius: 6,
                   cursor: 'pointer',
@@ -1772,7 +1772,7 @@ export default function BillingsPage() {
                 onClick={() => setShowContinuationSheet(false)}
                 style={{
                   padding: '8px 16px',
-                  background: '#3b82f6',
+                  background: '#1e3a5f',
                   color: 'white',
                   border: 'none',
                   borderRadius: 6,
@@ -1818,7 +1818,7 @@ export default function BillingsPage() {
                   setSovLineProgress([]);
                 }}
                 style={{
-                  background: '#e5e7eb',
+                  background: '#e5dfd5',
                   border: 'none',
                   borderRadius: 6,
                   cursor: 'pointer',
@@ -1833,7 +1833,7 @@ export default function BillingsPage() {
             {/* Application Summary */}
             <div
               style={{
-                background: '#f8fafc',
+                background: '#faf8f5',
                 padding: 20,
                 borderRadius: 8,
                 marginBottom: 20,
@@ -1950,7 +1950,7 @@ export default function BillingsPage() {
                     style={{
                       fontWeight: 600,
                       fontSize: 16,
-                      color: '#2563eb',
+                      color: '#1e3a5f',
                       paddingTop: 8,
                       borderTop: '2px solid #cbd5e1',
                     }}
@@ -1962,7 +1962,7 @@ export default function BillingsPage() {
                       textAlign: 'right',
                       fontWeight: 600,
                       fontSize: 16,
-                      color: '#2563eb',
+                      color: '#1e3a5f',
                       paddingTop: 8,
                       borderTop: '2px solid #cbd5e1',
                     }}
@@ -1992,7 +1992,7 @@ export default function BillingsPage() {
                   }}
                 >
                   <thead>
-                    <tr style={{ background: '#f1f5f9' }}>
+                    <tr style={{ background: '#f0ebe3' }}>
                       <th style={th}>Item</th>
                       <th style={th}>Description</th>
                       <th style={thRight}>Scheduled Value (C)</th>
@@ -2081,7 +2081,7 @@ export default function BillingsPage() {
                     <tfoot>
                       <tr
                         style={{
-                          background: '#f8fafc',
+                          background: '#faf8f5',
                           fontWeight: 600,
                           borderTop: '2px solid #cbd5e1',
                         }}
@@ -2214,7 +2214,7 @@ export default function BillingsPage() {
                 }}
                 style={{
                   padding: '10px 20px',
-                  background: '#2563eb',
+                  background: '#1e3a5f',
                   color: 'white',
                   border: 'none',
                   borderRadius: 6,
@@ -2237,7 +2237,7 @@ export default function BillingsPage() {
 const th: React.CSSProperties = {
   textAlign: 'left',
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
   fontWeight: 600,
 };
@@ -2246,7 +2246,7 @@ const thCenter: React.CSSProperties = { ...th, textAlign: 'center' };
 
 const td: React.CSSProperties = {
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
 };
 const tdRight: React.CSSProperties = { ...td, textAlign: 'right' };
@@ -2276,7 +2276,7 @@ const modal: React.CSSProperties = {
 
 const input: React.CSSProperties = {
   padding: 8,
-  border: '1px solid #e5e7eb',
+  border: '1px solid #e5dfd5',
   borderRadius: 6,
   width: '100%',
   fontSize: 14,
@@ -2302,7 +2302,7 @@ const btnCancel: React.CSSProperties = {
 const btnSave: React.CSSProperties = {
   padding: '8px 16px',
   borderRadius: 6,
-  background: '#2563eb',
+  background: '#1e3a5f',
   color: '#fff',
   border: 'none',
   cursor: 'pointer',

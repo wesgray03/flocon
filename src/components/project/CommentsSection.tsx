@@ -221,13 +221,13 @@ export function CommentsSection({
   const getBadgeColor = (userType: string) => {
     switch (userType) {
       case 'Owner':
-        return { bg: '#dbeafe', color: '#1e40af' };
+        return { bg: '#e8f0d4', color: '#1e40af' };
       case 'Admin':
-        return { bg: '#ede9fe', color: '#5b21b6' };
+        return { bg: '#e8f0d4', color: '#5b21b6' };
       case 'Foreman':
-        return { bg: '#fed7aa', color: '#9a3412' };
+        return { bg: '#ebe5db', color: '#9a3412' };
       default:
-        return { bg: '#f1f5f9', color: '#64748b' };
+        return { bg: '#f0ebe3', color: '#64748b' };
     }
   };
 

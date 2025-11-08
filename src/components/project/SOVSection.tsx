@@ -23,7 +23,7 @@ function money(n?: number | null) {
 
 const thBase: React.CSSProperties = {
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
 };
 const thLeft: React.CSSProperties = { ...thBase, textAlign: 'left' };
 const thCenter: React.CSSProperties = { ...thBase, textAlign: 'center' };
@@ -31,7 +31,7 @@ const thRight: React.CSSProperties = { ...thBase, textAlign: 'right' };
 
 const tdBase: React.CSSProperties = {
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
 };
 const tdLeft: React.CSSProperties = { ...tdBase, textAlign: 'left' };
 const tdCenter: React.CSSProperties = { ...tdBase, textAlign: 'center' };
@@ -39,7 +39,7 @@ const tdRight: React.CSSProperties = { ...tdBase, textAlign: 'right' };
 
 const cardStyle: React.CSSProperties = {
   background: '#fff',
-  border: '1px solid #e2e8f0',
+  border: '1px solid #e5dfd5',
   borderRadius: 12,
   padding: 24,
   marginBottom: 24,
@@ -172,7 +172,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
             style={{ width: '100%', fontSize: 14, borderCollapse: 'collapse' }}
           >
             <thead>
-              <tr style={{ background: '#f8fafc' }}>
+              <tr style={{ background: '#faf8f5' }}>
                 <th style={thLeft}>Code</th>
                 <th style={thLeft}>Description</th>
                 <th style={thCenter}>Unit</th>

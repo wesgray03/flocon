@@ -507,7 +507,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
               }}
             >
               <thead>
-                <tr style={{ background: '#f1f5f9' }}>
+                <tr style={{ background: '#f0ebe3' }}>
                   <th style={th}>App #</th>
                   <th style={th}>Description</th>
                   <th style={th}>Period</th>
@@ -565,7 +565,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                               ? '#e8f0d4'
                               : app.status === 'Rejected'
                                 ? '#fee2e2'
-                                : '#fef3c7',
+                                : '#ebe5db',
                           color:
                             app.status === 'Paid'
                               ? '#166534'
@@ -805,7 +805,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                       }}
                     >
                       <thead>
-                        <tr style={{ background: '#f8fafc' }}>
+                        <tr style={{ background: '#faf8f5' }}>
                           <th style={th}>Item</th>
                           <th style={th}>Description</th>
                           <th style={thRight}>Scheduled</th>
@@ -915,7 +915,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   {/* Payment Summary */}
                   <div
                     style={{
-                      background: '#f8fafc',
+                      background: '#faf8f5',
                       padding: 12,
                       borderRadius: 6,
                       marginBottom: 12,
@@ -1073,7 +1073,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   setSovLineProgress([]);
                 }}
                 style={{
-                  background: '#e5e7eb',
+                  background: '#e5dfd5',
                   border: 'none',
                   borderRadius: 6,
                   cursor: 'pointer',
@@ -1093,7 +1093,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   onClick={() => setG703Tab('summary')}
                   style={{
                     ...btnSmall,
-                    background: g703Tab === 'summary' ? '#152d4a' : '#e2e8f0',
+                    background: g703Tab === 'summary' ? '#152d4a' : '#e5dfd5',
                     color: g703Tab === 'summary' ? '#fff' : '#0f172a',
                   }}
                 >
@@ -1105,7 +1105,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   style={{
                     ...btnSmall,
                     background:
-                      g703Tab === 'continuation' ? '#152d4a' : '#e2e8f0',
+                      g703Tab === 'continuation' ? '#152d4a' : '#e5dfd5',
                     color: g703Tab === 'continuation' ? '#fff' : '#0f172a',
                   }}
                 >
@@ -1125,7 +1125,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
             {g703Tab === 'summary' && (
               <div
                 style={{
-                  background: '#f8fafc',
+                  background: '#faf8f5',
                   padding: 20,
                   borderRadius: 8,
                   margin: '0 20px 20px',
@@ -1142,7 +1142,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   }}
                 >
                   <tbody>
-                    <tr style={{ background: '#f8fafc' }}>
+                    <tr style={{ background: '#faf8f5' }}>
                       <td style={{ padding: 8 }}>Original Contract Sum</td>
                       <td style={{ padding: 8 }}></td>
                       <td style={{ padding: 8, textAlign: 'right' }}>
@@ -1156,7 +1156,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                         {money(netChangeByChangeOrders)}
                       </td>
                     </tr>
-                    <tr style={{ background: '#f8fafc' }}>
+                    <tr style={{ background: '#faf8f5' }}>
                       <td style={{ padding: 8, fontWeight: 600 }}>
                         Contract Sum to Date (Line 1 + 2)
                       </td>
@@ -1184,7 +1184,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                       </td>
                     </tr>
 
-                    <tr style={{ background: '#f8fafc' }}>
+                    <tr style={{ background: '#faf8f5' }}>
                       <td style={{ padding: 8, fontWeight: 600 }}>Retainage</td>
                       <td style={{ padding: 8 }}></td>
                       <td style={{ padding: 8 }}></td>
@@ -1200,7 +1200,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                         {money(retainageOnWork)}
                       </td>
                     </tr>
-                    <tr style={{ background: '#f8fafc' }}>
+                    <tr style={{ background: '#faf8f5' }}>
                       <td style={{ padding: 8 }}>
                         % of Stored Materials (Column F on G703)
                       </td>
@@ -1220,7 +1220,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                         {money(totalEarnedLessRetainageG702)}
                       </td>
                     </tr>
-                    <tr style={{ background: '#f8fafc' }}>
+                    <tr style={{ background: '#faf8f5' }}>
                       <td style={{ padding: 8 }}>
                         Less Previous Certificates for Payment
                       </td>
@@ -1245,7 +1245,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                         {money(Math.max(0, currentPaymentDueG702))}
                       </td>
                     </tr>
-                    <tr style={{ background: '#f8fafc' }}>
+                    <tr style={{ background: '#faf8f5' }}>
                       <td style={{ padding: 8 }}>
                         Balance to Finish, Including Retainage
                       </td>
@@ -1270,7 +1270,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                   }}
                 >
                   <thead>
-                    <tr style={{ background: '#f1f5f9' }}>
+                    <tr style={{ background: '#f0ebe3' }}>
                       <th style={th}>Item</th>
                       <th style={th}>Description of Work</th>
                       <th style={thRight}>Scheduled Value (C)</th>
@@ -1345,7 +1345,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
 /* ------------------------------ Styles ------------------------------ */
 const cardStyle: React.CSSProperties = {
   background: '#fff',
-  border: '1px solid #e2e8f0',
+  border: '1px solid #e5dfd5',
   borderRadius: 12,
   padding: 24,
   marginBottom: 24,
@@ -1354,7 +1354,7 @@ const cardStyle: React.CSSProperties = {
 const th: React.CSSProperties = {
   textAlign: 'left',
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
   fontWeight: 600,
   fontSize: 13,
@@ -1364,7 +1364,7 @@ const thCenter: React.CSSProperties = { ...th, textAlign: 'center' };
 
 const td: React.CSSProperties = {
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
   fontSize: 13,
 };
@@ -1395,7 +1395,7 @@ const modal: React.CSSProperties = {
 
 const input: React.CSSProperties = {
   padding: 8,
-  border: '1px solid #e5e7eb',
+  border: '1px solid #e5dfd5',
   borderRadius: 6,
   width: '100%',
   fontSize: 14,

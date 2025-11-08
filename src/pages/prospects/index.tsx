@@ -129,7 +129,7 @@ export default function ProspectsPage() {
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               style={{
-                background: '#f1f5f9',
+                background: '#f0ebe3',
                 border: 'none',
                 borderRadius: 8,
                 padding: '8px 12px',
@@ -149,7 +149,7 @@ export default function ProspectsPage() {
                   right: 0,
                   marginTop: 8,
                   background: '#fff',
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid #e5dfd5',
                   borderRadius: 8,
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                   minWidth: 160,

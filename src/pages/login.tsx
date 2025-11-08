@@ -42,7 +42,7 @@ export default function LoginPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#f8fafc',
+          background: '#faf8f5',
         }}
       >
         <p style={{ color: '#64748b' }}>Checking authentication...</p>
@@ -57,7 +57,7 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#f8fafc',
+        background: '#faf8f5',
       }}
     >
       <Head>
@@ -66,7 +66,7 @@ export default function LoginPage() {
       <div
         style={{
           background: '#fff',
-          border: '1px solid #e5e7eb',
+          border: '1px solid #e5dfd5',
           borderRadius: 12,
           padding: 24,
           width: 400,

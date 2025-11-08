@@ -175,7 +175,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
               key={ps.id}
               style={{
                 padding: 8,
-                background: '#f8fafc',
+                background: '#faf8f5',
                 borderRadius: 4,
                 fontSize: 13,
               }}
@@ -224,7 +224,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
           style={{
             marginTop: 12,
             padding: 12,
-            background: '#eff6ff',
+            background: '#e8f0d4',
             border: '1px solid #93c5fd',
             borderRadius: 6,
             display: 'flex',
@@ -372,7 +372,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
                 });
               }}
               style={{
-                background: '#e2e8f0',
+                background: '#e5dfd5',
                 color: '#0f172a',
                 border: 'none',
                 padding: '6px 14px',

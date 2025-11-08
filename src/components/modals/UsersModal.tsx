@@ -289,11 +289,11 @@ function getUserTypeBadgeStyle(userType: string): React.CSSProperties {
   };
 
   if (userType === 'Owner') {
-    return { ...baseStyle, background: '#dbeafe', color: '#1e40af' };
+    return { ...baseStyle, background: '#e8f0d4', color: '#1e40af' };
   } else if (userType === 'Admin') {
-    return { ...baseStyle, background: '#ede9fe', color: '#5b21b6' };
+    return { ...baseStyle, background: '#e8f0d4', color: '#5b21b6' };
   } else {
-    return { ...baseStyle, background: '#fed7aa', color: '#9a3412' };
+    return { ...baseStyle, background: '#ebe5db', color: '#9a3412' };
   }
 }
 
@@ -346,11 +346,11 @@ const styles = {
     fontWeight: 600,
   },
   formContainer: {
-    background: '#f8fafc',
+    background: '#faf8f5',
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
-    border: '1px solid #e2e8f0',
+    border: '1px solid #e5dfd5',
   },
   formTitle: {
     margin: '0 0 12px 0',
@@ -363,7 +363,7 @@ const styles = {
   },
   input: {
     padding: 8,
-    border: '1px solid #e5e7eb',
+    border: '1px solid #e5dfd5',
     borderRadius: 6,
     width: '100%',
   },
@@ -396,7 +396,7 @@ const styles = {
     borderCollapse: 'collapse' as const,
   },
   headerRow: {
-    borderBottom: '2px solid #e2e8f0',
+    borderBottom: '2px solid #e5dfd5',
   },
   th: {
     padding: 8,
@@ -411,7 +411,7 @@ const styles = {
     fontWeight: 600,
   },
   tableRow: {
-    borderBottom: '1px solid #e2e8f0',
+    borderBottom: '1px solid #e5dfd5',
   },
   td: {
     padding: 8,

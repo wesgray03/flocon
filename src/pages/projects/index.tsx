@@ -1265,7 +1265,7 @@ export default function ProjectsPage() {
                 type="button"
                 style={menuItemButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#f1f5f9';
+                  e.currentTarget.style.background = '#f0ebe3';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -1281,7 +1281,7 @@ export default function ProjectsPage() {
                 type="button"
                 style={menuItemButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#f1f5f9';
+                  e.currentTarget.style.background = '#f0ebe3';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -1297,7 +1297,7 @@ export default function ProjectsPage() {
                 type="button"
                 style={menuItemButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#f1f5f9';
+                  e.currentTarget.style.background = '#f0ebe3';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -1313,7 +1313,7 @@ export default function ProjectsPage() {
                 type="button"
                 style={menuItemButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#f1f5f9';
+                  e.currentTarget.style.background = '#f0ebe3';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -1329,7 +1329,7 @@ export default function ProjectsPage() {
                 type="button"
                 style={menuItemButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#f1f5f9';
+                  e.currentTarget.style.background = '#f0ebe3';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -1345,7 +1345,7 @@ export default function ProjectsPage() {
                 type="button"
                 style={menuItemButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#f1f5f9';
+                  e.currentTarget.style.background = '#f0ebe3';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -1930,6 +1930,6 @@ const menuItemButton: React.CSSProperties = {
   border: 'none',
   textAlign: 'left',
   fontSize: 14,
-  borderBottom: '1px solid #f1f5f9',
+  borderBottom: '1px solid #f0ebe3',
   cursor: 'pointer',
 };

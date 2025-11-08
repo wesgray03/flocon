@@ -165,10 +165,10 @@ export default function StageTasksModal({
                   key={s.id}
                   id={`stage-block-${s.id}`}
                   style={{
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #e5dfd5',
                     borderRadius: 8,
                     padding: 16,
-                    background: isCurrent ? '#f0fdf4' : '#ffffff',
+                    background: isCurrent ? '#e8f0d4' : '#faf8f5',
                   }}
                 >
                   <h3
@@ -176,7 +176,7 @@ export default function StageTasksModal({
                       margin: '0 0 12px 0',
                       fontSize: 16,
                       fontWeight: 600,
-                      color: isCurrent ? '#059669' : '#0f172a',
+                      color: isCurrent ? '#4a5d23' : '#0f172a',
                     }}
                   >
                     {s.order}. {s.name}
@@ -200,10 +200,10 @@ export default function StageTasksModal({
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            background: '#f8fafc',
+                            background: '#faf8f5',
                             padding: 8,
                             borderRadius: 6,
-                            border: '1px solid #e2e8f0',
+                            border: '1px solid #e5dfd5',
                           }}
                         >
                           <input
@@ -254,13 +254,13 @@ const overlayStyle: React.CSSProperties = {
 };
 
 const modalStyle: React.CSSProperties = {
-  background: '#ffffff',
+  background: '#faf8f5',
   borderRadius: 12,
   padding: 24,
   width: '100%',
   maxWidth: 600,
   boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
-  border: '1px solid #e2e8f0',
+  border: '1px solid #e5dfd5',
 };
 
 const closeBtnStyle: React.CSSProperties = {

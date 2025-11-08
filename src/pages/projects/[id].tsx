@@ -952,7 +952,7 @@ export default function ProjectDetail() {
                             disabled
                             style={{
                               ...styles.inputStyle,
-                              background: '#f8fafc',
+                              background: '#faf8f5',
                               color: '#64748b',
                             }}
                             placeholder="Not set"
@@ -984,7 +984,7 @@ export default function ProjectDetail() {
                             disabled
                             style={{
                               ...styles.inputStyle,
-                              background: '#f8fafc',
+                              background: '#faf8f5',
                               color: '#64748b',
                             }}
                             placeholder="Not set"
@@ -1186,7 +1186,7 @@ export default function ProjectDetail() {
                           style={{ width: '100%', borderCollapse: 'collapse' }}
                         >
                           <tbody>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1207,7 +1207,7 @@ export default function ProjectDetail() {
                                 {money(project?.contract_amount)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1228,7 +1228,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1249,7 +1249,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1270,7 +1270,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1330,7 +1330,7 @@ export default function ProjectDetail() {
                           style={{ width: '100%', borderCollapse: 'collapse' }}
                         >
                           <tbody>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1351,7 +1351,7 @@ export default function ProjectDetail() {
                                 0%
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1372,7 +1372,7 @@ export default function ProjectDetail() {
                                 0%
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1393,7 +1393,7 @@ export default function ProjectDetail() {
                                 0%
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1455,7 +1455,7 @@ export default function ProjectDetail() {
                           style={{ width: '100%', borderCollapse: 'collapse' }}
                         >
                           <tbody>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1476,7 +1476,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1497,7 +1497,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1518,7 +1518,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1539,7 +1539,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1599,7 +1599,7 @@ export default function ProjectDetail() {
                           style={{ width: '100%', borderCollapse: 'collapse' }}
                         >
                           <tbody>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1620,7 +1620,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1641,7 +1641,7 @@ export default function ProjectDetail() {
                                 {money(0)}
                               </td>
                             </tr>
-                            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
                               <td
                                 style={{
                                   padding: '8px 0',
@@ -1700,7 +1700,7 @@ export default function ProjectDetail() {
                       display: 'flex',
                       gap: 8,
                       marginBottom: 16,
-                      borderBottom: '2px solid #e2e8f0',
+                      borderBottom: '2px solid #e5dfd5',
                       paddingBottom: 8,
                     }}
                   >
@@ -1712,12 +1712,12 @@ export default function ProjectDetail() {
                         border: 'none',
                         borderBottom:
                           billingSubTab === 'sov'
-                            ? '2px solid #2563eb'
+                            ? '2px solid #1e3a5f'
                             : '2px solid transparent',
                         cursor: 'pointer',
                         fontWeight: billingSubTab === 'sov' ? 600 : 400,
                         fontSize: 14,
-                        color: billingSubTab === 'sov' ? '#2563eb' : '#64748b',
+                        color: billingSubTab === 'sov' ? '#1e3a5f' : '#64748b',
                         marginBottom: -10,
                       }}
                     >
@@ -1731,13 +1731,13 @@ export default function ProjectDetail() {
                         border: 'none',
                         borderBottom:
                           billingSubTab === 'payapps'
-                            ? '2px solid #2563eb'
+                            ? '2px solid #1e3a5f'
                             : '2px solid transparent',
                         cursor: 'pointer',
                         fontWeight: billingSubTab === 'payapps' ? 600 : 400,
                         fontSize: 14,
                         color:
-                          billingSubTab === 'payapps' ? '#2563eb' : '#64748b',
+                          billingSubTab === 'payapps' ? '#1e3a5f' : '#64748b',
                         marginBottom: -10,
                       }}
                     >
@@ -1826,7 +1826,7 @@ const ModuleCard = ({
     style={{
       padding: 20,
       background: '#fff',
-      border: '1px solid #e2e8f0',
+      border: '1px solid #e5dfd5',
       borderRadius: 8,
       cursor: 'pointer',
       transition: 'all 0.2s',
@@ -1837,7 +1837,7 @@ const ModuleCard = ({
       e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
     }}
     onMouseLeave={(e) => {
-      e.currentTarget.style.borderColor = '#e2e8f0';
+      e.currentTarget.style.borderColor = '#e5dfd5';
       e.currentTarget.style.borderLeftColor = color;
       e.currentTarget.style.boxShadow = 'none';
     }}

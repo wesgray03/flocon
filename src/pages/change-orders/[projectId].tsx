@@ -204,7 +204,7 @@ export default function ChangeOrdersPage() {
       style={{
         width: '100%',
         minHeight: '100vh',
-        background: '#f1f5f9',
+        background: '#f0ebe3',
         padding: 24,
         fontFamily: 'system-ui',
       }}
@@ -212,7 +212,7 @@ export default function ChangeOrdersPage() {
       <div style={{ marginBottom: 16 }}>
         <Link
           href="/projects"
-          style={{ color: '#2563eb', textDecoration: 'none' }}
+          style={{ color: '#1e3a5f', textDecoration: 'none' }}
         >
           ← Back to Projects
         </Link>
@@ -227,7 +227,7 @@ export default function ChangeOrdersPage() {
           <div
             style={{
               background: '#fff',
-              border: '1px solid #e5e7eb',
+              border: '1px solid #e5dfd5',
               borderRadius: 12,
               padding: 24,
               marginBottom: 16,
@@ -250,7 +250,7 @@ export default function ChangeOrdersPage() {
           <div
             style={{
               background: '#fff',
-              border: '1px solid #e5e7eb',
+              border: '1px solid #e5dfd5',
               borderRadius: 12,
               padding: 16,
               boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -276,7 +276,7 @@ export default function ChangeOrdersPage() {
                 type="button"
                 onClick={openForNew}
                 style={{
-                  background: '#2563eb',
+                  background: '#1e3a5f',
                   color: '#fff',
                   padding: '8px 16px',
                   borderRadius: 6,
@@ -304,7 +304,7 @@ export default function ChangeOrdersPage() {
                   }}
                 >
                   <thead>
-                    <tr style={{ background: '#f1f5f9' }}>
+                    <tr style={{ background: '#f0ebe3' }}>
                       <th style={th}>CO #</th>
                       <th style={th}>Description</th>
                       <th style={thRight}>Amount</th>
@@ -331,7 +331,7 @@ export default function ChangeOrdersPage() {
                                   ? '#e8f0d4'
                                   : co.status === 'Rejected'
                                     ? '#fee2e2'
-                                    : '#fef3c7',
+                                    : '#ebe5db',
                               border:
                                 co.status === 'Approved'
                                   ? '1px solid #a8c070'
@@ -485,7 +485,7 @@ export default function ChangeOrdersPage() {
 const th: React.CSSProperties = {
   textAlign: 'left',
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
   fontWeight: 600,
 };
@@ -494,7 +494,7 @@ const thCenter: React.CSSProperties = { ...th, textAlign: 'center' };
 
 const td: React.CSSProperties = {
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
 };
 const tdRight: React.CSSProperties = { ...td, textAlign: 'right' };
@@ -524,7 +524,7 @@ const modal: React.CSSProperties = {
 
 const input: React.CSSProperties = {
   padding: 8,
-  border: '1px solid #e5e7eb',
+  border: '1px solid #e5dfd5',
   borderRadius: 6,
   width: '100%',
   fontSize: 14,
@@ -542,7 +542,7 @@ const btnCancel: React.CSSProperties = {
 const btnSave: React.CSSProperties = {
   padding: '8px 16px',
   borderRadius: 6,
-  background: '#2563eb',
+  background: '#1e3a5f',
   color: '#fff',
   border: 'none',
   cursor: 'pointer',

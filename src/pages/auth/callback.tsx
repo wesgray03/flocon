@@ -150,13 +150,13 @@ export default function AuthCallback() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#f8fafc',
+        background: '#faf8f5',
       }}
     >
       <div
         style={{
           background: '#fff',
-          border: '1px solid #e5e7eb',
+          border: '1px solid #e5dfd5',
           borderRadius: 12,
           padding: 24,
           width: 400,
@@ -179,7 +179,7 @@ export default function AuthCallback() {
           style={{
             marginTop: 16,
             height: 4,
-            background: '#e5e7eb',
+            background: '#e5dfd5',
             borderRadius: 2,
             overflow: 'hidden',
           }}
