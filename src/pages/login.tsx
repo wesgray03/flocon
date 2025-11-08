@@ -1,3 +1,4 @@
+import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -78,7 +79,7 @@ export default function LoginPage() {
             margin: 0,
             marginBottom: 12,
             fontSize: 20,
-            color: '#0f172a',
+            color: colors.textPrimary,
           }}
         >
           Sign in

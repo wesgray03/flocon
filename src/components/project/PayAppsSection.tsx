@@ -1,4 +1,5 @@
 // components/project/PayAppsSection.tsx
+import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
 import { ExternalLink, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
@@ -446,7 +447,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
   if (loading) {
     return (
       <div style={cardStyle}>
-        <p style={{ margin: 0, color: {colors.textSecondary} }}>Loading pay applications…</p>
+        <p style={{ margin: 0, color: colors.textSecondary }}>Loading pay applications…</p>
       </div>
     );
   }
@@ -466,7 +467,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
             <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
               Pay Applications ({payApps.length})
             </h2>
-            <p style={{ color: {colors.textMuted}, fontSize: 14, marginTop: 4 }}>
+            <p style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}>
               Total Billed: {money(totalAmount)}
             </p>
           </div>
@@ -494,7 +495,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
         </div>
 
         {payApps.length === 0 ? (
-          <p style={{ color: {colors.textMuted}, textAlign: 'center', padding: 24 }}>
+          <p style={{ color: colors.textSecondary, textAlign: 'center', padding: 24 }}>
             No pay applications yet. Click "+ New Pay App" to add one.
           </p>
         ) : (
@@ -524,7 +525,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                 {payApps.map((app) => (
                   <tr key={app.id}>
                     <td style={td}>
-                      <span style={{ fontWeight: 600, color: '#0f172a' }}>
+                      <span style={{ fontWeight: 600, color: colors.textPrimary }}>
                         {app.pay_app_number ?? '—'}
                       </span>
                     </td>
@@ -538,17 +539,17 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                       {money(app.total_completed_and_stored || 0)}
                     </td>
                     <td style={tdRight}>
-                      <span style={{ color: {colors.logoRed} }}>
+                      <span style={{ color: colors.logoRed }}>
                         {money(app.total_retainage || 0)}
                       </span>
                     </td>
                     <td style={tdRight}>
-                      <strong style={{ color: '#1e3a5f', fontSize: 15 }}>
+                      <strong style={{ color: colors.navy, fontSize: 15 }}>
                         {money(app.current_payment_due || app.amount || 0)}
                       </strong>
                     </td>
                     <td style={tdRight}>
-                      <span style={{ color: {colors.textSecondary} }}>
+                      <span style={{ color: colors.textSecondary }}>
                         {money(app.balance_to_finish || 0)}
                       </span>
                     </td>
@@ -570,7 +571,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                             app.status === 'Paid'
                               ? '#166534'
                               : app.status === 'Rejected'
-                                ? {colors.errorText}
+                                ? '#991b1b'
                                 : '#854d0e',
                         }}
                       >
@@ -600,7 +601,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           ...btnSmall,
                           background: 'transparent',
                           border: 'none',
-                          color: '#1e3a5f',
+                          color: colors.navy,
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -619,7 +620,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           marginLeft: 6,
                           background: 'transparent',
                           border: 'none',
-                          color: {colors.textSecondary},
+                          color: colors.textSecondary,
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -638,7 +639,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           marginLeft: 6,
                           background: 'transparent',
                           border: 'none',
-                          color: {colors.logoRed},
+                          color: colors.logoRed,
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -677,7 +678,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                     fontSize: 14,
                     fontWeight: 600,
                     marginBottom: 12,
-                    color: '#0f172a',
+                    color: colors.textPrimary,
                   }}
                 >
                   Basic Information
@@ -791,7 +792,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                       fontSize: 14,
                       fontWeight: 600,
                       marginBottom: 12,
-                      color: '#0f172a',
+                      color: colors.textPrimary,
                     }}
                   >
                     Work Completed This Period
@@ -901,7 +902,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                                 ${balance.toLocaleString()}
                               </td>
                               <td style={tdRight}>
-                                <span style={{ color: {colors.logoRed} }}>
+                                <span style={{ color: colors.logoRed }}>
                                   ${retainage.toLocaleString()}
                                 </span>
                               </td>
@@ -970,7 +971,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                         style={{
                           textAlign: 'right',
                           fontWeight: 600,
-                          color: '#1e3a5f',
+                          color: colors.navy,
                         }}
                       >
                         $
@@ -1176,7 +1177,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                       <td style={{ padding: 8 }}>
                         Total Completed and Stored to Date
                       </td>
-                      <td style={{ padding: 8, color: {colors.textSecondary} }}>
+                      <td style={{ padding: 8, color: colors.textSecondary }}>
                         (Column G on G703)
                       </td>
                       <td style={{ padding: 8, textAlign: 'right' }}>
@@ -1239,7 +1240,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           padding: 8,
                           textAlign: 'right',
                           fontWeight: 700,
-                          color: '#1e3a5f',
+                          color: colors.navy,
                         }}
                       >
                         {money(Math.max(0, currentPaymentDueG702))}
@@ -1321,7 +1322,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           <td style={tdRight}>{percentComplete.toFixed(1)}%</td>
                           <td style={tdRight}>${balance.toLocaleString()}</td>
                           <td style={tdRight}>
-                            <span style={{ color: {colors.logoRed} }}>
+                            <span style={{ color: colors.logoRed }}>
                               ${retainage.toLocaleString()}
                             </span>
                           </td>
@@ -1332,7 +1333,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                 </table>
               </div>
             )}
-            <div style={{ fontSize: 12, color: {colors.textSecondary}, marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: colors.textSecondary, marginTop: 8 }}>
               Retainage calculated per line at its retainage percent.
             </div>
           </div>
@@ -1403,7 +1404,7 @@ const input: React.CSSProperties = {
 
 const labelStyle: React.CSSProperties = {
   fontSize: 12,
-  color: {colors.textMuted},
+  color: colors.textSecondary,
   marginBottom: 4,
   display: 'block',
   fontWeight: 500,

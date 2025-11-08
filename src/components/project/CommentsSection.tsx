@@ -1,3 +1,4 @@
+import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -227,7 +228,7 @@ export function CommentsSection({
       case 'Foreman':
         return { bg: '#ebe5db', color: '#9a3412' };
       default:
-        return { bg: '#f0ebe3', color: {colors.textSecondary} };
+        return { bg: '#f0ebe3', color: colors.textSecondary };
     }
   };
 
@@ -251,7 +252,7 @@ export function CommentsSection({
             fontSize: 18,
             fontWeight: 700,
             margin: '0 0 16px 0',
-            color: '#0f172a',
+            color: colors.textPrimary,
             borderBottom: '2px solid #1e3a5f',
             paddingBottom: 12,
           }}
@@ -309,7 +310,7 @@ export function CommentsSection({
           {comments.length === 0 ? (
             <p
               style={{
-                color: '#9ca3af',
+                color: colors.textMuted,
                 fontSize: 14,
                 textAlign: 'center',
                 padding: 20,
@@ -356,7 +357,7 @@ export function CommentsSection({
                           style={{
                             fontSize: 13,
                             fontWeight: 600,
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           {comment.user_name || 'Unknown'}
@@ -376,7 +377,7 @@ export function CommentsSection({
                         <span
                           style={{
                             fontSize: 11,
-                            color: '#9ca3af',
+                            color: colors.textMuted,
                           }}
                         >
                           {formatTimestamp(comment.created_at)}
@@ -391,7 +392,7 @@ export function CommentsSection({
                                 style={{
                                   background: 'transparent',
                                   border: 'none',
-                                  color: {colors.textSecondary},
+                                  color: colors.textSecondary,
                                   cursor: 'pointer',
                                   padding: 0,
                                   display: 'inline-flex',
@@ -408,7 +409,7 @@ export function CommentsSection({
                                 style={{
                                   background: 'transparent',
                                   border: 'none',
-                                  color: {colors.logoRed},
+                                  color: colors.logoRed,
                                   cursor: 'pointer',
                                   padding: 0,
                                   display: 'inline-flex',
@@ -463,7 +464,7 @@ export function CommentsSection({
                             style={{
                               padding: '4px 12px',
                               background: '#ebe5db',
-                              color: '#0f172a',
+                              color: colors.textPrimary,
                               border: 'none',
                               borderRadius: 4,
                               fontSize: 12,

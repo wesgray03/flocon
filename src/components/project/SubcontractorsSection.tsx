@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -132,7 +133,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
         }}
       >
         <p
-          style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#0f172a' }}
+          style={{ margin: 0, fontSize: 13, fontWeight: 600, color: colors.textPrimary }}
         >
           Subcontractors
         </p>
@@ -162,7 +163,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
           style={{
             margin: 0,
             fontSize: 13,
-            color: '#9ca3af',
+            color: colors.textMuted,
             fontStyle: 'italic',
           }}
         >
@@ -188,7 +189,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
                   marginBottom: 4,
                 }}
               >
-                <div style={{ fontWeight: 500, color: '#0f172a' }}>
+                <div style={{ fontWeight: 500, color: colors.textPrimary }}>
                   {ps.subcontractor_name}
                 </div>
                 <button
@@ -196,7 +197,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: {colors.logoRed},
+                    color: colors.logoRed,
                     cursor: 'pointer',
                     padding: 0,
                     display: 'inline-flex',
@@ -210,7 +211,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
                 </button>
               </div>
               {ps.work_order_number && (
-                <div style={{ fontSize: 12, color: {colors.textSecondary}, marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>
                   WO: {ps.work_order_number}
                 </div>
               )}
@@ -236,7 +237,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
             style={{
               fontSize: 12,
               fontWeight: 600,
-              color: '#0f172a',
+              color: colors.textPrimary,
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
@@ -268,7 +269,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
             style={{
               fontSize: 12,
               fontWeight: 600,
-              color: '#0f172a',
+              color: colors.textPrimary,
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
@@ -295,7 +296,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
             style={{
               fontSize: 12,
               fontWeight: 600,
-              color: '#0f172a',
+              color: colors.textPrimary,
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
@@ -321,7 +322,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
             style={{
               fontSize: 12,
               fontWeight: 600,
-              color: '#0f172a',
+              color: colors.textPrimary,
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
@@ -373,7 +374,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
               }}
               style={{
                 background: '#e5dfd5',
-                color: '#0f172a',
+                color: colors.textPrimary,
                 border: 'none',
                 padding: '6px 14px',
                 fontSize: 13,

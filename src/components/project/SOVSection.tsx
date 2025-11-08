@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 
 export type SOVLine = {
@@ -154,7 +155,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
         <h2 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>
           Schedule of Values
         </h2>
-        <div style={{ fontSize: 14, color: {colors.textMuted} }}>
+        <div style={{ fontSize: 14, color: colors.textMuted }}>
           <b>Materials:</b> {money(totals.materials)} &nbsp;|&nbsp;{' '}
           <b>Labor:</b> {money(totals.labor)} &nbsp;|&nbsp; <b>Other:</b>{' '}
           {money(totals.other)} &nbsp;|&nbsp; <b>Total:</b>{' '}
@@ -163,9 +164,9 @@ export default function SOVSection({ projectId }: { projectId: string }) {
       </div>
 
       {loading ? (
-        <p style={{ color: {colors.textSecondary} }}>Loading…</p>
+        <p style={{ color: colors.textSecondary }}>Loading…</p>
       ) : lines.length === 0 ? (
-        <p style={{ color: {colors.textSecondary} }}>No SOV lines yet.</p>
+        <p style={{ color: colors.textSecondary }}>No SOV lines yet.</p>
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table

@@ -4,6 +4,7 @@ import ProjectStatusBlock from '@/components/project/ProjectStatusBlock';
 import SubcontractorsSection from '@/components/project/SubcontractorsSection';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
+import { colors } from '@/styles/theme';
 import { Pencil, Save } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -22,7 +23,7 @@ const SOVSection = dynamic(() => import('@/components/project/SOVSection'), {
         marginBottom: 24,
       }}
     >
-      <p style={{ margin: 0, color: {colors.textSecondary} }}>Loading SOV…</p>
+  <p style={{ margin: 0, color: colors.textSecondary }}>Loading SOV…</p>
     </div>
   ),
 });
@@ -41,7 +42,7 @@ const PayAppsSection = dynamic(
           marginBottom: 24,
         }}
       >
-        <p style={{ margin: 0, color: {colors.textSecondary} }}>Loading Pay Apps…</p>
+  <p style={{ margin: 0, color: colors.textSecondary }}>Loading Pay Apps…</p>
       </div>
     ),
   }
@@ -698,7 +699,7 @@ export default function ProjectDetail() {
           <Link
             href="/projects"
             style={{
-              color: '#1e3a5f',
+              color: colors.navy,
               textDecoration: 'none',
               fontSize: 14,
               marginBottom: 8,
@@ -709,9 +710,9 @@ export default function ProjectDetail() {
           </Link>
 
           {loading ? (
-            <p style={{ color: {colors.textSecondary} }}>Loading…</p>
+            <p style={{ color: colors.textSecondary }}>Loading…</p>
           ) : !project ? (
-            <p style={{ color: {colors.textSecondary} }}>Project not found.</p>
+            <p style={{ color: colors.textSecondary }}>Project not found.</p>
           ) : (
             <div>
               <h1 style={styles.titleStyle}>{project.name}</h1>
@@ -748,7 +749,7 @@ export default function ProjectDetail() {
                         fontSize: 18,
                         fontWeight: 700,
                         margin: 0,
-                        color: '#0f172a',
+                        color: colors.textPrimary,
                       }}
                     >
                       Project Information
@@ -781,7 +782,7 @@ export default function ProjectDetail() {
                           disabled={saving}
                           style={{
                             padding: '6px 12px',
-                            background: {colors.gray},
+                            background: '#6b7280',
                             color: '#fff',
                             border: 'none',
                             borderRadius: 6,
@@ -953,7 +954,7 @@ export default function ProjectDetail() {
                             style={{
                               ...styles.inputStyle,
                               background: '#faf8f5',
-                              color: {colors.textSecondary},
+                              color: colors.textSecondary,
                             }}
                             placeholder="Not set"
                           />
@@ -985,7 +986,7 @@ export default function ProjectDetail() {
                             style={{
                               ...styles.inputStyle,
                               background: '#faf8f5',
-                              color: {colors.textSecondary},
+                              color: colors.textSecondary,
                             }}
                             placeholder="Not set"
                           />
@@ -1017,7 +1018,7 @@ export default function ProjectDetail() {
                             margin: 0,
                             fontSize: 12,
                             fontWeight: 600,
-                            color: {colors.gray},
+                            color: colors.gray,
                             marginBottom: 4,
                           }}
                         >
@@ -1028,7 +1029,7 @@ export default function ProjectDetail() {
                             margin: 0,
                             fontSize: 14,
                             fontWeight: 500,
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           {money(project.contract_amount || 0)}
@@ -1043,7 +1044,7 @@ export default function ProjectDetail() {
                             margin: 0,
                             fontSize: 12,
                             fontWeight: 600,
-                            color: {colors.gray},
+                            color: colors.gray,
                             marginBottom: 4,
                           }}
                         >
@@ -1054,7 +1055,7 @@ export default function ProjectDetail() {
                             margin: 0,
                             fontSize: 14,
                             fontWeight: 500,
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           {dateStr(project.start_date)}
@@ -1069,7 +1070,7 @@ export default function ProjectDetail() {
                             margin: 0,
                             fontSize: 12,
                             fontWeight: 600,
-                            color: {colors.gray},
+                            color: colors.gray,
                             marginBottom: 4,
                           }}
                         >
@@ -1080,7 +1081,7 @@ export default function ProjectDetail() {
                             margin: 0,
                             fontSize: 14,
                             fontWeight: 500,
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           {dateStr(project.end_date)}
@@ -1177,7 +1178,7 @@ export default function ProjectDetail() {
                             fontSize: 18,
                             fontWeight: 700,
                             margin: '0 0 16px 0',
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           Revenue
@@ -1191,7 +1192,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Contract Amount
@@ -1212,7 +1213,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Change Orders
@@ -1233,7 +1234,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Billings-to-date
@@ -1254,7 +1255,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Retainage-to-date
@@ -1275,7 +1276,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Remaining Billings
@@ -1296,7 +1297,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 % Complete Revenue
@@ -1321,7 +1322,7 @@ export default function ProjectDetail() {
                             fontSize: 18,
                             fontWeight: 700,
                             margin: '32px 0 16px 0',
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           Gross Margin
@@ -1335,7 +1336,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Contract GM%
@@ -1356,7 +1357,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Change Order GM%
@@ -1377,7 +1378,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Total GM %
@@ -1398,7 +1399,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Unadjusted GM%
@@ -1419,7 +1420,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Expected GM%
@@ -1446,7 +1447,7 @@ export default function ProjectDetail() {
                             fontSize: 18,
                             fontWeight: 700,
                             margin: '0 0 16px 0',
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           Cost
@@ -1460,7 +1461,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Contract Budget
@@ -1481,7 +1482,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Change Order Cost Budget
@@ -1502,7 +1503,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Total Contract Cost Budget
@@ -1523,7 +1524,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Cost-to-date
@@ -1544,7 +1545,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Remaining Cost
@@ -1565,7 +1566,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 % Complete Cost
@@ -1590,7 +1591,7 @@ export default function ProjectDetail() {
                             fontSize: 18,
                             fontWeight: 700,
                             margin: '32px 0 16px 0',
-                            color: '#0f172a',
+                            color: colors.textPrimary,
                           }}
                         >
                           Cash Flow
@@ -1604,7 +1605,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Cash In
@@ -1625,7 +1626,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Cash Out
@@ -1646,7 +1647,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Net Cash Flow
@@ -1667,7 +1668,7 @@ export default function ProjectDetail() {
                                 style={{
                                   padding: '8px 0',
                                   fontSize: 14,
-                                  color: {colors.textMuted},
+                                  color: colors.textSecondary,
                                 }}
                               >
                                 Cash Position (+/-)
@@ -1717,7 +1718,7 @@ export default function ProjectDetail() {
                         cursor: 'pointer',
                         fontWeight: billingSubTab === 'sov' ? 600 : 400,
                         fontSize: 14,
-                        color: billingSubTab === 'sov' ? '#1e3a5f' : {colors.textSecondary},
+                        color: billingSubTab === 'sov' ? '#1e3a5f' : '#64748b',
                         marginBottom: -10,
                       }}
                     >
@@ -1737,7 +1738,7 @@ export default function ProjectDetail() {
                         fontWeight: billingSubTab === 'payapps' ? 600 : 400,
                         fontSize: 14,
                         color:
-                          billingSubTab === 'payapps' ? '#1e3a5f' : {colors.textSecondary},
+                          billingSubTab === 'payapps' ? '#1e3a5f' : '#64748b',
                         marginBottom: -10,
                       }}
                     >
@@ -1843,7 +1844,7 @@ const ModuleCard = ({
     }}
   >
     <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color }}>{title}</h3>
-    <p style={{ margin: '4px 0 0', fontSize: 14, color: {colors.textSecondary} }}>
+    <p style={{ margin: '4px 0 0', fontSize: 14, color: colors.textSecondary }}>
       {description}
     </p>
   </div>

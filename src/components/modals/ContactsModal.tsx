@@ -1,3 +1,4 @@
+import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -370,7 +371,7 @@ const styles = {
   title: {
     margin: 0,
     fontSize: 18,
-    color: '#0f172a',
+    color: colors.textPrimary,
   },
   formContainer: {
     border: '1px solid #e5dfd5',

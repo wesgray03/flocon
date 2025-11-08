@@ -1,3 +1,4 @@
+import { colors } from '@/styles/theme';
 import { ProjectTask, Stage } from '@/lib/hooks/useProjectTasks';
 import { supabase } from '@/lib/supabaseClient';
 import { useEffect, useState } from 'react';
@@ -146,7 +147,7 @@ export default function StageTasksModal({
           </button>
         </div>
         {loading ? (
-          <p style={{ fontSize: 14, color: {colors.textSecondary} }}>Loading tasks…</p>
+          <p style={{ fontSize: 14, color: colors.textSecondary }}>Loading tasks…</p>
         ) : (
           <div
             style={{
@@ -182,7 +183,7 @@ export default function StageTasksModal({
                     {s.order}. {s.name}
                   </h3>
                   {sts.length === 0 ? (
-                    <p style={{ margin: 0, fontSize: 13, color: {colors.textSecondary} }}>
+                    <p style={{ margin: 0, fontSize: 13, color: colors.textSecondary }}>
                       No tasks yet.
                     </p>
                   ) : (
@@ -268,7 +269,7 @@ const closeBtnStyle: React.CSSProperties = {
   border: 'none',
   fontSize: 20,
   cursor: 'pointer',
-  color: {colors.textSecondary},
+  color: colors.textSecondary,
   padding: 4,
   lineHeight: 1,
 };

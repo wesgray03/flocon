@@ -6,6 +6,7 @@
 // - This file contains: Main ProjectsPage component, MasterDataModal, Popover
 // --------------------------------------------------------------
 
+import { colors } from '@/styles/theme';
 import { ContactsModal } from '@/components/modals/ContactsModal';
 import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
@@ -259,12 +260,12 @@ function MasterDataModal({
               background: '#f0ebe3',
               padding: 8,
               fontSize: 12,
-              color: {colors.textMuted},
+              color: colors.textPrimary,
             }}
           >
             {loading ? 'Loading…' : `${items.length} item(s)`}
             {loadError ? (
-              <div style={{ color: {colors.errorText}, marginTop: 8, fontSize: 12 }}>
+              <div style={{ color: colors.errorText, marginTop: 8, fontSize: 12 }}>
                 Error: {loadError}
               </div>
             ) : null}
@@ -296,7 +297,7 @@ function MasterDataModal({
                         style={{
                           marginLeft: 8,
                           fontSize: '0.875rem',
-                          color: {colors.gray},
+                          color: colors.gray,
                         }}
                       >
                         ({it.stage_name})
@@ -1083,12 +1084,12 @@ export default function ProjectsPage() {
               margin: 0,
               marginBottom: 12,
               fontSize: 20,
-              color: '#0f172a',
+              color: colors.textPrimary,
             }}
           >
             Sign in required
           </h1>
-          <p style={{ marginTop: 0, marginBottom: 16, color: {colors.textMuted} }}>
+          <p style={{ marginTop: 0, marginBottom: 16, color: colors.textSecondary }}>
             Please sign in with your Microsoft account to access Projects.
           </p>
           <Link
@@ -1168,7 +1169,7 @@ export default function ProjectsPage() {
             style={{
               padding: '6px 18px',
               background: '#faf8f5',
-              color: {colors.textMuted},
+              color: '#8b7d6b',
               border: 'none',
               borderRadius: 6,
               fontSize: 13,
@@ -1207,7 +1208,7 @@ export default function ProjectsPage() {
           }}
         >
           {sessionEmail && (
-            <span style={{ color: {colors.textSecondary}, fontSize: 14 }}>
+            <span style={{ color: colors.textSecondary, fontSize: 14 }}>
               {sessionEmail}
             </span>
           )}
@@ -1220,7 +1221,7 @@ export default function ProjectsPage() {
               aria-expanded={menuOpen}
               style={{
                 background: '#ebe5db',
-                color: '#0f172a',
+                color: colors.textPrimary,
                 padding: '10px 12px',
                 borderRadius: 6,
                 border: '1px solid #e5dfd5',
@@ -1371,7 +1372,7 @@ export default function ProjectsPage() {
                     style={{
                       ...menuItemButton,
                       background: '#fee2e2',
-                      color: {colors.errorText},
+                      color: colors.errorText,
                       fontWeight: 600,
                     }}
                     onMouseEnter={(e) => {
@@ -1397,9 +1398,9 @@ export default function ProjectsPage() {
 
       {/* Body */}
       {loading ? (
-        <p style={{ color: {colors.textMuted} }}>Loading…</p>
+        <p style={{ color: colors.textSecondary }}>Loading…</p>
       ) : filteredAndSortedRows.length === 0 ? (
-        <p style={{ color: {colors.textMuted} }}>No projects yet.</p>
+        <p style={{ color: colors.textSecondary }}>No projects yet.</p>
       ) : (
         <div
           style={{
@@ -1558,7 +1559,7 @@ export default function ProjectsPage() {
                     }}
                     style={{
                       background: '#ebe5db',
-                      color: {colors.textMuted},
+                      color: colors.textPrimary,
                       border: '1px solid #e5dfd5',
                       borderRadius: 4,
                       padding: '4px 10px',
@@ -1606,7 +1607,7 @@ export default function ProjectsPage() {
                 >
                   <td style={td}>{r.qbid ?? '—'}</td>
                   <td style={td}>
-                    <span style={{ color: '#0f172a' }}>{r.project_name}</span>
+                    <span style={{ color: colors.textPrimary }}>{r.project_name}</span>
                     {r.sharepoint_folder ? (
                       <a
                         href={r.sharepoint_folder}
@@ -1615,7 +1616,7 @@ export default function ProjectsPage() {
                         title="Open project folder in SharePoint"
                         style={{
                           marginLeft: 8,
-                          color: '#1e3a5f',
+                          color: colors.navy,
                           textDecoration: 'none',
                           display: 'inline-flex',
                           verticalAlign: 'middle',
@@ -1634,7 +1635,7 @@ export default function ProjectsPage() {
                   <td style={tdRight}>
                     <Link
                       href={`/change-orders/${r.id}`}
-                      style={{ color: '#1e3a5f', textDecoration: 'none' }}
+                      style={{ color: colors.navy, textDecoration: 'none' }}
                     >
                       {money(r.co_amt)}
                     </Link>
@@ -1643,7 +1644,7 @@ export default function ProjectsPage() {
                   <td style={tdRight}>
                     <Link
                       href={`/billings/${r.id}`}
-                      style={{ color: '#1e3a5f', textDecoration: 'none' }}
+                      style={{ color: colors.navy, textDecoration: 'none' }}
                     >
                       {money(r.billed_amt)}
                     </Link>
@@ -1659,7 +1660,7 @@ export default function ProjectsPage() {
                         border: 'none',
                         cursor: 'pointer',
                         padding: 4,
-                        color: '#1e3a5f',
+                        color: colors.navy,
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1677,7 +1678,7 @@ export default function ProjectsPage() {
                         border: 'none',
                         cursor: 'pointer',
                         padding: 4,
-                        color: {colors.logoRed},
+                        color: colors.logoRed,
                         marginLeft: 4,
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -1925,7 +1926,7 @@ const menuItemButton: React.CSSProperties = {
   display: 'block',
   width: '100%',
   padding: '10px 12px',
-  color: '#0f172a',
+  color: colors.textPrimary,
   background: 'transparent',
   border: 'none',
   textAlign: 'left',

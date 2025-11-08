@@ -1,6 +1,7 @@
+import { colors } from '@/styles/theme';
 import {
-    Stage as StageType,
-    useProjectTasks,
+  Stage as StageType,
+  useProjectTasks,
 } from '@/lib/hooks/useProjectTasks';
 
 type Project = {
@@ -22,7 +23,7 @@ const sectionHeaderStyle: React.CSSProperties = {
   fontSize: 18,
   fontWeight: 700,
   margin: 0,
-  color: '#0f172a',
+  color: colors.textPrimary,
 };
 
 const cardStyle: React.CSSProperties = {
@@ -85,7 +86,7 @@ export default function StageProgressSection({
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: {colors.textSecondary},
+                color: colors.textSecondary,
                 fontWeight: 600,
               }}
             >
@@ -99,7 +100,7 @@ export default function StageProgressSection({
                   margin: '4px 0 0',
                   fontSize: 16,
                   fontWeight: 600,
-                  color: {colors.gray},
+                  color: colors.gray,
                   background: 'transparent',
                   border: 'none',
                   cursor: advancing ? 'not-allowed' : 'pointer',
@@ -111,7 +112,7 @@ export default function StageProgressSection({
                 {prevStage.order}. {prevStage.name}
               </button>
             ) : (
-              <p style={{ margin: '4px 0 0', fontSize: 16, color: '#9ca3af' }}>
+              <p style={{ margin: '4px 0 0', fontSize: 16, color: colors.textMuted }}>
                 —
               </p>
             )}
@@ -121,14 +122,14 @@ export default function StageProgressSection({
               style={{
                 margin: '0 0 8px 0',
                 fontSize: 13,
-                color: {colors.textSecondary},
+                color: colors.textSecondary,
                 fontStyle: 'italic',
               }}
             >
               List Previous Stage Tasks (View Only)
             </p>
             {prevTasks.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 14, color: '#9ca3af' }}>
+              <p style={{ margin: 0, fontSize: 14, color: colors.textMuted }}>
                 No tasks
               </p>
             ) : (
@@ -140,7 +141,7 @@ export default function StageProgressSection({
                       display: 'flex',
                       alignItems: 'center',
                       fontSize: 14,
-                      color: {colors.textSecondary},
+                      color: colors.textSecondary,
                     }}
                   >
                     <input
@@ -183,7 +184,7 @@ export default function StageProgressSection({
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: '#0f172a',
+                color: colors.textPrimary,
                 fontWeight: 600,
               }}
             >
@@ -194,7 +195,7 @@ export default function StageProgressSection({
                 margin: '4px 0 0',
                 fontSize: 18,
                 fontWeight: 700,
-                color: '#0f172a',
+                color: colors.textPrimary,
               }}
             >
               {project?.stage_order
@@ -207,14 +208,14 @@ export default function StageProgressSection({
               style={{
                 margin: '0 0 8px 0',
                 fontSize: 13,
-                color: '#0f172a',
+                color: colors.textPrimary,
                 fontWeight: 600,
               }}
             >
               List Current Stage Tasks (Read/Write)
             </p>
             {currentTasks.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 14, color: '#0f172a' }}>
+              <p style={{ margin: 0, fontSize: 14, color: colors.textPrimary }}>
                 No tasks
               </p>
             ) : (
@@ -269,7 +270,7 @@ export default function StageProgressSection({
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: {colors.textSecondary},
+                color: colors.textSecondary,
                 fontWeight: 600,
               }}
             >
@@ -295,7 +296,7 @@ export default function StageProgressSection({
                 {nextStage.order}. {nextStage.name}
               </button>
             ) : (
-              <p style={{ margin: '4px 0 0', fontSize: 16, color: '#9ca3af' }}>
+              <p style={{ margin: '4px 0 0', fontSize: 16, color: colors.textMuted }}>
                 Complete
               </p>
             )}
@@ -305,14 +306,14 @@ export default function StageProgressSection({
               style={{
                 margin: '0 0 8px 0',
                 fontSize: 13,
-                color: {colors.textSecondary},
+                color: colors.textSecondary,
                 fontStyle: 'italic',
               }}
             >
               List Next Stage Tasks (View Only)
             </p>
             {nextTasks.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 14, color: '#9ca3af' }}>
+              <p style={{ margin: 0, fontSize: 14, color: colors.textMuted }}>
                 No tasks
               </p>
             ) : (
@@ -324,7 +325,7 @@ export default function StageProgressSection({
                       display: 'flex',
                       alignItems: 'center',
                       fontSize: 14,
-                      color: {colors.textSecondary},
+                      color: colors.textSecondary,
                     }}
                   >
                     <input

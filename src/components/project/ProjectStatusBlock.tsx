@@ -1,3 +1,4 @@
+import { colors } from '@/styles/theme';
 import {
   ProjectTask,
   Stage as StageType,
@@ -89,7 +90,7 @@ export default function ProjectStatusBlock({
               margin: 0,
               fontSize: 16,
               fontWeight: 700,
-              color: '#0f172a',
+              color: colors.textPrimary,
             }}
           >
             Project Status
@@ -150,7 +151,7 @@ export default function ProjectStatusBlock({
               margin: 0,
               fontSize: 12,
               fontWeight: 700,
-              color: {colors.gray},
+              color: colors.gray,
             }}
           >
             Previous Stage
@@ -162,7 +163,7 @@ export default function ProjectStatusBlock({
               padding: 0,
               background: 'transparent',
               border: 'none',
-              color: '#1e3a5f',
+              color: colors.navy,
               textDecoration: 'underline',
               cursor: advancing ? 'not-allowed' : 'pointer',
               fontSize: 14,
@@ -178,14 +179,14 @@ export default function ProjectStatusBlock({
       <div
         style={{
           marginBottom: 12,
-          background: '#d4f0e8',
-          border: '1px solid #e5dfd5',
+          background: '#e8f0d4',
+          border: '1px solid #a8c070',
           borderRadius: 8,
           padding: 12,
         }}
       >
         <p
-          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#0f172a' }}
+          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: colors.textPrimary }}
         >
           Current Stage
         </p>
@@ -194,7 +195,7 @@ export default function ProjectStatusBlock({
             margin: '4px 0 8px 0',
             fontSize: 16,
             fontWeight: 700,
-            color: '#0f172a',
+            color: colors.textPrimary,
           }}
         >
           {project?.stage_order
@@ -203,7 +204,7 @@ export default function ProjectStatusBlock({
         </p>
 
         {tasksState.length === 0 ? (
-          <p style={{ margin: 0, fontSize: 14, color: '#0f172a' }}>No tasks</p>
+          <p style={{ margin: 0, fontSize: 14, color: '#4a5d23' }}>No tasks</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {tasksState.map((task) => (
@@ -250,7 +251,7 @@ export default function ProjectStatusBlock({
                 <span
                   style={{
                     textDecoration: task.complete ? 'line-through' : 'none',
-                    color: task.complete ? '#2d5a1e' : '#0f172a',
+                    color: task.complete ? '#4a5d23' : '#0f172a',
                   }}
                 >
                   {task.name}
@@ -264,7 +265,7 @@ export default function ProjectStatusBlock({
       {/* Next Stage name only with action */}
       <div>
         <p
-          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: {colors.gray} }}
+          style={{ margin: 0, fontSize: 12, fontWeight: 700, color: colors.gray }}
         >
           Next Stage
         </p>
@@ -276,7 +277,7 @@ export default function ProjectStatusBlock({
               padding: 0,
               background: 'transparent',
               border: 'none',
-              color: '#1e3a5f',
+              color: colors.navy,
               textDecoration: 'underline',
               cursor: advancing ? 'not-allowed' : 'pointer',
               fontSize: 14,
@@ -286,7 +287,7 @@ export default function ProjectStatusBlock({
             {nextStage.order}. {nextStage.name}
           </button>
         ) : (
-          <p style={{ margin: 0, fontSize: 14, color: '#9ca3af' }}>Complete</p>
+          <p style={{ margin: 0, fontSize: 14, color: colors.textMuted }}>Complete</p>
         )}
       </div>
 

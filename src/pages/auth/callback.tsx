@@ -1,3 +1,4 @@
+import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -169,7 +170,7 @@ export default function AuthCallback() {
             margin: 0,
             marginBottom: 12,
             fontSize: 20,
-            color: '#0f172a',
+            color: colors.textPrimary,
           }}
         >
           Authenticating...
