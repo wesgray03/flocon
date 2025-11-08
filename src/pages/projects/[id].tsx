@@ -158,6 +158,7 @@ export default function ProjectDetail() {
     'overview'
   );
   const [billingSubTab, setBillingSubTab] = useState<'sov' | 'payapps'>('sov');
+  const [showModuleMenu, setShowModuleMenu] = useState(false);
   // SOV data is now loaded lazily by SOVSection component
 
   // Comments state
@@ -1146,8 +1147,8 @@ export default function ProjectDetail() {
 
             {/* Main Content - 55% */}
             <div style={styles.mainContentStyle} className="main-content">
-              {/* Tabs for Main Content */}
-              <div style={styles.tabContainerStyle}>
+              {/* Desktop Tabs for Main Content */}
+              <div style={styles.tabContainerStyle} className="desktop-tabs">
                 {(
                   [
                     { key: 'overview', label: 'Overview' },
@@ -1162,6 +1163,95 @@ export default function ProjectDetail() {
                     {tab.label}
                   </button>
                 ))}
+              </div>
+
+              {/* Mobile Floating Module Button */}
+              <div className="mobile-module-selector">
+                <button
+                  onClick={() => setShowModuleMenu(!showModuleMenu)}
+                  style={{
+                    position: 'fixed',
+                    bottom: 20,
+                    right: 20,
+                    zIndex: 1000,
+                    background: '#1e3a5f',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 56,
+                    height: 56,
+                    fontSize: 24,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {showModuleMenu ? '✕' : '☰'}
+                </button>
+
+                {showModuleMenu && (
+                  <div
+                    style={{
+                      position: 'fixed',
+                      bottom: 85,
+                      right: 20,
+                      zIndex: 1000,
+                      background: '#fff',
+                      border: '1px solid #e5dfd5',
+                      borderRadius: 12,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      minWidth: 200,
+                    }}
+                  >
+                    <button
+                      onClick={() => {
+                        setActiveTab('overview');
+                        setShowModuleMenu(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '14px 16px',
+                        background:
+                          activeTab === 'overview' ? '#f0ebe3' : 'transparent',
+                        color: colors.textPrimary,
+                        border: 'none',
+                        borderBottom: '1px solid #e5dfd5',
+                        textAlign: 'left',
+                        fontSize: 15,
+                        fontWeight: activeTab === 'overview' ? 600 : 400,
+                        cursor: 'pointer',
+                        borderTopLeftRadius: 12,
+                        borderTopRightRadius: 12,
+                      }}
+                    >
+                      📊 Overview
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveTab('billing');
+                        setShowModuleMenu(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '14px 16px',
+                        background:
+                          activeTab === 'billing' ? '#f0ebe3' : 'transparent',
+                        color: colors.textPrimary,
+                        border: 'none',
+                        textAlign: 'left',
+                        fontSize: 15,
+                        fontWeight: activeTab === 'billing' ? 600 : 400,
+                        cursor: 'pointer',
+                        borderBottomLeftRadius: 12,
+                        borderBottomRightRadius: 12,
+                      }}
+                    >
+                      💰 Billing
+                    </button>
+                  </div>
+                )}
               </div>
 
               {activeTab === 'overview' && (
