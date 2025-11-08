@@ -247,7 +247,7 @@ function MasterDataModal({
 
         <div
           style={{
-            border: '1px solid #e5e7eb',
+            border: '1px solid #e5dfd5',
             borderRadius: 8,
             overflow: 'hidden',
             display: 'flex',
@@ -256,7 +256,7 @@ function MasterDataModal({
         >
           <div
             style={{
-              background: '#f8fafc',
+              background: '#f0ebe3',
               padding: 8,
               fontSize: 12,
               color: '#334155',
@@ -279,7 +279,7 @@ function MasterDataModal({
                   gap: 8,
                   alignItems: 'center',
                   padding: 8,
-                  borderTop: '1px solid #e5e7eb',
+                  borderTop: '1px solid #e5dfd5',
                 }}
               >
                 {editingId === it.id ? (
@@ -418,7 +418,7 @@ function Popover({
         marginTop: 8,
         width: 220,
         background: '#fff',
-        border: '1px solid #e5e7eb',
+        border: '1px solid #e5dfd5',
         borderRadius: 8,
         boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
         overflow: 'hidden',
@@ -1066,7 +1066,7 @@ export default function ProjectsPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#f8fafc',
+          background: '#f5f1ea',
         }}
       >
         <div
@@ -1219,11 +1219,11 @@ export default function ProjectsPage() {
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               style={{
-                background: '#f1f5f9',
+                background: '#ebe5db',
                 color: '#0f172a',
                 padding: '10px 12px',
                 borderRadius: 6,
-                border: '1px solid #e2e8f0',
+                border: '1px solid #e5dfd5',
                 cursor: 'pointer',
                 fontSize: 16,
               }}
@@ -1237,15 +1237,15 @@ export default function ProjectsPage() {
                 type="button"
                 style={{
                   ...menuItemButton,
-                  background: '#2563eb',
+                  background: '#1e3a5f',
                   color: '#fff',
                   fontWeight: 600,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#1d4ed8';
+                  e.currentTarget.style.background = '#152d4a';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#2563eb';
+                  e.currentTarget.style.background = '#1e3a5f';
                 }}
                 onClick={() => {
                   setMenuOpen(false);
@@ -1257,7 +1257,7 @@ export default function ProjectsPage() {
               <div
                 style={{
                   height: 1,
-                  background: '#e2e8f0',
+                  background: '#e5dfd5',
                   margin: '4px 0',
                 }}
               />
@@ -1362,7 +1362,7 @@ export default function ProjectsPage() {
                   <div
                     style={{
                       height: 1,
-                      background: '#e2e8f0',
+                      background: '#e5dfd5',
                       margin: '4px 0',
                     }}
                   />
@@ -1557,9 +1557,9 @@ export default function ProjectsPage() {
                       });
                     }}
                     style={{
-                      background: '#f1f5f9',
+                      background: '#ebe5db',
                       color: '#334155',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid #e5dfd5',
                       borderRadius: 4,
                       padding: '4px 10px',
                       fontSize: 13,
@@ -1598,7 +1598,7 @@ export default function ProjectsPage() {
                     transition: 'background-color 0.15s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f8fafc';
+                    e.currentTarget.style.backgroundColor = '#f0ebe3';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';
@@ -1885,10 +1885,10 @@ export default function ProjectsPage() {
 const th: React.CSSProperties = {
   textAlign: 'left',
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
   cursor: 'pointer',
-  background: '#f1f5f9',
+  background: '#f0ebe3',
 };
 const thRight: React.CSSProperties = { ...th, textAlign: 'right' };
 const thCenter: React.CSSProperties = {
@@ -1915,7 +1915,7 @@ const thActions: React.CSSProperties = { ...thCenter, width: 80, minWidth: 80 };
 
 const td: React.CSSProperties = {
   padding: 8,
-  borderBottom: '1px solid #e5e7eb',
+  borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
 };
 const tdRight: React.CSSProperties = { ...td, textAlign: 'right' };
