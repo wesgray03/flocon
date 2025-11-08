@@ -1,7 +1,7 @@
 import {
-    ProjectTask,
-    Stage as StageType,
-    useProjectTasks,
+  ProjectTask,
+  Stage as StageType,
+  useProjectTasks,
 } from '@/lib/hooks/useProjectTasks';
 import { AlertTriangle, Pencil } from 'lucide-react';
 import { useEffect, useState } from 'react';
