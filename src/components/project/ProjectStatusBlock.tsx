@@ -162,7 +162,7 @@ export default function ProjectStatusBlock({
               padding: 0,
               background: 'transparent',
               border: 'none',
-              color: '#0369a1',
+              color: '#1e3a5f',
               textDecoration: 'underline',
               cursor: advancing ? 'not-allowed' : 'pointer',
               fontSize: 14,

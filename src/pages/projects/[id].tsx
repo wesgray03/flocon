@@ -698,7 +698,7 @@ export default function ProjectDetail() {
           <Link
             href="/projects"
             style={{
-              color: '#2563eb',
+              color: '#1e3a5f',
               textDecoration: 'none',
               fontSize: 14,
               marginBottom: 8,
@@ -740,7 +740,7 @@ export default function ProjectDetail() {
                       alignItems: 'center',
                       marginBottom: 16,
                       paddingBottom: 12,
-                      borderBottom: '2px solid #2563eb',
+                      borderBottom: '2px solid #1e3a5f',
                     }}
                   >
                     <h2
