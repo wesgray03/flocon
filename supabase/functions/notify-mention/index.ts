@@ -88,8 +88,11 @@ serve(async (req) => {
 
     // Send email to each mentioned user
     const emailPromises = users.map(async (user) => {
-      const appUrl = Deno.env.get('APP_URL') || 'https://floconapp.com';
+      const appUrl = Deno.env.get('APP_URL') || 'http://localhost:3000';
       const projectUrl = `${appUrl}/projects/${project_id}`;
+      
+      console.log(`Generating email for ${user.email}`);
+      console.log(`Project URL: ${projectUrl}`);
       
       const emailHtml = `
         <html>
