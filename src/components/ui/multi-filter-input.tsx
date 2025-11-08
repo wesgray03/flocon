@@ -159,6 +159,7 @@ export function MultiFilterInput({
         onFocus={() => setShowSuggestions(true)}
         className={cn('w-full', className)}
         placeholder={props.placeholder}
+        style={{ background: '#faf8f5', borderColor: '#e5dfd5' }}
         {...props}
       />
       {showSuggestions &&
