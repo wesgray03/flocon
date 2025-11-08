@@ -1231,6 +1231,7 @@ export default function ProjectsPage() {
           <div style={{ position: 'relative' }}>
             <button
               type="button"
+              className="projects-menu-button"
               onClick={() => setMenuOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={menuOpen}
