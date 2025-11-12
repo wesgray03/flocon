@@ -4,6 +4,7 @@ import { SharedMenu } from '@/components/layout/SharedMenu';
 import { CompaniesModal } from '@/components/modals/CompaniesModal';
 import { ContactsModal } from '@/components/modals/ContactsModal';
 import { LostReasonsModal } from '@/components/modals/LostReasonsModal';
+import { MasterDataModal } from '@/components/modals/MasterDataModal';
 import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import {
@@ -18,7 +19,7 @@ import {
 } from '@/lib/engagementUserRoles';
 import { supabase } from '@/lib/supabaseClient';
 import { colors } from '@/styles/theme';
-import { Folder, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Folder, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -85,6 +86,16 @@ export default function ProspectsPage() {
   const [showContactsModal, setShowContactsModal] = useState(false);
   const [showUsersModal, setShowUsersModal] = useState(false);
   const [showLostReasonsModal, setShowLostReasonsModal] = useState(false);
+
+  const [showMaster, setShowMaster] = useState<null | {
+    table: 'stages' | 'engagement_tasks';
+    label: string;
+  }>(null);
+  const openMaster = (table: 'stages' | 'engagement_tasks', label: string) => {
+    console.log('[openMaster] Called with:', { table, label });
+    setShowMaster({ table, label });
+  };
+  const closeMaster = () => setShowMaster(null);
 
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [loading, setLoading] = useState(true);
@@ -771,6 +782,9 @@ export default function ProspectsPage() {
         menuItems={
           <SharedMenu
             onClose={() => setMenuOpen(false)}
+            onOpenMasterData={(table, label) =>
+              openMaster(table as 'stages' | 'engagement_tasks', label)
+            }
             onOpenCompanies={(companyType, label) => {
               setCompaniesModal({ open: true, companyType, label });
             }}
@@ -1398,34 +1412,6 @@ export default function ProspectsPage() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>Status</label>
-                  <select
-                    name="active"
-                    value={form.active}
-                    onChange={handleChange}
-                    style={inputStyle}
-                  >
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>Lost Reason</label>
-                  <select
-                    name="lost_reason_id"
-                    value={form.lost_reason_id}
-                    onChange={handleChange}
-                    style={inputStyle}
-                  >
-                    <option value="">Not lost / Still pursuing</option>
-                    {lostReasons.map((reason) => (
-                      <option key={reason.id} value={reason.id}>
-                        {reason.reason}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
                   <label style={labelStyle}>SharePoint Folder URL</label>
                   <input
                     type="text"
@@ -1435,110 +1421,6 @@ export default function ProspectsPage() {
                     placeholder="https://..."
                     style={inputStyle}
                   />
-                </div>
-
-                {/* Trade editing section */}
-                <div
-                  style={{
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: 8,
-                    padding: 16,
-                    background: '#fff',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: 12,
-                    }}
-                  >
-                    <strong style={{ color: colors.textPrimary }}>
-                      Trades & Bid Breakdown
-                    </strong>
-                    <button
-                      type="button"
-                      onClick={addTradeLine}
-                      style={smallButtonStyle}
-                    >
-                      <Plus size={14} /> Add Trade
-                    </button>
-                  </div>
-                  {tradeLines.length === 0 && (
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: 13,
-                        color: colors.textMuted,
-                      }}
-                    >
-                      No trades added yet.
-                    </p>
-                  )}
-                  <div
-                    style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
-                  >
-                    {tradeLines.map((line, idx) => {
-                      return (
-                        <div
-                          key={idx}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 110px 34px',
-                            gap: 8,
-                            alignItems: 'center',
-                          }}
-                        >
-                          <select
-                            value={line.trade_id}
-                            onChange={(e) =>
-                              updateTradeLine(idx, { trade_id: e.target.value })
-                            }
-                            style={inputStyle}
-                          >
-                            <option value="">Select trade...</option>
-                            {tradeOptions.map((t) => (
-                              <option key={t.id} value={t.id}>
-                                {t.code} — {t.name}
-                              </option>
-                            ))}
-                          </select>
-                          <input
-                            type="number"
-                            min={0}
-                            step={1}
-                            value={line.amount}
-                            onChange={(e) =>
-                              updateTradeLine(idx, { amount: e.target.value })
-                            }
-                            placeholder="Amount"
-                            style={inputStyle}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeTradeLine(idx)}
-                            style={removeButtonStyle}
-                            title="Remove"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div
-                    style={{
-                      marginTop: 12,
-                      textAlign: 'right',
-                      fontSize: 13,
-                      color: colors.textSecondary,
-                    }}
-                  >
-                    <strong>
-                      Total Bid (Extended): {formatCurrency(modalExtended)}
-                    </strong>
-                  </div>
                 </div>
               </div>
 
@@ -1684,6 +1566,17 @@ export default function ProspectsPage() {
           open={showUsersModal}
           onClose={() => setShowUsersModal(false)}
         />
+      )}
+      {showMaster && (
+        <>
+          {console.log('[Render] MasterDataModal with:', showMaster)}
+          <MasterDataModal
+            open={true}
+            onClose={closeMaster}
+            table={showMaster.table}
+            label={showMaster.label}
+          />
+        </>
       )}
       {showLostReasonsModal && (
         <LostReasonsModal

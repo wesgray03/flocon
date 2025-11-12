@@ -4,6 +4,7 @@ import { SharedMenu } from '@/components/layout/SharedMenu';
 import { CompaniesModal } from '@/components/modals/CompaniesModal';
 import { ContactsModal } from '@/components/modals/ContactsModal';
 import { CommentsSection } from '@/components/project/CommentsSection';
+import { useMenuModals } from '@/hooks/useMenuModals';
 import {
   getPrimaryPartiesForEngagements,
   setPrimaryParty,
@@ -66,6 +67,9 @@ export default function ProspectDetailPage() {
 
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { menuCallbacks, renderModals } = useMenuModals(() => {
+    loadDropdownOptions();
+  });
   const [loading, setLoading] = useState(true);
   const [prospect, setProspect] = useState<Prospect | null>(null);
   const [partiesLoaded, setPartiesLoaded] = useState(false);
@@ -751,13 +755,7 @@ export default function ProspectDetailPage() {
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
         menuItems={
-          <SharedMenu
-            onClose={() => setMenuOpen(false)}
-            onOpenCompanies={(companyType, label) => {
-              setCompaniesModal({ open: true, companyType, label });
-            }}
-            onOpenContacts={() => setShowContactsModal(true)}
-          />
+          <SharedMenu onClose={() => setMenuOpen(false)} {...menuCallbacks} />
         }
       />
 
@@ -1748,6 +1746,8 @@ export default function ProspectDetailPage() {
           }}
         />
       )}
+
+      {renderModals()}
     </div>
   );
 }

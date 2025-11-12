@@ -1,6 +1,7 @@
 // pages/proposals/[id].tsx - Coming Soon Page for Proposals
 import { DashboardHeader } from '@/components/layout/DashboardHeader';
 import { SharedMenu } from '@/components/layout/SharedMenu';
+import { useMenuModals } from '@/hooks/useMenuModals';
 import {
   getPrimaryPartiesForEngagements,
   type PartyRole,
@@ -13,6 +14,7 @@ import { useEffect, useState } from 'react';
 export default function ProposalPage() {
   const router = useRouter();
   const { id } = router.query;
+  const { menuCallbacks, renderModals } = useMenuModals();
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [prospectName, setProspectName] = useState<string>('');
@@ -71,12 +73,7 @@ export default function ProposalPage() {
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
         menuItems={
-          <SharedMenu
-            onClose={() => setMenuOpen(false)}
-            onOpenCompanies={() => {}}
-            onOpenContacts={() => {}}
-            onOpenUsers={() => {}}
-          />
+          <SharedMenu onClose={() => setMenuOpen(false)} {...menuCallbacks} />
         }
       />
 
@@ -221,6 +218,11 @@ function PartyBadge({ label, value }: { label: string; value: string | null }) {
       <div style={{ fontSize: 14, fontWeight: 600, color: colors.textPrimary }}>
         {value || '—'}
       </div>
+    </div>
+  );
+}
+
+      {renderModals()}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { CommentsSection } from '@/components/project/CommentsSection';
 import ProjectStatusBlock from '@/components/project/ProjectStatusBlock';
 import type { Project } from '@/domain/projects/types';
 import { useProjectCore } from '@/domain/projects/useProjectCore';
+import { useMenuModals } from '@/hooks/useMenuModals';
 import {
   getPrimaryPartiesForEngagements,
   setPrimaryParty,
@@ -114,6 +115,9 @@ export default function ProjectDetail() {
   } = useProjectCore(id);
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const { menuCallbacks, renderModals } = useMenuModals(() => {
+    loadDropdownOptions();
+  });
   const [activeTab, setActiveTab] = useState<
     'overview' | 'billing' | 'changeorders'
   >('overview');
@@ -863,13 +867,7 @@ export default function ProjectDetail() {
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
         menuItems={
-          <SharedMenu
-            onClose={() => setMenuOpen(false)}
-            onOpenCompanies={(companyType, label) => {
-              setCompaniesModal({ open: true, companyType, label });
-            }}
-            onOpenContacts={() => setShowContactsModal(true)}
-          />
+          <SharedMenu onClose={() => setMenuOpen(false)} {...menuCallbacks} />
         }
       />
 
@@ -1362,3 +1360,8 @@ const DetailItem = ({
     <p style={styles.detailValueStyle}>{value || '—'}</p>
   </div>
 );
+
+      {renderModals()}
+    </div>
+  );
+}

@@ -102,7 +102,7 @@ function MasterDataModal({
             .order('order_num', { ascending: true }),
           supabase.from('stages').select('id, name'),
         ]);
-        
+
         if (tasksResult.error) {
           error = tasksResult.error;
           data = null;
@@ -1628,7 +1628,10 @@ export default function ProjectsPage() {
       <ContactsModal open={showContactsModal} onClose={closeContacts} />
       {/* Lost Reasons Modal */}
       {console.log('[Render] showLostReasonsModal:', showLostReasonsModal)}
-      <LostReasonsModal open={showLostReasonsModal} onClose={closeLostReasons} />
+      <LostReasonsModal
+        open={showLostReasonsModal}
+        onClose={closeLostReasons}
+      />
     </div>
   );
 }
