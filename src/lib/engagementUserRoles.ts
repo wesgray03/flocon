@@ -132,7 +132,17 @@ export async function setPrimaryUserRole(options: {
     .eq('engagement_id', engagementId)
     .eq('role', role)
     .eq('is_primary', true);
-  if (clearErr) throw clearErr;
+  if (clearErr) {
+    console.error('[setPrimaryUserRole] Clear error:', {
+      code: clearErr.code,
+      message: clearErr.message,
+      details: clearErr.details,
+      hint: clearErr.hint,
+      engagementId,
+      role,
+    });
+    throw clearErr;
+  }
 
   if (!userId) {
     // If null, we've cleared the primary and are done
@@ -155,7 +165,92 @@ export async function setPrimaryUserRole(options: {
       ],
       { onConflict: 'engagement_id,user_id,role' }
     );
-  if (upsertErr) throw upsertErr;
+
+  if (upsertErr) {
+    const needsFallback =
+      upsertErr.message?.includes(
+        'no unique or exclusion constraint matching the ON CONFLICT specification'
+      ) || upsertErr.code === 'PGRST204';
+
+    if (!needsFallback) {
+      console.error('[setPrimaryUserRole] Upsert error:', {
+        code: upsertErr.code,
+        message: upsertErr.message,
+        details: upsertErr.details,
+        hint: upsertErr.hint,
+        engagementId,
+        role,
+        userId,
+      });
+      throw upsertErr;
+    }
+
+    // Fallback path when unique constraint (engagement_id,user_id,role) not present in prod yet
+    const { data: existing, error: fetchErr } = await supabase
+      .from('engagement_user_roles')
+      .select('id')
+      .eq('engagement_id', engagementId)
+      .eq('user_id', userId)
+      .eq('role', role)
+      .limit(1)
+      .maybeSingle();
+    if (fetchErr) {
+      console.error('[setPrimaryUserRole] Fallback fetch error:', {
+        code: fetchErr.code,
+        message: fetchErr.message,
+        details: fetchErr.details,
+        hint: fetchErr.hint,
+        engagementId,
+        role,
+        userId,
+      });
+      throw fetchErr;
+    }
+
+    if (existing) {
+      const { error: updateErr } = await supabase
+        .from('engagement_user_roles')
+        .update({ is_primary: true, assigned_by: assignedBy, notes })
+        .eq('id', existing.id);
+      if (updateErr) {
+        console.error('[setPrimaryUserRole] Fallback update error:', {
+          code: updateErr.code,
+          message: updateErr.message,
+          details: updateErr.details,
+          hint: updateErr.hint,
+          engagementId,
+          role,
+          existingId: existing.id,
+        });
+        throw updateErr;
+      }
+    } else {
+      const { error: insertErr } = await supabase
+        .from('engagement_user_roles')
+        .insert([
+          {
+            engagement_id: engagementId,
+            user_id: userId,
+            role,
+            is_primary: true,
+            assigned_by: assignedBy,
+            notes,
+          },
+        ]);
+      if (insertErr) {
+        console.error('[setPrimaryUserRole] Fallback insert error:', {
+          code: insertErr.code,
+          message: insertErr.message,
+          details: insertErr.details,
+          hint: insertErr.hint,
+          engagementId,
+          role,
+          userId,
+        });
+        throw insertErr;
+      }
+    }
+  }
 }
 
 // Convenience: sync common user roles

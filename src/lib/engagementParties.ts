@@ -131,14 +131,24 @@ export async function setPrimaryParty(options: {
     .eq('engagement_id', engagementId)
     .eq('role', role)
     .eq('is_primary', true);
-  if (clearErr) throw clearErr;
+  if (clearErr) {
+    console.error('[setPrimaryParty] Clear error:', {
+      code: clearErr.code,
+      message: clearErr.message,
+      details: clearErr.details,
+      hint: clearErr.hint,
+      engagementId,
+      role,
+    });
+    throw clearErr;
+  }
 
   if (!partyId) {
     // If null, we've cleared the primary and are done
     return;
   }
 
-  // Upsert the specific party-role and set as primary
+  // Attempt upsert first (preferred path when proper unique constraint exists)
   const { error: upsertErr } = await supabase.from('engagement_parties').upsert(
     [
       {
@@ -152,7 +162,95 @@ export async function setPrimaryParty(options: {
     ],
     { onConflict: 'engagement_id,party_id,role' }
   );
-  if (upsertErr) throw upsertErr;
+
+  if (upsertErr) {
+    const needsFallback =
+      upsertErr.message?.includes(
+        'no unique or exclusion constraint matching the ON CONFLICT specification'
+      ) || upsertErr.code === 'PGRST204';
+
+    if (!needsFallback) {
+      console.error('[setPrimaryParty] Upsert error:', {
+        code: upsertErr.code,
+        message: upsertErr.message,
+        details: upsertErr.details,
+        hint: upsertErr.hint,
+        engagementId,
+        role,
+        partyType,
+        partyId,
+      });
+      throw upsertErr;
+    }
+
+    // Fallback for production environments missing the unique (engagement_id,party_id,role) constraint.
+    // 1. Try to update existing row
+    const { data: existing, error: fetchErr } = await supabase
+      .from('engagement_parties')
+      .select('id')
+      .eq('engagement_id', engagementId)
+      .eq('party_type', partyType)
+      .eq('party_id', partyId)
+      .eq('role', role)
+      .limit(1)
+      .maybeSingle();
+    if (fetchErr) {
+      console.error('[setPrimaryParty] Fallback fetch error:', {
+        code: fetchErr.code,
+        message: fetchErr.message,
+        details: fetchErr.details,
+        hint: fetchErr.hint,
+        engagementId,
+        role,
+      });
+      throw fetchErr;
+    }
+
+    if (existing) {
+      const { error: updateErr } = await supabase
+        .from('engagement_parties')
+        .update({ is_primary: true, notes })
+        .eq('id', existing.id);
+      if (updateErr) {
+        console.error('[setPrimaryParty] Fallback update error:', {
+          code: updateErr.code,
+          message: updateErr.message,
+          details: updateErr.details,
+          hint: updateErr.hint,
+          engagementId,
+          role,
+          existingId: existing.id,
+        });
+        throw updateErr;
+      }
+    } else {
+      const { error: insertErr } = await supabase
+        .from('engagement_parties')
+        .insert([
+          {
+            engagement_id: engagementId,
+            party_type: partyType,
+            party_id: partyId,
+            role,
+            is_primary: true,
+            notes,
+          },
+        ]);
+      if (insertErr) {
+        console.error('[setPrimaryParty] Fallback insert error:', {
+          code: insertErr.code,
+          message: insertErr.message,
+          details: insertErr.details,
+          hint: insertErr.hint,
+          engagementId,
+          role,
+          partyType,
+          partyId,
+        });
+        throw insertErr;
+      }
+    }
+  }
 }
 
 // Convenience: sync three common roles based on optional IDs
