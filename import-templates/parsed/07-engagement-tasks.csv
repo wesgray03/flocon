@@ -1,0 +1,36 @@
+id,name,stage_id,order_num
+0a73b484-28e9-473c-8f47-2fbcf99b438f,Project Moved to Archive,bc24a36b-414a-4552-9542-63571623d9e2,1
+0bc68628-762c-4476-a0be-598637b6080d,Installation Finished,758869ae-1dd9-4599-8108-8b4ee9732f48,1
+0dffc969-b57d-47b2-9c05-3c099953f1b1,Material Received,c73876ec-eee7-461b-ab5b-1bbab8fdaa30,1
+10ed670b-0622-4cee-a6d4-4a12a8ab3acc,Contract Reconciled (PM),e149937b-bd12-430a-a11c-45931ec395ab,1
+1572d040-d715-46c6-b18d-d8e078a55a1e,Submital Literature Approved,5d521457-7aa8-4af4-8d20-a5ab7670e87f,1
+16ed7949-f50f-4e83-b664-dc9c47a5483c,Foreman Assigned,758869ae-1dd9-4599-8108-8b4ee9732f48,1
+2153d2ff-b243-492a-b738-bf904f9e747e,Final Billing Sent,8cbc4d48-0b15-4df8-9040-659642080d5c,1
+224b5083-f342-408b-935a-036b0765c48f,Work Order Issued,758869ae-1dd9-4599-8108-8b4ee9732f48,1
+25fd9c7b-d6ca-4741-9354-357018696f5a,Contract Sent for Customer Signature,e149937b-bd12-430a-a11c-45931ec395ab,1
+26046422-123d-42d2-91d8-57ed722ed427,SOV Created,3a585396-96b5-473b-bb31-fa8061da1295,1
+2bf502ef-0d94-4067-8716-cc4f957f0c3c,Warranty & Maintenance Sent,8cbc4d48-0b15-4df8-9040-659642080d5c,1
+3acaf05e-c1dd-4808-becc-bfe3aa66cc60,PM Review,0b1ba5b1-7fa6-49f2-a049-69367c0fb71a,1
+4695fc2b-a812-4935-8c05-78b8daa86a5b,Final Billing Received,df92729c-602f-44cf-90ba-e16e73d73602,2
+47054612-1bac-43a9-99e6-95cfdd020d11,Subcontractor Assigned,758869ae-1dd9-4599-8108-8b4ee9732f48,2
+5c7a50f8-81c5-4169-a9ab-0874801dd7b8,Insurance on File,e149937b-bd12-430a-a11c-45931ec395ab,2
+62635a00-52d1-406e-bf2d-076f9309a80d,Shop Drawing Approved,5d521457-7aa8-4af4-8d20-a5ab7670e87f,2
+6fd25a92-1d65-4221-9491-60bfa14d915e,Project Closed in QuickBooks,bc24a36b-414a-4552-9542-63571623d9e2,2
+72f5129f-339b-4883-bb5c-aa9b069c8eb2,Samples Approved,5d521457-7aa8-4af4-8d20-a5ab7670e87f,2
+77b2db5f-43ed-448d-a16e-0f3a0086dc31,Bonus Calculated,56510b85-e88a-4228-b17f-a233284deb82,2
+91392e39-80f8-4598-92aa-a5e097978fa5,GC Docs Completed,e149937b-bd12-430a-a11c-45931ec395ab,2
+980594a6-d211-489e-acaa-4b8d4504cfb5,Shop Drawing Submitted,5d521457-7aa8-4af4-8d20-a5ab7670e87f,2
+98de312a-d80f-4dab-8442-5e597f22013e,Submittal Literature Submitted,5d521457-7aa8-4af4-8d20-a5ab7670e87f,2
+a1a1af7e-376a-4396-9e03-9c0bdd69f26f,Material Ordered,c73876ec-eee7-461b-ab5b-1bbab8fdaa30,2
+a5b077f0-fac1-417c-8afa-bb1532dcd335,Contract Signed (FUN),e149937b-bd12-430a-a11c-45931ec395ab,2
+a9a77d9a-a7fa-4556-a528-ecb5979898ae,Punch List Complete,4db5edf1-6ee5-4d8a-96a1-2631a6e99909,3
+b5167719-a83a-4c65-8764-733b287ad6d2,Samples Submitted,5d521457-7aa8-4af4-8d20-a5ab7670e87f,3
+bfc74f75-3df0-415b-ba35-db6b8e4145af,Sundries Ordered,c73876ec-eee7-461b-ab5b-1bbab8fdaa30,3
+c2b10fae-340f-4cb2-954a-7887bdfddb5e,Contract Draft Received,e149937b-bd12-430a-a11c-45931ec395ab,3
+d76eea0f-27c8-404a-ac49-0feb2f64b41d,Final Lien Release Executed,df92729c-602f-44cf-90ba-e16e73d73602,4
+d7c5f68e-53ce-46c6-b0b6-84b7d137e475,CFO Review,0b1ba5b1-7fa6-49f2-a049-69367c0fb71a,4
+dec79e7c-64cc-416e-af5e-53f2c8f5db4d,Punch List ReceIved,4db5edf1-6ee5-4d8a-96a1-2631a6e99909,5
+e1d7e9e6-f947-4213-8e10-209eb9340a66,Installation Started,758869ae-1dd9-4599-8108-8b4ee9732f48,5
+e737ad11-c61a-4c81-9032-ea97c6dcbd9a,Recap Created,3a585396-96b5-473b-bb31-fa8061da1295,6
+e95fdfef-40fe-44fd-b3a3-c5ed76b0dd63,Contract Returned and Executed,e149937b-bd12-430a-a11c-45931ec395ab,6
+f2f6408f-6293-44f5-bd01-9becd7bff117,Payment Scheduled,56510b85-e88a-4228-b17f-a233284deb82,7

@@ -34,14 +34,79 @@ export async function getPrimaryUserRolesForEngagements(
   roles: UserRole[]
 ): Promise<EngagementUserRoleDetailed[]> {
   if (engagementIds.length === 0) return [];
-  const { data, error } = await supabase
-    .from('engagement_user_roles_detailed')
+
+  // Fetch user roles first
+  const { data: userRoles, error: rolesError } = await supabase
+    .from('engagement_user_roles')
     .select('*')
     .in('engagement_id', engagementIds)
     .in('role', roles)
     .eq('is_primary', true);
-  if (error) throw error;
-  return (data ?? []) as EngagementUserRoleDetailed[];
+
+  if (rolesError) throw rolesError;
+  if (!userRoles || userRoles.length === 0) return [];
+
+  // Get unique IDs for related data
+  const userIds = [...new Set(userRoles.map((r) => r.user_id))];
+  const assignedByIds = [
+    ...new Set(userRoles.map((r) => r.assigned_by).filter(Boolean)),
+  ];
+
+  // Fetch engagements, users, and assigned_by users in parallel
+  const [engagementsRes, usersRes, assignedByUsersRes] = await Promise.all([
+    supabase
+      .from('engagements')
+      .select('id, name, type')
+      .in('id', engagementIds),
+    supabase
+      .from('users')
+      .select('id, name, email, user_type')
+      .in('id', userIds),
+    assignedByIds.length > 0
+      ? supabase.from('users').select('id, name').in('id', assignedByIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (engagementsRes.error) throw engagementsRes.error;
+  if (usersRes.error) throw usersRes.error;
+  if (assignedByUsersRes.error) throw assignedByUsersRes.error;
+
+  // Build lookup maps
+  const engagementsMap = new Map(
+    (engagementsRes.data || []).map((e) => [e.id, e])
+  );
+  const usersMap = new Map((usersRes.data || []).map((u) => [u.id, u]));
+  const assignedByMap = new Map(
+    (assignedByUsersRes.data || []).map((u) => [u.id, u])
+  );
+
+  // Map to detailed format
+  return userRoles.map((role) => {
+    const engagement = engagementsMap.get(role.engagement_id);
+    const user = usersMap.get(role.user_id);
+    const assignedByUser = role.assigned_by
+      ? assignedByMap.get(role.assigned_by)
+      : null;
+
+    return {
+      id: role.id,
+      engagement_id: role.engagement_id,
+      user_id: role.user_id,
+      role: role.role as UserRole,
+      is_primary: role.is_primary,
+      assigned_at: role.assigned_at,
+      assigned_by: role.assigned_by,
+      notes: role.notes,
+      created_at: role.created_at,
+      updated_at: role.updated_at,
+      engagement_name: engagement?.name || '',
+      engagement_type: engagement?.type || '',
+      user_name: user?.name || '',
+      user_email: user?.email || '',
+      user_type: user?.user_type || '',
+      assigned_by_name: assignedByUser?.name || null,
+    };
+  }) as EngagementUserRoleDetailed[];
 }
 
 // Set primary user for a role, clearing any previous primary
@@ -138,14 +203,75 @@ export async function syncCoreUserRoles(params: {
 export async function getEngagementUsers(
   engagementId: string
 ): Promise<EngagementUserRoleDetailed[]> {
-  const { data, error } = await supabase
-    .from('engagement_user_roles_detailed')
+  // Fetch user roles first
+  const { data: userRoles, error: rolesError } = await supabase
+    .from('engagement_user_roles')
     .select('*')
     .eq('engagement_id', engagementId)
     .order('role', { ascending: true })
     .order('is_primary', { ascending: false });
-  if (error) throw error;
-  return (data ?? []) as EngagementUserRoleDetailed[];
+
+  if (rolesError) throw rolesError;
+  if (!userRoles || userRoles.length === 0) return [];
+
+  // Get unique IDs for related data
+  const userIds = [...new Set(userRoles.map((r) => r.user_id))];
+  const assignedByIds = [
+    ...new Set(userRoles.map((r) => r.assigned_by).filter(Boolean)),
+  ];
+
+  // Fetch engagement, users, and assigned_by users in parallel
+  const [engagementRes, usersRes, assignedByUsersRes] = await Promise.all([
+    supabase
+      .from('engagements')
+      .select('id, name, type')
+      .eq('id', engagementId)
+      .single(),
+    supabase
+      .from('users')
+      .select('id, name, email, user_type')
+      .in('id', userIds),
+    assignedByIds.length > 0
+      ? supabase.from('users').select('id, name').in('id', assignedByIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (engagementRes.error) throw engagementRes.error;
+  if (usersRes.error) throw usersRes.error;
+  if (assignedByUsersRes.error) throw assignedByUsersRes.error;
+
+  // Build lookup maps
+  const usersMap = new Map((usersRes.data || []).map((u) => [u.id, u]));
+  const assignedByMap = new Map(
+    (assignedByUsersRes.data || []).map((u) => [u.id, u])
+  );
+
+  // Map to detailed format
+  return userRoles.map((role) => {
+    const user = usersMap.get(role.user_id);
+    const assignedByUser = role.assigned_by
+      ? assignedByMap.get(role.assigned_by)
+      : null;
+
+    return {
+      id: role.id,
+      engagement_id: role.engagement_id,
+      user_id: role.user_id,
+      role: role.role as UserRole,
+      is_primary: role.is_primary,
+      assigned_at: role.assigned_at,
+      assigned_by: role.assigned_by,
+      notes: role.notes,
+      created_at: role.created_at,
+      updated_at: role.updated_at,
+      engagement_name: engagementRes.data?.name || '',
+      engagement_type: engagementRes.data?.type || '',
+      user_name: user?.name || '',
+      user_email: user?.email || '',
+      user_type: user?.user_type || '',
+      assigned_by_name: assignedByUser?.name || null,
+    };
+  }) as EngagementUserRoleDetailed[];
 }
 
 // Add a non-primary user to an engagement
