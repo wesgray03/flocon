@@ -105,7 +105,7 @@ SELECT
   s.order as stage_order,
   COUNT(e.id) as project_count
 FROM stages s
-LEFT JOIN engagements e ON e.current_stage_id = s.id AND e.type = 'project'
+LEFT JOIN engagements e ON e.stage_id = s.id AND e.type = 'project'
 GROUP BY s.id, s.name, s.order
 ORDER BY s.order;
 
@@ -179,14 +179,14 @@ SELECT
   type,
   CASE 
     WHEN type IS NULL THEN 'Missing type'
-    WHEN current_stage_id IS NULL AND type = 'project' THEN 'Missing stage (project)'
+  WHEN stage_id IS NULL AND type = 'project' THEN 'Missing stage (project)'
     WHEN name IS NULL OR name = '' THEN 'Missing name'
     ELSE 'Other issue'
   END as issue
 FROM engagements
 WHERE 
   type IS NULL 
-  OR (current_stage_id IS NULL AND type = 'project')
+  OR (stage_id IS NULL AND type = 'project')
   OR name IS NULL 
   OR name = '';
 

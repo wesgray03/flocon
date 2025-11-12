@@ -664,15 +664,26 @@ export default function ProjectDetail() {
             project.id
           ) {
             try {
+              // Query directly with join instead of using view
               const { data: s2 } = await supabase
-                .from('engagement_parties_detailed')
-                .select('party_name')
+                .from('engagement_parties')
+                .select(`
+                  party_type,
+                  contacts(name),
+                  companies(name)
+                `)
                 .eq('engagement_id', project.id)
                 .eq('role', 'superintendent')
                 .eq('is_primary', true)
                 .maybeSingle();
-              if (s2?.party_name) {
-                updatedProjectData.superintendent = s2.party_name;
+              
+              if (s2) {
+                const partyName = s2.party_type === 'contact' 
+                  ? (s2.contacts as any)?.name 
+                  : (s2.companies as any)?.name;
+                if (partyName) {
+                  updatedProjectData.superintendent = partyName;
+                }
               }
             } catch {}
           }

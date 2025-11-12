@@ -39,14 +39,47 @@ export async function getPrimaryPartiesForEngagements(
   roles: PartyRole[]
 ): Promise<EngagementPartyDetailed[]> {
   if (engagementIds.length === 0) return [];
+  
+  // Query directly with joins instead of using view
   const { data, error } = await supabase
-    .from('engagement_parties_detailed')
-    .select('*')
+    .from('engagement_parties')
+    .select(`
+      id,
+      engagement_id,
+      party_type,
+      party_id,
+      role,
+      is_primary,
+      notes,
+      created_at,
+      updated_at,
+      engagements!inner(name),
+      contacts(name, email, phone, company_type:contact_type),
+      companies(name, email, phone, company_type)
+    `)
     .in('engagement_id', engagementIds)
     .in('role', roles)
     .eq('is_primary', true);
+  
   if (error) throw error;
-  return (data ?? []) as EngagementPartyDetailed[];
+  
+  // Map to the detailed format
+  return (data ?? []).map((row: any) => ({
+    id: row.id,
+    engagement_id: row.engagement_id,
+    party_type: row.party_type,
+    party_id: row.party_id,
+    role: row.role,
+    is_primary: row.is_primary,
+    notes: row.notes,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    engagement_name: row.engagements?.name || '',
+    party_name: row.party_type === 'contact' ? row.contacts?.name : row.companies?.name,
+    party_email: row.party_type === 'contact' ? row.contacts?.email : row.companies?.email,
+    party_phone: row.party_type === 'contact' ? row.contacts?.phone : row.companies?.phone,
+    company_type: row.party_type === 'contact' ? row.contacts?.company_type : row.companies?.company_type,
+  })) as EngagementPartyDetailed[];
 }
 
 // Set primary party for a role, clearing any previous primary

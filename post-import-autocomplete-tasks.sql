@@ -4,6 +4,7 @@
 -- This will create engagement_task_completion records for all tasks
 -- up to and including the current stage of each engagement
 
+-- NOTE: Production schema uses engagements.stage_id (not current_stage_id)
 WITH stage_order AS (
   -- Get stage order numbers
   SELECT id, "order" as stage_order FROM stages
@@ -12,10 +13,10 @@ engagement_current_stage AS (
   -- Get each engagement's current stage order
   SELECT 
     e.id as engagement_id,
-    e.current_stage_id,
+    e.stage_id as current_stage_id,
     so.stage_order as current_stage_order
   FROM engagements e
-  JOIN stage_order so ON e.current_stage_id = so.id
+  JOIN stage_order so ON e.stage_id = so.id
   WHERE e.type = 'project' -- Only auto-complete for projects, not prospects
 ),
 tasks_to_complete AS (
@@ -61,7 +62,7 @@ SELECT
   COUNT(*) as tasks_completed
 FROM engagement_task_completion etc
 JOIN engagements e ON etc.engagement_id = e.id
-JOIN stages s ON e.current_stage_id = s.id
+JOIN stages s ON e.stage_id = s.id
 WHERE etc.completed_at > NOW() - INTERVAL '1 minute' -- Just created
 GROUP BY e.name, s.name
 ORDER BY e.name;
