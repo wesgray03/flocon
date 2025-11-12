@@ -10,6 +10,7 @@ import { DashboardHeader } from '@/components/layout/DashboardHeader';
 import { SharedMenu } from '@/components/layout/SharedMenu';
 import { CompaniesModal } from '@/components/modals/CompaniesModal';
 import { ContactsModal } from '@/components/modals/ContactsModal';
+import { LostReasonsModal } from '@/components/modals/LostReasonsModal';
 import { UsersModal } from '@/components/modals/UsersModal';
 import { StageBadge } from '@/components/project/StageBadge';
 import { ProjectsTable } from '@/components/projects/ProjectsTable';
@@ -94,24 +95,31 @@ function MasterDataModal({
       let data, error;
       if (table === 'engagement_tasks') {
         // Load engagement_tasks with stage information
-        const result = await supabase
-          .from('engagement_tasks')
-          .select('id, name, stage_id, stages(name)')
-          .order('order_num', { ascending: true });
-        data = result.data;
-        error = result.error;
-        // Transform to include stage_name
-        if (data) {
-          data = data.map((task: TaskData) => {
-            const stageName = Array.isArray(task.stages)
-              ? task.stages[0]?.name
-              : task.stages?.name;
-            return {
-              id: task.id,
-              name: task.name,
-              stage_name: stageName || 'Unknown Stage',
-            };
-          });
+        const [tasksResult, stagesResult] = await Promise.all([
+          supabase
+            .from('engagement_tasks')
+            .select('id, name, stage_id')
+            .order('order_num', { ascending: true }),
+          supabase.from('stages').select('id, name'),
+        ]);
+        
+        if (tasksResult.error) {
+          error = tasksResult.error;
+          data = null;
+        } else if (stagesResult.error) {
+          error = stagesResult.error;
+          data = null;
+        } else {
+          // Build stage lookup
+          const stagesMap = new Map(
+            (stagesResult.data || []).map((s) => [s.id, s.name])
+          );
+          // Join manually
+          data = (tasksResult.data || []).map((task) => ({
+            id: task.id,
+            name: task.name,
+            stage_name: stagesMap.get(task.stage_id) || 'Unknown Stage',
+          }));
         }
       } else {
         const result = await supabase
@@ -419,7 +427,10 @@ export default function ProjectsPage() {
       | 'engagement_tasks'
       | 'subcontractors',
     label: string
-  ) => setShowMaster({ table, label });
+  ) => {
+    console.log('[openMaster] Called with:', { table, label });
+    setShowMaster({ table, label });
+  };
   const closeMaster = () => setShowMaster(null);
 
   const [showUsersModal, setShowUsersModal] = useState(false);
@@ -434,6 +445,9 @@ export default function ProjectsPage() {
 
   const [showContactsModal, setShowContactsModal] = useState(false);
   const closeContacts = () => setShowContactsModal(false);
+
+  const [showLostReasonsModal, setShowLostReasonsModal] = useState(false);
+  const closeLostReasons = () => setShowLostReasonsModal(false);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -759,6 +773,7 @@ export default function ProjectsPage() {
             }}
             onOpenContacts={() => setShowContactsModal(true)}
             onOpenUsers={() => setShowUsersModal(true)}
+            onOpenLostReasons={() => setShowLostReasonsModal(true)}
           />
         }
         actionButton={
@@ -1581,12 +1596,15 @@ export default function ProjectsPage() {
 
       {/* Master Data modal (Customers/Managers/Owners/Stages) */}
       {showMaster && (
-        <MasterDataModal
-          open={true}
-          onClose={closeMaster}
-          table={showMaster.table}
-          label={showMaster.label}
-        />
+        <>
+          {console.log('[Render] MasterDataModal with:', showMaster)}
+          <MasterDataModal
+            open={true}
+            onClose={closeMaster}
+            table={showMaster.table}
+            label={showMaster.label}
+          />
+        </>
       )}
 
       {/* Companies Modal */}
@@ -1603,9 +1621,14 @@ export default function ProjectsPage() {
       )}
 
       {/* Users Modal */}
+      {console.log('[Render] showUsersModal:', showUsersModal)}
       <UsersModal open={showUsersModal} onClose={closeUsers} />
       {/* Contacts Modal */}
+      {console.log('[Render] showContactsModal:', showContactsModal)}
       <ContactsModal open={showContactsModal} onClose={closeContacts} />
+      {/* Lost Reasons Modal */}
+      {console.log('[Render] showLostReasonsModal:', showLostReasonsModal)}
+      <LostReasonsModal open={showLostReasonsModal} onClose={closeLostReasons} />
     </div>
   );
 }
