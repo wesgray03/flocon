@@ -179,7 +179,7 @@ export default function ProspectsPage() {
         new Set(
           prospects
             .map((p) => p.estimating_type)
-            .filter((v): v is string => !!v)
+            .filter((v): v is 'Budget' | 'Construction' => !!v)
         )
       ),
       probability_level: Array.from(
@@ -1020,7 +1020,8 @@ export default function ProspectsPage() {
                           contact: [],
                           owner: [],
                           architect: [],
-                          probability: [],
+                          estimating_type: [],
+                          probability_level: [],
                         })
                       }
                       style={{
