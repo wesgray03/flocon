@@ -3,17 +3,24 @@ import { colors } from '@/styles/theme';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+type ContactType =
+  | 'Project Manager'
+  | 'Superintendent'
+  | 'Estimator'
+  | 'Accounting'
+  | 'Architect';
+
 interface Contact {
   id: string;
   name: string;
   email: string;
   phone: string | null;
-  contact_type: string;
-  customer_id: string | null;
-  customer_name?: string;
+  contact_type: ContactType;
+  company_id: string | null;
+  customer_name?: string | null;
 }
 
-interface Customer {
+interface Company {
   id: string;
   name: string;
 }
@@ -25,64 +32,70 @@ interface ContactsModalProps {
 
 export function ContactsModal({ open, onClose }: ContactsModalProps) {
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    contact_type: ContactType;
+    company_id: string;
+  }>({
     name: '',
     email: '',
     phone: '',
-    contact_type: 'Project Manager' as
-      | 'Project Manager'
-      | 'Superintendent'
-      | 'Estimator'
-      | 'Accounting'
-      | 'Other',
-    customer_id: '',
+    contact_type: 'Project Manager',
+    company_id: '',
   });
 
   const load = async () => {
-    setLoading(true);
     setLoadError(null);
     try {
-      const [contactsRes, customersRes] = await Promise.all([
+      const [contactsRes, companiesRes] = await Promise.all([
         supabase
           .from('contacts')
-          .select(
-            'id, name, email, phone, contact_type, customer_id, customers(name)'
-          )
+          .select('id, name, email, phone, contact_type, company_id')
           .order('name', { ascending: true }),
         supabase
-          .from('customers')
+          .from('companies')
           .select('id, name')
           .order('name', { ascending: true }),
       ]);
 
       if (contactsRes.error) throw contactsRes.error;
-      if (customersRes.error) throw customersRes.error;
+      if (companiesRes.error) throw companiesRes.error;
 
-      const contactsData = (contactsRes.data ?? []).map((c: any) => ({
-        ...c,
-        customer_name: c.customers?.name ?? null,
+      // Create a map of company IDs to names
+      const companyMap = new Map<string, string>(
+        (companiesRes.data ?? []).map((c: Company) => [c.id, c.name])
+      );
+
+      const contactsData: Contact[] = (contactsRes.data ?? []).map((c) => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        phone: c.phone,
+        contact_type: c.contact_type as ContactType,
+        company_id: c.company_id,
+        customer_name: c.company_id
+          ? (companyMap.get(c.company_id) ?? null)
+          : null,
       }));
 
       setContacts(contactsData);
-      setCustomers(customersRes.data ?? []);
-    } catch (err: any) {
+      setCompanies(companiesRes.data ?? []);
+    } catch (err: unknown) {
       console.error('Contacts load error:', err);
-      setLoadError(err?.message ?? String(err));
-      setContacts([]);
-      setCustomers([]);
-    } finally {
-      setLoading(false);
+      const message = err instanceof Error ? err.message : String(err);
+      setLoadError(message);
+      setCompanies([]);
     }
   };
 
   useEffect(() => {
     if (open) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {
@@ -100,7 +113,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
       email: '',
       phone: '',
       contact_type: 'Project Manager',
-      customer_id: '',
+      company_id: '',
     });
     setEditingId(null);
     setShowForm(false);
@@ -117,16 +130,19 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
       name: contact.name,
       email: contact.email,
       phone: contact.phone || '',
-      contact_type: contact.contact_type as any,
-      customer_id: contact.customer_id || '',
+      contact_type: contact.contact_type,
+      company_id: contact.company_id || '',
     });
     setShowForm(true);
   };
 
   const save = async () => {
-    const { name, email, contact_type, customer_id } = formData;
+    const { name, email, contact_type, company_id } = formData;
     if (!name.trim() || !email.trim()) {
       return alert('Name and email are required');
+    }
+    if (!company_id) {
+      return alert('Company is required');
     }
 
     try {
@@ -135,7 +151,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
         email: email.trim(),
         phone: formData.phone.trim() || null,
         contact_type,
-        customer_id: customer_id || null,
+        company_id: company_id,
       };
 
       if (editingId) {
@@ -150,19 +166,35 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
       }
       await load();
       resetForm();
-    } catch (err: any) {
-      alert(`Save contact error: ${err?.message ?? err}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      alert(`Save contact error: ${message}`);
     }
   };
 
   const remove = async (id: string) => {
     if (!confirm('Delete this contact?')) return;
     try {
+      // Guard: block deleting a contact referenced by any engagement
+      const { count, error: usageErr } = await supabase
+        .from('engagement_parties')
+        .select('id', { count: 'exact', head: true })
+        .eq('party_type', 'contact')
+        .eq('party_id', id);
+      if (usageErr) throw usageErr;
+      if ((count ?? 0) > 0) {
+        alert(
+          'Cannot delete this contact because it is linked to one or more engagements. Remove those links first.'
+        );
+        return;
+      }
+
       const { error } = await supabase.from('contacts').delete().eq('id', id);
       if (error) throw error;
       await load();
-    } catch (err: any) {
-      alert(`Delete contact error: ${err?.message ?? err}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      alert(`Delete contact error: ${message}`);
     }
   };
 
@@ -216,7 +248,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
                 onChange={(e) =>
                   setFormData((s) => ({
                     ...s,
-                    contact_type: e.target.value as any,
+                    contact_type: e.target.value as ContactType,
                   }))
                 }
                 style={styles.input}
@@ -225,17 +257,18 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
                 <option value="Superintendent">Superintendent</option>
                 <option value="Estimator">Estimator</option>
                 <option value="Accounting">Accounting</option>
-                <option value="Other">Other</option>
+                <option value="Architect">Architect</option>
               </select>
               <select
-                value={formData.customer_id}
+                value={formData.company_id}
                 onChange={(e) =>
-                  setFormData((s) => ({ ...s, customer_id: e.target.value }))
+                  setFormData((s) => ({ ...s, company_id: e.target.value }))
                 }
                 style={styles.input}
+                required
               >
-                <option value="">Unassigned customer…</option>
-                {customers.map((c) => (
+                <option value="">-- Select Company (Required) --</option>
+                {companies.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>
@@ -259,7 +292,9 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
           </div>
         )}
 
-        {loadError && <p style={{ color: colors.logoRed }}>Error: {loadError}</p>}
+        {loadError && (
+          <p style={{ color: colors.logoRed }}>Error: {loadError}</p>
+        )}
 
         <div style={{ maxHeight: 720, overflowY: 'auto' }}>
           <table style={styles.table}>
@@ -280,9 +315,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
                   <td style={styles.td}>{contact.email}</td>
                   <td style={styles.td}>{contact.phone || '—'}</td>
                   <td style={styles.td}>
-                    <span
-                      style={getContactTypeBadgeStyle(contact.contact_type)}
-                    >
+                    <span style={getContactTypeBadgeStyle()}>
                       {contact.contact_type}
                     </span>
                   </td>
@@ -328,7 +361,7 @@ export function ContactsModal({ open, onClose }: ContactsModalProps) {
   );
 }
 
-function getContactTypeBadgeStyle(type: string): React.CSSProperties {
+function getContactTypeBadgeStyle(): React.CSSProperties {
   return {
     padding: '4px 8px',
     borderRadius: 4,

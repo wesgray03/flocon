@@ -1,0 +1,15 @@
+name,id,company_type,is_customer,is_vendor,is_subcontractor
+JE Dunn Construction,65c239f9-2470-480d-9cf0-ad198087ca08,Contractor,TRUE,FALSE,FALSE
+"Aagaard-Juergensen, LLC",4398923e-ecab-49f4-b69f-f1b1db1cda80,Contractor,TRUE,FALSE,FALSE
+"D.F. Chase, Inc.",fda317ab-70e1-4a09-96e4-a9206b322aa2,Contractor,TRUE,FALSE,FALSE
+"Reliable Service, LLC",b9ed0b05-51f4-4c80-8a33-904432edcbd1,Contractor,TRUE,FALSE,FALSE
+DPR Construction,ec1eb205-a1c0-42e4-83bf-6929d2308a45,Contractor,TRUE,FALSE,FALSE
+W Austin,652972e5-5f73-452a-9c78-4896ff7da3ed,Owner,TRUE,FALSE,FALSE
+Layton Construction Co,8880e7d2-17ac-4cc1-8378-a8bc250fb133,Contractor,TRUE,FALSE,FALSE
+Oak Hill School,de4ddb0a-98fd-4798-96e6-517e38834e2f,Owner,TRUE,FALSE,FALSE
+"Beech Construction Services, Inc.",91cd4612-bd1a-436a-b400-b480e7465d69,Contractor,TRUE,FALSE,FALSE
+Aquinas College,35898215-416c-4aba-a1f4-9efefcc24d7d,Owner,TRUE,FALSE,FALSE
+Hyatt Hotels,d29b2572-d0dc-4c30-b158-cbf588e4f1fc,Owner,TRUE,FALSE,FALSE
+"Southeast Flooring, LLC",1808f5d7-15c4-408d-9ddb-c32b0a56bb5f,Contractor,TRUE,FALSE,FALSE
+Averitt Express,e93ed3d8-fbf3-4b0a-88d5-0afb644b23c3,Owner,TRUE,FALSE,FALSE
+Memoir Wedgewood Houston,94823a2c-2faf-4a12-9a41-dbd3d22554b0,Owner,TRUE,FALSE,FALSE

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 type ProjectComment = {
   id: string;
-  project_id: string;
+  engagement_id: string;
   user_id: string;
   comment_text: string;
   created_at: string;
@@ -17,7 +17,7 @@ type User = {
   id: string;
   name: string;
   email: string;
-  user_type: 'Owner' | 'Admin' | 'Foreman';
+  user_type: 'Admin' | 'Office' | 'Field';
 };
 
 type CommentsSectionProps = {
@@ -217,15 +217,15 @@ export function CommentsSection({
       const mentionedUserIds = getUserIdsByNames(mentionedNames);
 
       const { data, error } = await supabase
-        .from('project_comments')
+        .from('engagement_comments')
         .insert([
           {
-            project_id: projectId,
+            engagement_id: projectId,
             user_id: user.id,
             comment_text: newComment.trim(),
           },
         ])
-        .select('id, project_id, user_id, comment_text, created_at')
+        .select('id, engagement_id, user_id, comment_text, created_at')
         .single();
 
       if (error) {
@@ -254,7 +254,7 @@ export function CommentsSection({
           if (projectId && projectId !== 'undefined') {
             // Fetch project name for notification
             const { data: projectData } = await supabase
-              .from('projects')
+              .from('engagements')
               .select('name')
               .eq('id', projectId)
               .single();
@@ -266,13 +266,16 @@ export function CommentsSection({
                   mentioned_user_ids: mentionedUserIds,
                   commenter_name: user.name,
                   project_name: projectData?.name || 'Project',
-                  project_id: projectId,
+                  engagement_id: projectId,
                   comment_text: newComment.trim(),
                 },
               })
               .catch((err) => console.error('Email notification error:', err));
           } else {
-            console.warn('Skipping mention notification: invalid project ID', projectId);
+            console.warn(
+              'Skipping mention notification: invalid project ID',
+              projectId
+            );
           }
         }
       }
@@ -280,7 +283,7 @@ export function CommentsSection({
       // Use the user object we already have from ensureUser()
       const newCommentObj: ProjectComment = {
         id: data.id,
-        project_id: data.project_id,
+        engagement_id: data.engagement_id,
         user_id: data.user_id,
         comment_text: data.comment_text,
         created_at: data.created_at,
@@ -303,7 +306,7 @@ export function CommentsSection({
 
     try {
       const { error } = await supabase
-        .from('project_comments')
+        .from('engagement_comments')
         .delete()
         .eq('id', commentId);
 
@@ -335,7 +338,7 @@ export function CommentsSection({
 
     try {
       const { error } = await supabase
-        .from('project_comments')
+        .from('engagement_comments')
         .update({ comment_text: editingText.trim() })
         .eq('id', commentId);
 

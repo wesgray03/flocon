@@ -23,6 +23,7 @@ interface Props {
     incompleteTasks?: { id: string; name: string }[]
   ) => void;
   onGoToPreviousStage: () => void;
+  onProjectStageChange?: (stageId: string) => void;
 }
 
 export default function ProjectStatusBlock({
@@ -31,12 +32,15 @@ export default function ProjectStatusBlock({
   advancing,
   onAdvanceToNextStage,
   onGoToPreviousStage,
+  onProjectStageChange,
 }: Props) {
   const { prevStage, nextStage, prevTasks, currentTasks, toggleTask, reload } =
     useProjectTasks(project?.id, project?.stage_id ?? undefined, stages);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [tasksState, setTasksState] = useState<ProjectTask[]>(currentTasks);
+  const [stageChangeFlag, setStageChangeFlag] = useState(0);
+  const [checkAutoAdvance, setCheckAutoAdvance] = useState(false);
 
   // Check if there are incomplete tasks from previous stages
   const hasIncompletePriorTasks = prevTasks.some((task) => !task.complete);
@@ -46,9 +50,42 @@ export default function ProjectStatusBlock({
 
   // keep local tasks in sync when hook updates
   useEffect(() => {
-    console.log('Syncing tasksState from currentTasks:', currentTasks);
     setTasksState(currentTasks);
-  }, [currentTasks]);
+  }, [currentTasks, stageChangeFlag]);
+
+  // Auto-advance when all tasks are complete after a check
+  useEffect(() => {
+    if (checkAutoAdvance && currentTasks.length > 0) {
+      console.log('Checking auto-advance - currentTasks:', currentTasks);
+      console.log(
+        'All complete?',
+        currentTasks.every((t) => t.complete)
+      );
+      console.log('nextStage:', nextStage);
+      console.log('advancing:', advancing);
+
+      if (currentTasks.every((t) => t.complete) && nextStage && !advancing) {
+        console.log('Auto-advancing to next stage');
+        setCheckAutoAdvance(false);
+        onAdvanceToNextStage();
+      } else {
+        setCheckAutoAdvance(false);
+      }
+    }
+  }, [
+    checkAutoAdvance,
+    currentTasks,
+    nextStage,
+    advancing,
+    onAdvanceToNextStage,
+  ]);
+
+  // Proactively reload tasks when project or stage changes (e.g., after save or stage change)
+  useEffect(() => {
+    if (!project?.id) return;
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.id, project?.stage_id]);
 
   const handleAdvanceClick = () => {
     const incompleteTasks = tasksState.filter((t) => !t.complete);
@@ -231,26 +268,18 @@ export default function ProjectStatusBlock({
                   onChange={async () => {
                     const wasChecking = !task.complete;
 
-                    // Optimistically update local state immediately
-                    const updatedTasks = tasksState.map((t) =>
-                      t.id === task.id ? { ...t, complete: !task.complete } : t
-                    );
-                    setTasksState(updatedTasks);
+                    // Persist to database first
+                    const result = await toggleTask(task.id, task.complete);
 
-                    // Then persist to database
-                    await toggleTask(task.id, task.complete);
+                    if (result && !result.error) {
+                      // Reload to get fresh data from database
+                      await reload();
 
-                    // If user just checked a box and all tasks are now complete, auto-advance
-                    if (
-                      wasChecking &&
-                      updatedTasks.every((t) => t.complete) &&
-                      nextStage &&
-                      !advancing
-                    ) {
-                      console.log(
-                        'All tasks complete after checking, auto-advancing'
-                      );
-                      onAdvanceToNextStage();
+                      // If we just checked a box, set flag to check for auto-advance
+                      // after currentTasks updates
+                      if (wasChecking) {
+                        setCheckAutoAdvance(true);
+                      }
                     }
                   }}
                   style={{ width: 16, height: 16, cursor: 'pointer' }}
@@ -321,6 +350,12 @@ export default function ProjectStatusBlock({
           if (stageId === (project?.stage_id ?? '')) {
             setTasksState(updated);
           }
+        }}
+        onStageChange={(newStageId) => {
+          // Inform parent so it updates project.stage_id and triggers hook re-evaluation
+          if (onProjectStageChange) onProjectStageChange(newStageId);
+          // Also nudge our local state to re-sync until parent re-renders
+          setStageChangeFlag((f) => f + 1);
         }}
       />
     </div>

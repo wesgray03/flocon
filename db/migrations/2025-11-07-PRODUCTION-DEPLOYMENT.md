@@ -14,6 +14,7 @@ This migration changes how project task completion is tracked. Previously, tasks
 A junction table that tracks which tasks are complete for each project.
 
 **Schema:**
+
 ```sql
 CREATE TABLE project_task_completion (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -28,21 +29,25 @@ CREATE TABLE project_task_completion (
 ```
 
 **Indexes:**
+
 - `idx_project_task_completion_project_id` - For querying tasks by project
 - `idx_project_task_completion_task_id` - For querying projects by task
 - `idx_project_task_completion_complete` - For filtering by completion status
 
 **Trigger:**
+
 - `update_project_task_completion_updated_at()` - Auto-updates `updated_at` timestamp and sets `completed_at` when task is marked complete
 
 ### Modified Table: `project_tasks`
 
 **Removed Column:**
+
 - `complete` - No longer needed as completion is now per-project in `project_task_completion`
 
 ## Pre-Deployment Checklist
 
 1. ✅ **Backup Database**
+
    ```bash
    # Create a full backup before running migration
    pg_dump -h <host> -U <user> -d <database> > backup_before_task_completion_migration.sql
@@ -94,25 +99,25 @@ Run these queries to verify the migration succeeded:
 
 ```sql
 -- 1. Check that table was created
-SELECT table_name 
-FROM information_schema.tables 
+SELECT table_name
+FROM information_schema.tables
 WHERE table_name = 'project_task_completion';
 
 -- 2. Check that indexes exist
-SELECT indexname 
-FROM pg_indexes 
+SELECT indexname
+FROM pg_indexes
 WHERE tablename = 'project_task_completion';
 
 -- 3. Check that complete column was removed from project_tasks
-SELECT column_name 
-FROM information_schema.columns 
-WHERE table_name = 'project_tasks' 
+SELECT column_name
+FROM information_schema.columns
+WHERE table_name = 'project_tasks'
   AND column_name = 'complete';
 -- Should return 0 rows
 
 -- 4. Check that triggers were created
-SELECT trigger_name 
-FROM information_schema.triggers 
+SELECT trigger_name
+FROM information_schema.triggers
 WHERE event_object_table = 'project_task_completion';
 
 -- 5. Test inserting a completion record
@@ -125,9 +130,9 @@ VALUES (
 -- Should succeed without errors
 
 -- 6. Verify trigger sets completed_at
-SELECT completed_at 
-FROM project_task_completion 
-WHERE complete = true 
+SELECT completed_at
+FROM project_task_completion
+WHERE complete = true
 LIMIT 1;
 -- Should have a timestamp
 ```
@@ -138,17 +143,18 @@ The migration includes RLS policies. Verify they're active:
 
 ```sql
 -- Check RLS is enabled
-SELECT tablename, rowsecurity 
-FROM pg_tables 
+SELECT tablename, rowsecurity
+FROM pg_tables
 WHERE tablename = 'project_task_completion';
 
 -- Check policies exist
-SELECT policyname, cmd 
-FROM pg_policies 
+SELECT policyname, cmd
+FROM pg_policies
 WHERE tablename = 'project_task_completion';
 ```
 
 Expected policies:
+
 - `project_task_completion_select_policy` - SELECT for authenticated users
 - `project_task_completion_insert_policy` - INSERT for authenticated users
 - `project_task_completion_update_policy` - UPDATE for authenticated users
@@ -162,7 +168,7 @@ If issues occur, run this rollback:
 BEGIN;
 
 -- Restore the complete column to project_tasks
-ALTER TABLE project_tasks 
+ALTER TABLE project_tasks
 ADD COLUMN complete BOOLEAN NOT NULL DEFAULT false;
 
 -- Drop the new table (CASCADE will drop foreign keys)
@@ -181,10 +187,12 @@ COMMIT;
 The following files were updated to use the new schema:
 
 ### Backend/Database Queries:
+
 1. `src/lib/hooks/useProjectTasks.ts` - Updated to use LEFT JOIN with `project_task_completion`
 2. `src/components/project/StageTasksModal.tsx` - Updated task queries and toggle logic
 
 ### Key Changes:
+
 - Queries now use `LEFT JOIN project_task_completion` to get per-project completion status
 - `toggleTask` function inserts/updates records in `project_task_completion` instead of updating `project_tasks`
 - All queries filter by `project_id` to ensure project-specific completion
@@ -195,7 +203,7 @@ After deployment, test the following:
 
 - [ ] View project status - tasks display correctly
 - [ ] Check task checkbox - marks as complete
-- [ ] Uncheck task checkbox - marks as incomplete  
+- [ ] Uncheck task checkbox - marks as incomplete
 - [ ] Check task in one project - doesn't affect other projects
 - [ ] Auto-advance to next stage when all tasks complete
 - [ ] Edit tasks modal - can add/remove/toggle tasks
@@ -206,6 +214,7 @@ After deployment, test the following:
 ## Support Contact
 
 If issues arise during deployment:
+
 - Review this document
 - Check Supabase logs for errors
 - Verify all queries in the application code
@@ -220,7 +229,7 @@ If issues arise during deployment:
 
 ---
 
-**Deployed by:** _________________  
-**Deployment Date:** _________________  
-**Verified by:** _________________  
-**Issues encountered:** _________________
+**Deployed by:** ********\_********  
+**Deployment Date:** ********\_********  
+**Verified by:** ********\_********  
+**Issues encountered:** ********\_********

@@ -1,0 +1,5 @@
+id,name,type,project_number,address,city,state,zip,contract_amount,bid_amount,start_date,end_date,est_start_date,stage_id,lead_source,probability,expected_close_date,estimating_type,lost_reason,converted_by_user_id,converted_to_project_at
+50000001-0000-0000-0000-000000000001,ABC Office Building Remodel,project,24-001,123 Main St,Phoenix,AZ,85001,125000.00,,2024-01-15,2024-03-30,,10000004-0000-0000-0000-000000000004,Referral,,,,,
+50000002-0000-0000-0000-000000000002,XYZ Warehouse Flooring,project,24-002,456 Commerce Dr,Scottsdale,AZ,85251,89500.00,,2024-02-01,2024-04-15,,10000003-0000-0000-0000-000000000003,Website,,,,,
+50000003-0000-0000-0000-000000000003,Phoenix School District - Building 5,prospect,,999 Education Way,Phoenix,AZ,85003,,175000.00,,,2024-06-01,10000001-0000-0000-0000-000000000001,Referral,75,2024-05-15,Takeoff,,,
+50000004-0000-0000-0000-000000000004,Retail Space - Mall of Arizona,prospect,,7890 Shopping Center Dr,Glendale,AZ,85305,,95000.00,,,2024-07-01,,Cold Call,50,2024-06-01,Conceptual,,,

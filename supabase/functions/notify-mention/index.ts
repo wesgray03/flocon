@@ -1,5 +1,10 @@
+// @ts-nocheck
 // Supabase Edge Function: notify-mention
 // Sends email notifications when users are mentioned in comments
+// This file runs in a Deno environment with different global types
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// @ts-expect-error - Deno environment globals not recognized by Node TS config
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -15,7 +20,7 @@ interface MentionNotification {
   mentioned_user_ids: string[];
   commenter_name: string;
   project_name: string;
-  project_id: string;
+  engagement_id: string;
   comment_text: string;
 }
 
@@ -45,10 +50,13 @@ serve(async (req) => {
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
       console.error('Attempted to parse:', requestBody);
-      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
     }
 
     const {
@@ -56,7 +64,7 @@ serve(async (req) => {
       mentioned_user_ids,
       commenter_name,
       project_name,
-      project_id,
+      engagement_id,
       comment_text,
     } = parsedBody;
 
@@ -89,11 +97,11 @@ serve(async (req) => {
     // Send email to each mentioned user
     const emailPromises = users.map(async (user) => {
       const appUrl = Deno.env.get('APP_URL') || 'http://localhost:3000';
-      const projectUrl = `${appUrl}/projects/${project_id}`;
-      
+      const projectUrl = `${appUrl}/projects/${engagement_id}`;
+
       console.log(`Generating email for ${user.email}`);
       console.log(`Project URL: ${projectUrl}`);
-      
+
       const emailHtml = `
         <html>
           <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -115,7 +123,7 @@ serve(async (req) => {
 
       try {
         const resendApiKey = Deno.env.get('RESEND_API_KEY');
-        
+
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {

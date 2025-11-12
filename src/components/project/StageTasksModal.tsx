@@ -1,6 +1,6 @@
-import { colors } from '@/styles/theme';
 import { ProjectTask, Stage } from '@/lib/hooks/useProjectTasks';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { useEffect, useState } from 'react';
 
 interface StageTasksModalProps {
@@ -10,6 +10,7 @@ interface StageTasksModalProps {
   projectId: string | undefined;
   currentStageId: string | null | undefined;
   onStageTasksUpdate?: (stageId: string, tasks: ProjectTask[]) => void; // notify parent for current stage sync
+  onStageChange?: (stageId: string) => void; // notify parent when stage changes
 }
 
 type TasksByStage = Record<string, ProjectTask[]>;
@@ -21,6 +22,7 @@ export default function StageTasksModal({
   projectId,
   currentStageId,
   onStageTasksUpdate,
+  onStageChange,
 }: StageTasksModalProps) {
   const [tasksByStage, setTasksByStage] = useState<TasksByStage>({});
   const [loading, setLoading] = useState(false);
@@ -34,31 +36,39 @@ export default function StageTasksModal({
         const results = await Promise.all(
           stages.map((s) =>
             supabase
-              .from('project_tasks')
+              .from('engagement_tasks')
               .select(
                 `
                 id,
                 name,
                 stage_id,
                 order_num,
-                project_task_completion!left(complete)
+                engagement_task_completion!left(complete)
               `
               )
               .eq('stage_id', s.id)
-              .eq('project_task_completion.project_id', projectId)
+              .eq('engagement_task_completion.engagement_id', projectId)
               .order('order_num', { ascending: true })
           )
         );
         const map: TasksByStage = {};
         results.forEach((res, idx) => {
           const stageId = stages[idx].id;
-          const mapped = (res.data ?? []).map((task: any) => ({
-            id: task.id,
-            name: task.name,
-            stage_id: task.stage_id,
-            order_num: task.order_num,
-            complete: task.project_task_completion?.[0]?.complete ?? false,
-          }));
+          const mapped = (res.data ?? []).map(
+            (task: {
+              id: string;
+              name: string;
+              stage_id: string;
+              order_num: number;
+              engagement_task_completion?: { complete: boolean }[];
+            }) => ({
+              id: task.id,
+              name: task.name,
+              stage_id: task.stage_id,
+              order_num: task.order_num,
+              complete: task.engagement_task_completion?.[0]?.complete ?? false,
+            })
+          );
           map[stageId] = mapped as ProjectTask[];
         });
         setTasksByStage(map);
@@ -91,9 +101,9 @@ export default function StageTasksModal({
 
     // Check if completion record exists
     const { data: existing } = await supabase
-      .from('project_task_completion')
+      .from('engagement_task_completion')
       .select('id')
-      .eq('project_id', projectId)
+      .eq('engagement_id', projectId)
       .eq('task_id', task.id)
       .maybeSingle();
 
@@ -101,14 +111,14 @@ export default function StageTasksModal({
     if (existing) {
       // Update existing record
       const result = await supabase
-        .from('project_task_completion')
+        .from('engagement_task_completion')
         .update({ complete: !task.complete })
         .eq('id', existing.id);
       error = result.error;
     } else {
       // Insert new record
-      const result = await supabase.from('project_task_completion').insert({
-        project_id: projectId,
+      const result = await supabase.from('engagement_task_completion').insert({
+        engagement_id: projectId,
         task_id: task.id,
         complete: !task.complete,
       });
@@ -147,7 +157,9 @@ export default function StageTasksModal({
           </button>
         </div>
         {loading ? (
-          <p style={{ fontSize: 14, color: colors.textSecondary }}>Loading tasks…</p>
+          <p style={{ fontSize: 14, color: colors.textSecondary }}>
+            Loading tasks…
+          </p>
         ) : (
           <div
             style={{
@@ -172,18 +184,111 @@ export default function StageTasksModal({
                     background: isCurrent ? '#e0e7ee' : '#faf8f5',
                   }}
                 >
-                  <h3
+                  <div
                     style={{
-                      margin: '0 0 12px 0',
-                      fontSize: 16,
-                      fontWeight: 600,
-                      color: isCurrent ? '#475569' : '#0f172a',
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginBottom: 8,
                     }}
                   >
-                    {s.order}. {s.name}
-                  </h3>
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: 16,
+                        fontWeight: 600,
+                        color: isCurrent ? '#475569' : '#0f172a',
+                        flex: 1,
+                      }}
+                    >
+                      {s.order}. {s.name}
+                    </h3>
+                    <label
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        fontSize: 13,
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isCurrent}
+                        onChange={async () => {
+                          if (!projectId) return;
+                          if (isCurrent) return; // already current
+                          // Update project stage_id in DB (engagements table)
+                          await supabase
+                            .from('engagements')
+                            .update({ stage_id: s.id })
+                            .eq('id', projectId);
+                          // Reload tasks for new stage
+                          setLoading(true);
+                          const results = await Promise.all(
+                            stages.map((stage) =>
+                              supabase
+                                .from('engagement_tasks')
+                                .select(
+                                  `
+                                  id,
+                                  name,
+                                  stage_id,
+                                  order_num,
+                                  engagement_task_completion!left(complete)
+                                `
+                                )
+                                .eq('stage_id', stage.id)
+                                .eq(
+                                  'engagement_task_completion.engagement_id',
+                                  projectId
+                                )
+                                .order('order_num', { ascending: true })
+                            )
+                          );
+                          const map: TasksByStage = {};
+                          results.forEach((res, idx) => {
+                            const stageId = stages[idx].id;
+                            const mapped = (res.data ?? []).map(
+                              (task: {
+                                id: string;
+                                name: string;
+                                stage_id: string;
+                                order_num: number;
+                                engagement_task_completion?: {
+                                  complete: boolean;
+                                }[];
+                              }) => ({
+                                id: task.id,
+                                name: task.name,
+                                stage_id: task.stage_id,
+                                order_num: task.order_num,
+                                complete:
+                                  task.engagement_task_completion?.[0]
+                                    ?.complete ?? false,
+                              })
+                            );
+                            map[stageId] = mapped as ProjectTask[];
+                          });
+                          setTasksByStage(map);
+                          setLoading(false);
+                          // Notify parent to reload project data
+                          if (onStageChange) onStageChange(s.id);
+                          if (onStageTasksUpdate)
+                            onStageTasksUpdate(s.id, map[s.id] || []);
+                        }}
+                        style={{ marginRight: 4 }}
+                        aria-label="Set as current stage"
+                      />
+                      Current
+                    </label>
+                  </div>
                   {sts.length === 0 ? (
-                    <p style={{ margin: 0, fontSize: 13, color: colors.textSecondary }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 13,
+                        color: colors.textSecondary,
+                      }}
+                    >
                       No tasks yet.
                     </p>
                   ) : (

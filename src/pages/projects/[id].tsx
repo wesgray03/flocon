@@ -1,15 +1,35 @@
 // pages/projects/[id].tsx
+import { DashboardHeader } from '@/components/layout/DashboardHeader';
+import { SharedMenu } from '@/components/layout/SharedMenu';
+import { CompaniesModal } from '@/components/modals/CompaniesModal';
+import { ContactsModal } from '@/components/modals/ContactsModal';
 import { CommentsSection } from '@/components/project/CommentsSection';
 import ProjectStatusBlock from '@/components/project/ProjectStatusBlock';
-import SubcontractorsSection from '@/components/project/SubcontractorsSection';
+import type { Project } from '@/domain/projects/types';
+import { useProjectCore } from '@/domain/projects/useProjectCore';
+import {
+  getPrimaryPartiesForEngagements,
+  setPrimaryParty,
+  type PartyRole,
+} from '@/lib/engagementParties';
+import {
+  getPrimaryUserRolesForEngagements,
+  setPrimaryUserRole,
+  type UserRole,
+} from '@/lib/engagementUserRoles';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
-import { Pencil, Save } from 'lucide-react';
+// Icon imports moved into ProjectInfoCard; FinancialOverview centralizes financial tables
+import { FinancialOverview } from '@/components/project/FinancialOverview';
+import {
+  ProjectInfoCard,
+  type EditForm,
+} from '@/components/project/ProjectInfoCard';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const SOVSection = dynamic(() => import('@/components/project/SOVSection'), {
   ssr: false,
@@ -50,130 +70,70 @@ const PayAppsSection = dynamic(
   }
 );
 
-type Project = {
-  id: string;
-  name: string;
-  qbid?: string | null;
-  customer_name?: string | null;
-  manager?: string | null;
-  owner?: string | null;
-  superintendent?: string | null;
-  foreman?: string | null;
-  start_date?: string | null;
-  end_date?: string | null;
-  contract_amount?: number | null;
-  // display-friendly stage name (from stages.name) and optional FK
-  stage?: string | null;
-  stage_id?: string | null;
-  stage_order?: number | null;
-};
+const ChangeOrdersSection = dynamic(
+  () => import('@/components/project/ChangeOrdersSection'),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          background: '#faf8f5',
+          border: '1px solid #e5dfd5',
+          borderRadius: 12,
+          padding: 24,
+          marginBottom: 24,
+        }}
+      >
+        <p style={{ margin: 0, color: colors.textSecondary }}>
+          Loading Change Orders…
+        </p>
+      </div>
+    ),
+  }
+);
 
-type Stage = {
-  id: string;
-  name: string;
-  order: number;
-};
-
-type SOVLine = {
-  id: string;
-  line_code: string | null;
-  description: string;
-  division: string | null;
-  unit: string | null;
-  quantity: number | null;
-  unit_cost: number | null;
-  extended_cost: number; // computed by DB
-  category: string | null; // 'Material' | 'Labor' | 'Other' | null
-  retainage_percent: number; // AIA retainage %
-  created_at: string;
-};
-
-type SOVLineProgress = {
-  id: string;
-  pay_app_id: string;
-  sov_line_id: string;
-  scheduled_value: number;
-  previous_completed: number;
-  current_completed: number;
-  stored_materials: number;
-  total_completed_and_stored: number;
-  percent_complete: number;
-  balance_to_finish: number;
-  retainage_amount: number;
-  retainage_percent: number;
-};
-
-// Subcontractor and task types handled within extracted components/hooks
-
-type PayApp = {
-  id: string;
-  pay_app_number: string | null;
-  description: string;
-  amount: number;
-  period_start: string | null;
-  period_end: string | null;
-  date_submitted: string | null;
-  date_paid: string | null;
-  status: string | null;
-  // AIA G703S fields
-  total_completed_and_stored: number;
-  retainage_completed_work: number;
-  retainage_stored_materials: number;
-  total_retainage: number;
-  total_earned_less_retainage: number;
-  previous_payments: number;
-  current_payment_due: number;
-  balance_to_finish: number;
-  created_at: string;
-};
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  user_type: 'Owner' | 'Admin' | 'Foreman';
-};
-
-type ProjectComment = {
-  id: string;
-  project_id: string;
-  user_id: string;
-  comment_text: string;
-  created_at: string;
-  user_name?: string;
-  user_type?: string;
-};
+// Types centralized in '@/domain/projects/types'
 
 export default function ProjectDetail() {
   const router = useRouter();
   const rawId = router.query.id;
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
 
-  const [project, setProject] = useState<Project | null>(null);
-  const [stages, setStages] = useState<Stage[]>([]);
-  const [lines, setLines] = useState<SOVLine[]>([]);
-  const [payApps, setPayApps] = useState<PayApp[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'billing'>(
-    'overview'
-  );
+  const {
+    sessionEmail,
+    project,
+    setProject,
+    stages,
+    loading,
+    partiesLoaded,
+    comments,
+    setComments,
+    currentUser,
+    nextStage,
+    prevStage,
+  } = useProjectCore(id);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'billing' | 'changeorders'
+  >('overview');
   const [billingSubTab, setBillingSubTab] = useState<'sov' | 'payapps'>('sov');
   const [showModuleMenu, setShowModuleMenu] = useState(false);
   // SOV data is now loaded lazily by SOVSection component
 
-  // Comments state
-  const [comments, setComments] = useState<ProjectComment[]>([]);
-  // Comments input state handled inside CommentsSection
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-
   // Add editing state
   const [editMode, setEditMode] = useState(false);
-  const [editForm, setEditForm] = useState({
+  const [editForm, setEditForm] = useState<EditForm>({
     name: '',
-    qbid: '',
+    project_number: '',
     customer_name: '',
     manager: '',
-    owner: '',
+    architect: '',
+    owner_company: '',
+    superintendent: '',
+    foreman: '',
+    sales_lead: '',
+    project_lead: '',
     start_date: '',
     end_date: '',
     stage_id: '',
@@ -183,7 +143,12 @@ export default function ProjectDetail() {
   const [advancing, setAdvancing] = useState(false);
   const [customerOptions, setCustomerOptions] = useState<string[]>([]);
   const [managerOptions, setManagerOptions] = useState<string[]>([]);
-  const [ownerOptions, setOwnerOptions] = useState<string[]>([]);
+  const [architectOptions, setArchitectOptions] = useState<string[]>([]);
+  const [ownerCompanyOptions, setOwnerCompanyOptions] = useState<string[]>([]);
+  const [superintendentOptions, setSuperintendentOptions] = useState<string[]>(
+    []
+  );
+  const [userOptions, setUserOptions] = useState<string[]>([]);
   const [stageOptions, setStageOptions] = useState<
     { id: string; name: string; order: number }[]
   >([]);
@@ -193,6 +158,15 @@ export default function ProjectDetail() {
     message: string;
     type: 'success' | 'error' | 'info';
   } | null>(null);
+
+  // Modal states
+  const [companiesModal, setCompaniesModal] = useState<{
+    open: boolean;
+    companyType: 'Contractor' | 'Architect' | 'Owner' | 'Subcontractor' | null;
+    label: string;
+  }>({ open: false, companyType: null, label: '' });
+  const [showContactsModal, setShowContactsModal] = useState(false);
+
   const notify = (
     message: string,
     type: 'success' | 'error' | 'info' = 'success',
@@ -206,247 +180,77 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     if (!id) return;
-    const load = async () => {
-      setLoading(true);
-
-      // Load current authenticated user
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      // If no session, redirect to login with return URL
-      if (!session) {
-        router.push(`/login?redirect=/projects/${id}`);
-        return;
-      }
-
-      if (session?.user) {
-        // Get the user record linked to this auth user
-        // Use limit(1) to get just one record even if there are duplicates
-        const { data: userDataArray, error: userErr } = await supabase
-          .from('users')
-          .select('*')
-          .eq('auth_user_id', session.user.id)
-          .order('created_at', { ascending: false })
-          .limit(1);
-
-        if (userErr) {
-          console.error('Error loading user record:', userErr);
-        }
-
-        const userData =
-          userDataArray && userDataArray.length > 0 ? userDataArray[0] : null;
-
-        if (userData) {
-          setCurrentUser(userData as User);
-          console.log('Loaded user record:', userData.id);
-        } else {
-          console.warn('No user record found for authenticated user');
-          // Auto-create user record if not found
-          const { data: newUser, error: insertErr } = await supabase
-            .from('users')
-            .insert([
-              {
-                auth_user_id: session.user.id,
-                name:
-                  session.user.user_metadata?.full_name ||
-                  session.user.email ||
-                  'Unnamed User',
-                email: session.user.email,
-                user_type: 'admin',
-              },
-            ])
-            .select('*')
-            .single();
-
-          if (newUser && !insertErr) {
-            setCurrentUser(newUser as User);
-            console.info('Created new user record for authenticated user');
-          } else {
-            console.error('Failed to create user record:', insertErr);
-          }
-        }
-      }
-
-      // Load all stages for current/next stage calculation
-      const { data: stagesList } = await supabase
-        .from('stages')
-        .select('id, name, order')
-        .order('order', { ascending: true });
-
-      setStages((stagesList ?? []) as Stage[]);
-      setStageOptions(
-        (stagesList ?? []) as { id: string; name: string; order: number }[]
+    // Load dropdown options (customers/managers/architects/superintendents/owners)
+    const loadOptions = async () => {
+      const [
+        { data: customers },
+        { data: managers },
+        { data: architects },
+        { data: ownerCompanies },
+        { data: superintendents },
+        { data: owners },
+      ] = await Promise.all([
+        supabase
+          .from('companies')
+          .select('name')
+          .eq('is_customer', true)
+          .order('name'),
+        supabase
+          .from('contacts')
+          .select('name')
+          .eq('contact_type', 'Project Manager')
+          .order('name'),
+        supabase
+          .from('companies')
+          .select('name')
+          .eq('company_type', 'Architect')
+          .order('name'),
+        supabase
+          .from('companies')
+          .select('name')
+          .eq('company_type', 'Owner')
+          .order('name'),
+        supabase
+          .from('contacts')
+          .select('name')
+          .eq('contact_type', 'Superintendent')
+          .order('name'),
+        supabase.from('users').select('name').order('name'),
+      ]);
+      setCustomerOptions((customers?.map((c) => c.name) ?? []).filter(Boolean));
+      setManagerOptions((managers?.map((m) => m.name) ?? []).filter(Boolean));
+      setArchitectOptions(
+        (architects?.map((a) => a.name) ?? []).filter(Boolean)
       );
-
-      // Load dropdown options
-      try {
-        const [{ data: customers }, { data: managers }, { data: owners }] =
-          await Promise.all([
-            supabase.from('customers').select('name').order('name'),
-            supabase.from('managers').select('name').order('name'),
-            supabase.from('owners').select('name').order('name'),
-          ]);
-
-        setCustomerOptions(
-          (customers?.map((c) => c.name) ?? []).filter(Boolean)
-        );
-        setManagerOptions((managers?.map((m) => m.name) ?? []).filter(Boolean));
-        setOwnerOptions((owners?.map((o) => o.name) ?? []).filter(Boolean));
-      } catch (err) {
-        console.error('Error loading dropdown options:', err);
-      }
-
-      // Load project info with all fields
-      const { data: proj, error: projErr } = await supabase
-        .from('project_dashboard')
-        .select(
-          `
-          id, project_name, qbid, customer_name, manager, owner, 
-          start_date, end_date, stage_id, stage_name, stage_order
-        `
-        )
-        .eq('id', id)
-        .single();
-
-      if (projErr) {
-        console.error('Project load error:', projErr);
-      }
-
-      // Load contract_amount separately from projects table
-      let contractAmount = null;
-      if (id) {
-        const { data: projectData, error: contractErr } = await supabase
-          .from('projects')
-          .select('contract_amount')
-          .eq('id', id)
-          .single();
-
-        if (!contractErr && projectData) {
-          contractAmount = projectData.contract_amount;
-        }
-      }
-
-      // Now we have proper stage_id and stage_order from the view
-      const projectData = proj
-        ? ({
-            id: proj.id,
-            name: proj.project_name,
-            qbid: proj.qbid,
-            customer_name: proj.customer_name,
-            manager: proj.manager,
-            owner: proj.owner,
-            superintendent: null, // Not available in dashboard view
-            foreman: null, // Not available in dashboard view
-            start_date: proj.start_date,
-            end_date: proj.end_date,
-            contract_amount: contractAmount,
-            stage: proj.stage_name,
-            stage_id: proj.stage_id,
-            stage_order: proj.stage_order,
-          } as Project)
-        : null;
-
-      setProject(projectData);
-
-      // Initialize edit form with current project data
-      if (projectData) {
-        setEditForm({
-          name: projectData.name || '',
-          qbid: projectData.qbid || '',
-          customer_name: projectData.customer_name || '',
-          manager: projectData.manager || '',
-          owner: projectData.owner || '',
-          start_date: projectData.start_date || '',
-          end_date: projectData.end_date || '',
-          stage_id: projectData.stage_id || '',
-          contract_amount: projectData.contract_amount?.toString() || '',
-        });
-      }
-
-      // SOV lines now handled in SOVSection
-
-      // Tasks and subcontractors are now loaded within extracted components/hooks
-
-      // Defer pay apps loading - not needed on initial page load
-      // const { data: payAppsData, error: payAppsErr } = await supabase...
-      // setPayApps((payAppsData ?? []) as PayApp[]);
-
-      // Load only recent 20 comments initially (pagination optimization)
-      const { data: commentsData, error: commentsErr } = await supabase
-        .from('project_comments')
-        .select(
-          `
-          id,
-          project_id,
-          user_id,
-          comment_text,
-          created_at,
-          users (name, user_type)
-        `
-        )
-        .eq('project_id', id)
-        .order('created_at', { ascending: false })
-        .limit(20); // Only load 20 most recent comments
-
-      if (commentsErr) {
-        console.error('Comments load error:', commentsErr);
-      } else {
-        console.log('Raw comments data:', commentsData);
-        console.log('Comments count:', commentsData?.length);
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mappedComments = (commentsData ?? []).map((c: any) => ({
-        id: c.id,
-        project_id: c.project_id,
-        user_id: c.user_id,
-        comment_text: c.comment_text,
-        created_at: c.created_at,
-        user_name: c.users?.name || 'Unknown',
-        user_type: c.users?.user_type || 'Unknown',
-      }));
-      console.log('Mapped comments:', mappedComments);
-      setComments(mappedComments);
-
-      setLoading(false);
+      setOwnerCompanyOptions(
+        (ownerCompanies?.map((o) => o.name) ?? []).filter(Boolean)
+      );
+      setSuperintendentOptions(
+        (superintendents?.map((s) => s.name) ?? []).filter(Boolean)
+      );
+      setUserOptions((owners?.map((o) => o.name) ?? []).filter(Boolean));
     };
-
-    load();
+    loadOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Redirect to login if no session (preserve original behavior)
+  useEffect(() => {
+    if (!id) return;
+    if (!loading && !sessionEmail) {
+      router.push(`/login?redirect=/projects/${id}`);
+    }
+  }, [loading, sessionEmail, id, router]);
 
   // Removed task reload effect (handled in hook within StageProgressSection)
 
   // SOV loading moved into SOVSection
 
-  const money = (n?: number | null) =>
-    n == null
-      ? '—'
-      : n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-
-  const dateStr = (d: string | null | undefined) =>
-    d ? new Date(d).toLocaleDateString() : '—';
-
-  // Helper function to clean stage display (remove order number if present)
-  const cleanStageName = (stageName: string | null | undefined) => {
-    if (!stageName) return 'Not Set';
-    if (stageName.includes('. ')) {
-      return stageName.split('. ')[1]; // Return just the name part
-    }
-    return stageName;
-  };
+  // money/dateStr now provided by shared formatter in '@/lib/format'
 
   // Totals computed inside SOVSection
 
-  const nextStage = useMemo(() => {
-    if (!project?.stage_order || !stages.length) return null;
-    return stages.find((s) => s.order === project.stage_order! + 1);
-  }, [project?.stage_order, stages]);
-
-  const prevStage = useMemo(() => {
-    if (!project?.stage_order || !stages.length) return null;
-    return stages.find((s) => s.order === project.stage_order! - 1);
-  }, [project?.stage_order, stages]);
+  // nextStage and prevStage provided by useProjectCore
 
   const handleEditChange = (field: string, value: string) => {
     setEditForm((prev) => ({ ...prev, [field]: value }));
@@ -456,10 +260,15 @@ export default function ProjectDetail() {
     if (project) {
       setEditForm({
         name: project.name || '',
-        qbid: project.qbid || '',
+        project_number: project.project_number || '',
         customer_name: project.customer_name || '',
         manager: project.manager || '',
-        owner: project.owner || '',
+        architect: project.architect || '',
+        owner_company: project.company_owner || '',
+        project_lead: project.project_lead || '',
+        superintendent: project.superintendent || '',
+        foreman: project.foreman || '',
+        sales_lead: project.sales_lead || '',
         start_date: project.start_date || '',
         end_date: project.end_date || '',
         stage_id: project.stage_id || '',
@@ -480,35 +289,13 @@ export default function ProjectDetail() {
 
     setSaving(true);
     try {
-      // Get or create customer_id
-      let customer_id = null;
-      if (editForm.customer_name.trim()) {
-        const { data: existingCustomer } = await supabase
-          .from('customers')
-          .select('id')
-          .ilike('name', editForm.customer_name.trim())
-          .limit(1)
-          .single();
-
-        if (existingCustomer) {
-          customer_id = existingCustomer.id;
-        } else {
-          const { data: newCustomer } = await supabase
-            .from('customers')
-            .insert([{ name: editForm.customer_name.trim() }])
-            .select('id')
-            .single();
-          customer_id = newCustomer?.id;
-        }
-      }
-
-      // Update project
+      // Update project basic fields
+      // Customer/manager/superintendent are handled via engagement_parties
+      // Owner/foreman are handled via engagement_user_roles
+      // Only update columns that exist in engagements table
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updatePayload: any = {
         name: editForm.name.trim(),
-        qbid: editForm.qbid.trim() || null,
-        manager: editForm.manager.trim() || null,
-        owner: editForm.owner.trim() || null,
         start_date: editForm.start_date || null,
         end_date: editForm.end_date || null,
         contract_amount: editForm.contract_amount.trim()
@@ -516,11 +303,15 @@ export default function ProjectDetail() {
           : null,
       };
 
-      if (customer_id) updatePayload.customer_id = customer_id;
+      // Only set project_number if it's a project (not a prospect)
+      if (project.type === 'project' && editForm.project_number.trim()) {
+        updatePayload.project_number = editForm.project_number.trim();
+      }
+
       if (editForm.stage_id) updatePayload.stage_id = editForm.stage_id;
 
       const { error } = await supabase
-        .from('projects')
+        .from('engagements')
         .update(updatePayload)
         .eq('id', project.id);
 
@@ -530,44 +321,364 @@ export default function ProjectDetail() {
         return;
       }
 
-      // Reload project data
-      const { data: updatedProj } = await supabase
-        .from('project_dashboard')
-        .select(
-          'id, project_name, qbid, customer_name, manager, owner, start_date, end_date, stage_id, stage_name, stage_order'
-        )
-        .eq('id', project.id)
-        .single();
+      // After updating basic fields, sync junction-table primaries for roles that were edited.
+      try {
+        // If customer_name was provided/changed, resolve and set customer primary party
+        if (editForm.customer_name.trim()) {
+          try {
+            const { data: customerCompany } = await supabase
+              .from('companies')
+              .select('id')
+              .ilike('name', editForm.customer_name.trim())
+              .eq('is_customer', true)
+              .limit(1)
+              .single();
+            const customerId = customerCompany?.id || null;
+            if (customerId) {
+              await setPrimaryParty({
+                engagementId: project.id,
+                role: 'customer',
+                partyType: 'company',
+                partyId: customerId,
+              });
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set customer primary party:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to set customer: ${message}`, 'error');
+          }
+        }
+        // If manager was provided, resolve contact and set as project_manager primary
+        if (editForm.manager.trim()) {
+          try {
+            const { data: pmContact } = await supabase
+              .from('contacts')
+              .select('id')
+              .ilike('name', editForm.manager.trim())
+              .eq('contact_type', 'Project Manager')
+              .limit(1)
+              .single();
+            const pmId = pmContact?.id || null;
+            if (pmId) {
+              await setPrimaryParty({
+                engagementId: project.id,
+                role: 'project_manager',
+                partyType: 'contact',
+                partyId: pmId,
+              });
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set project manager primary party:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to set project manager: ${message}`, 'error');
+          }
+        }
+        // If architect was provided, resolve company and set as architect primary
+        if (editForm.architect.trim()) {
+          try {
+            const { data: architectCompany } = await supabase
+              .from('companies')
+              .select('id')
+              .ilike('name', editForm.architect.trim())
+              .eq('company_type', 'Architect')
+              .limit(1)
+              .single();
+            const architectId = architectCompany?.id || null;
+            if (architectId) {
+              await setPrimaryParty({
+                engagementId: project.id,
+                role: 'architect',
+                partyType: 'company',
+                partyId: architectId,
+              });
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set architect primary party:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to set architect: ${message}`, 'error');
+          }
+        }
+        // If owner_company was provided, resolve company and set as owner primary
+        if (editForm.owner_company.trim()) {
+          try {
+            const { data: ownerCompany } = await supabase
+              .from('companies')
+              .select('id')
+              .ilike('name', editForm.owner_company.trim())
+              .eq('company_type', 'Owner')
+              .limit(1)
+              .single();
+            const ownerId = ownerCompany?.id || null;
+            if (ownerId) {
+              await setPrimaryParty({
+                engagementId: project.id,
+                role: 'owner',
+                partyType: 'company',
+                partyId: ownerId,
+              });
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set owner company primary party:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to set owner company: ${message}`, 'error');
+          }
+        }
+        // Superintendent via contacts -> engagement_parties
+        if (editForm.superintendent.trim()) {
+          try {
+            const { data: superContact } = await supabase
+              .from('contacts')
+              .select('id')
+              .ilike('name', editForm.superintendent.trim())
+              .eq('contact_type', 'Superintendent')
+              .limit(1)
+              .single();
+            const superId = superContact?.id || null;
+            if (superId) {
+              await setPrimaryParty({
+                engagementId: project.id,
+                role: 'superintendent',
+                partyType: 'contact',
+                partyId: superId,
+              });
+            } else {
+              notify(
+                'Superintendent contact not found. No change made.',
+                'info'
+              );
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set superintendent primary party:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(
+              `Failed to set superintendent: ${message}. If this mentions a CHECK constraint on role, run the migration to allow role 'superintendent'.`,
+              'error'
+            );
+          }
+        } else {
+          // Clearing field removes primary superintendent contact
+          try {
+            await setPrimaryParty({
+              engagementId: project.id,
+              role: 'superintendent',
+              partyType: 'contact',
+              partyId: null,
+            });
+          } catch (e: unknown) {
+            console.warn('Failed to clear superintendent primary party:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to clear superintendent: ${message}`, 'error');
+          }
+        }
 
-      // Reload contract_amount separately
-      let updatedContractAmount = null;
-      const { data: contractData } = await supabase
-        .from('projects')
-        .select('contract_amount')
-        .eq('id', project.id)
-        .single();
+        // Project Lead via users -> engagement_user_roles (stored as 'project_lead' role)
+        if (editForm.project_lead.trim()) {
+          try {
+            const { data: ownerUser } = await supabase
+              .from('users')
+              .select('id')
+              .ilike('name', editForm.project_lead.trim())
+              .limit(1)
+              .single();
+            const ownerId = ownerUser?.id || null;
+            if (ownerId) {
+              await setPrimaryUserRole({
+                engagementId: project.id,
+                role: 'project_lead',
+                userId: ownerId,
+              });
+            } else {
+              notify(
+                'Project Lead not found in users. No change made.',
+                'info'
+              );
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set project lead user role:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to set project lead: ${message}`, 'error');
+          }
+        }
 
-      if (contractData) {
-        updatedContractAmount = contractData.contract_amount;
+        // Foreman via users -> engagement_user_roles
+        if (editForm.foreman.trim()) {
+          try {
+            const { data: foremanUser } = await supabase
+              .from('users')
+              .select('id')
+              .ilike('name', editForm.foreman.trim())
+              .limit(1)
+              .single();
+            const foremanId = foremanUser?.id || null;
+            if (foremanId) {
+              await setPrimaryUserRole({
+                engagementId: project.id,
+                role: 'foreman',
+                userId: foremanId,
+              });
+            } else {
+              notify('Foreman not found in users. No change made.', 'info');
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set foreman user role:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to set foreman: ${message}`, 'error');
+          }
+        }
+
+        // Sales Lead via users -> engagement_user_roles (stored as 'sales_lead' role)
+        if (editForm.sales_lead.trim()) {
+          try {
+            const { data: salesLeadUser } = await supabase
+              .from('users')
+              .select('id')
+              .ilike('name', editForm.sales_lead.trim())
+              .limit(1)
+              .single();
+            const salesLeadId = salesLeadUser?.id || null;
+            if (salesLeadId) {
+              await setPrimaryUserRole({
+                engagementId: project.id,
+                role: 'sales_lead',
+                userId: salesLeadId,
+              });
+            } else {
+              notify('Sales Lead not found in users. No change made.', 'info');
+            }
+          } catch (e: unknown) {
+            console.warn('Failed to set sales lead user role:', e);
+            const message = e instanceof Error ? e.message : String(e);
+            notify(`Failed to set sales lead: ${message}`, 'error');
+          }
+        }
+      } catch (partySyncErr) {
+        console.warn(
+          'Non-blocking: failed to sync primary parties/user roles',
+          partySyncErr
+        );
       }
+
+      // Reload project data (projects_v fields loaded from engagements table)
+      const { data: updatedProj } = await supabase
+        .from('projects_v')
+        .select('*')
+        .eq('id', project.id)
+        .single();
 
       if (updatedProj) {
         const updatedProjectData = {
           id: updatedProj.id,
-          name: updatedProj.project_name,
-          qbid: updatedProj.qbid,
-          customer_name: updatedProj.customer_name,
-          manager: updatedProj.manager,
-          owner: updatedProj.owner,
+          name: updatedProj.name,
+          project_number: updatedProj.project_number,
+          customer_name: null,
+          manager: null,
+          architect: null,
+          project_lead: null,
           superintendent: null,
           foreman: null,
+          sales_lead: null,
           start_date: updatedProj.start_date,
           end_date: updatedProj.end_date,
-          contract_amount: updatedContractAmount,
-          stage: updatedProj.stage_name,
+          contract_amount: updatedProj.contract_amount,
+          stage: null,
           stage_id: updatedProj.stage_id,
-          stage_order: updatedProj.stage_order,
+          stage_order: null,
         } as Project;
+
+        // Load stage name/order from stages table
+        if (updatedProj.stage_id) {
+          const { data: stageData } = await supabase
+            .from('stages')
+            .select('name, order')
+            .eq('id', updatedProj.stage_id)
+            .single();
+          if (stageData) {
+            updatedProjectData.stage = stageData.order
+              ? `${stageData.order}. ${stageData.name}`
+              : stageData.name;
+            updatedProjectData.stage_order = stageData.order ?? null;
+          }
+        }
+
+        // Overlay current primary parties post-save for consistency
+        try {
+          const roles: PartyRole[] = [
+            'customer',
+            'project_manager',
+            'architect',
+            'owner',
+            'superintendent',
+          ];
+          const parties = await getPrimaryPartiesForEngagements(
+            [project.id],
+            roles
+          );
+          for (const p of parties) {
+            if (p.role === 'customer')
+              updatedProjectData.customer_name =
+                p.party_name ?? updatedProjectData.customer_name;
+            if (p.role === 'project_manager')
+              updatedProjectData.manager =
+                p.party_name ?? updatedProjectData.manager;
+            if (p.role === 'architect') {
+              const projectWithArchitect = updatedProjectData as Project & {
+                architect?: string | null;
+              };
+              projectWithArchitect.architect =
+                p.party_name ?? projectWithArchitect.architect;
+            }
+            if (p.role === 'owner')
+              updatedProjectData.company_owner =
+                p.party_name ?? updatedProjectData.company_owner;
+            if (p.role === 'superintendent')
+              updatedProjectData.superintendent =
+                p.party_name ?? updatedProjectData.superintendent;
+          }
+
+          // Also reload user roles for sales_lead, project_lead, foreman
+          const userRoles: UserRole[] = [
+            'project_lead',
+            'foreman',
+            'sales_lead',
+          ];
+          const userRoleAssignments = await getPrimaryUserRolesForEngagements(
+            [project.id],
+            userRoles
+          );
+          for (const ur of userRoleAssignments) {
+            if (ur.role === 'project_lead')
+              updatedProjectData.project_lead =
+                ur.user_name ?? updatedProjectData.project_lead;
+            if (ur.role === 'foreman')
+              updatedProjectData.foreman =
+                ur.user_name ?? updatedProjectData.foreman;
+            if (ur.role === 'sales_lead')
+              updatedProjectData.sales_lead =
+                ur.user_name ?? updatedProjectData.sales_lead;
+          }
+
+          // Fallback post-save as well
+          if (
+            (!updatedProjectData.superintendent ||
+              updatedProjectData.superintendent.trim() === '') &&
+            project.id
+          ) {
+            try {
+              const { data: s2 } = await supabase
+                .from('engagement_parties_detailed')
+                .select('party_name')
+                .eq('engagement_id', project.id)
+                .eq('role', 'superintendent')
+                .eq('is_primary', true)
+                .maybeSingle();
+              if (s2?.party_name) {
+                updatedProjectData.superintendent = s2.party_name;
+              }
+            } catch {}
+          }
+        } catch (err) {
+          console.debug('Post-save party overlay skipped:', err);
+        }
 
         setProject(updatedProjectData);
       }
@@ -599,7 +710,7 @@ export default function ProjectDetail() {
     setAdvancing(true);
     try {
       const { error } = await supabase
-        .from('projects')
+        .from('engagements')
         .update({ stage_id: nextStage.id })
         .eq('id', project.id);
 
@@ -610,30 +721,42 @@ export default function ProjectDetail() {
       }
 
       const { data: updatedProj } = await supabase
-        .from('project_dashboard')
-        .select(
-          'id, project_name, qbid, customer_name, manager, owner, start_date, end_date, stage_id, stage_name, stage_order'
-        )
+        .from('projects_v')
+        .select('*')
         .eq('id', project.id)
         .single();
 
       if (updatedProj) {
-        setProject({
+        // Load stage name/order from stages table
+        let stageName: string | null = null;
+        let stageOrder: number | null = null;
+        if (updatedProj.stage_id) {
+          const { data: stageData } = await supabase
+            .from('stages')
+            .select('name, order')
+            .eq('id', updatedProj.stage_id)
+            .single();
+          if (stageData) {
+            stageName = stageData.order
+              ? `${stageData.order}. ${stageData.name}`
+              : stageData.name;
+            stageOrder = stageData.order ?? null;
+          }
+        }
+
+        // Keep existing customer_name and manager from current project state
+        setProject((prev) => ({
+          ...prev!,
           id: updatedProj.id,
-          name: updatedProj.project_name,
-          qbid: updatedProj.qbid,
-          customer_name: updatedProj.customer_name,
-          manager: updatedProj.manager,
-          owner: updatedProj.owner,
-          superintendent: null,
-          foreman: null,
+          name: updatedProj.name,
+          project_number: updatedProj.project_number,
           start_date: updatedProj.start_date,
           end_date: updatedProj.end_date,
-          stage: updatedProj.stage_name,
+          stage: stageName,
           stage_id: updatedProj.stage_id,
-          stage_order: updatedProj.stage_order,
-        } as Project);
-        notify(`Advanced to ${updatedProj.stage_name}`, 'success');
+          stage_order: stageOrder,
+        }));
+        notify(`Advanced to ${stageName}`, 'success');
       }
     } catch (err) {
       console.error('Unexpected error advancing stage:', err);
@@ -649,7 +772,7 @@ export default function ProjectDetail() {
     setAdvancing(true);
     try {
       const { error } = await supabase
-        .from('projects')
+        .from('engagements')
         .update({ stage_id: prevStage.id })
         .eq('id', project.id);
 
@@ -660,30 +783,42 @@ export default function ProjectDetail() {
       }
 
       const { data: updatedProj } = await supabase
-        .from('project_dashboard')
-        .select(
-          'id, project_name, qbid, customer_name, manager, owner, start_date, end_date, stage_id, stage_name, stage_order'
-        )
+        .from('projects_v')
+        .select('*')
         .eq('id', project.id)
         .single();
 
       if (updatedProj) {
-        setProject({
+        // Load stage name/order from stages table
+        let stageName: string | null = null;
+        let stageOrder: number | null = null;
+        if (updatedProj.stage_id) {
+          const { data: stageData } = await supabase
+            .from('stages')
+            .select('name, order')
+            .eq('id', updatedProj.stage_id)
+            .single();
+          if (stageData) {
+            stageName = stageData.order
+              ? `${stageData.order}. ${stageData.name}`
+              : stageData.name;
+            stageOrder = stageData.order ?? null;
+          }
+        }
+
+        // Keep existing customer_name and manager from current project state
+        setProject((prev) => ({
+          ...prev!,
           id: updatedProj.id,
-          name: updatedProj.project_name,
-          qbid: updatedProj.qbid,
-          customer_name: updatedProj.customer_name,
-          manager: updatedProj.manager,
-          owner: updatedProj.owner,
-          superintendent: null,
-          foreman: null,
+          name: updatedProj.name,
+          project_number: updatedProj.project_number,
           start_date: updatedProj.start_date,
           end_date: updatedProj.end_date,
-          stage: updatedProj.stage_name,
+          stage: stageName,
           stage_id: updatedProj.stage_id,
-          stage_order: updatedProj.stage_order,
-        } as Project);
-        notify(`Moved back to ${updatedProj.stage_name}`, 'success');
+          stage_order: stageOrder,
+        }));
+        notify(`Moved back to ${stageName}`, 'success');
       }
     } catch (err) {
       console.error('Unexpected error going to previous stage:', err);
@@ -702,8 +837,26 @@ export default function ProjectDetail() {
   return (
     <div style={styles.pageContainerStyle}>
       {toast && <Toast message={toast.message} type={toast.type} />}
+
+      {/* Dashboard Header with Menu */}
+      <DashboardHeader
+        sessionEmail={sessionEmail}
+        activeTab="projects"
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        menuItems={
+          <SharedMenu
+            onClose={() => setMenuOpen(false)}
+            onOpenCompanies={(companyType, label) => {
+              setCompaniesModal({ open: true, companyType, label });
+            }}
+            onOpenContacts={() => setShowContactsModal(true)}
+          />
+        }
+      />
+
       {/* Header */}
-      <div style={styles.headerStyle}>
+      <div style={{ ...styles.headerStyle, paddingTop: 0 }}>
         <div style={{ maxWidth: 1600, margin: '0 auto' }}>
           <Link
             href="/projects"
@@ -726,7 +879,9 @@ export default function ProjectDetail() {
             <div>
               <h1 style={styles.titleStyle}>{project.name}</h1>
               <p style={styles.subtitleStyle}>
-                {project.qbid ? `QBID: ${project.qbid}` : 'No QBID assigned'}
+                {project.project_number
+                  ? `Project #: ${project.project_number}`
+                  : 'No project number assigned'}
               </p>
             </div>
           )}
@@ -747,405 +902,25 @@ export default function ProjectDetail() {
                 className="sticky-container"
               >
                 {/* Project Information Card */}
-                <div
-                  style={styles.projectInfoCardStyle}
-                  className="project-info-card"
-                >
-                  {/* Header with Edit/Save/Cancel Buttons */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: 16,
-                      paddingBottom: 12,
-                      borderBottom: '2px solid #1e3a5f',
-                    }}
-                  >
-                    <h2
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 700,
-                        margin: 0,
-                        color: colors.textPrimary,
-                      }}
-                    >
-                      Project Information
-                    </h2>
-                    {!editMode ? (
-                      <button
-                        onClick={startEdit}
-                        style={{
-                          padding: '6px 8px',
-                          background: '#1e3a5f',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: 6,
-                          fontSize: 13,
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                        title="Edit project"
-                        aria-label="Edit project"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                    ) : (
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          onClick={cancelEdit}
-                          disabled={saving}
-                          style={{
-                            padding: '6px 12px',
-                            background: '#6b7280',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: 6,
-                            fontSize: 13,
-                            fontWeight: 500,
-                            cursor: saving ? 'not-allowed' : 'pointer',
-                            opacity: saving ? 0.7 : 1,
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={saveEdit}
-                          disabled={saving}
-                          style={{
-                            padding: '6px 12px',
-                            background: '#1e3a5f',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: 6,
-                            fontSize: 13,
-                            fontWeight: 600,
-                            cursor: saving ? 'not-allowed' : 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            opacity: saving ? 0.7 : 1,
-                          }}
-                        >
-                          {saving ? (
-                            'Saving…'
-                          ) : (
-                            <span
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                              }}
-                            >
-                              <Save size={16} />
-                              Save
-                            </span>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Project Details / Edit Form */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 16,
-                    }}
-                  >
-                    {editMode && (
-                      <div style={styles.editFormContainerStyle}>
-                        {/* QBID */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>QBID</label>
-                          <input
-                            value={editForm.qbid}
-                            onChange={(e) =>
-                              handleEditChange('qbid', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                            placeholder="QBID"
-                          />
-                        </div>
-                        {/* Project Name */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Project Name</label>
-                          <input
-                            value={editForm.name}
-                            onChange={(e) =>
-                              handleEditChange('name', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                            placeholder="Project Name"
-                          />
-                        </div>
-                        {/* Contract Amount */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>
-                            Contract Amount
-                          </label>
-                          <input
-                            type="number"
-                            value={editForm.contract_amount}
-                            onChange={(e) =>
-                              handleEditChange(
-                                'contract_amount',
-                                e.target.value
-                              )
-                            }
-                            style={styles.inputStyle}
-                            placeholder="0.00"
-                          />
-                        </div>
-                        {/* Start Date */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Start Date</label>
-                          <input
-                            type="date"
-                            value={editForm.start_date}
-                            onChange={(e) =>
-                              handleEditChange('start_date', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                          />
-                        </div>
-                        {/* End Date */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Finish Date</label>
-                          <input
-                            type="date"
-                            value={editForm.end_date}
-                            onChange={(e) =>
-                              handleEditChange('end_date', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                          />
-                        </div>
-                        {/* Customer Name (datalist) */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Customer</label>
-                          <input
-                            list="customer-options"
-                            value={editForm.customer_name}
-                            onChange={(e) =>
-                              handleEditChange('customer_name', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                            placeholder="Customer Name"
-                          />
-                          <datalist id="customer-options">
-                            {customerOptions.map((c) => (
-                              <option key={c} value={c} />
-                            ))}
-                          </datalist>
-                        </div>
-                        {/* Manager */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Manager</label>
-                          <input
-                            list="manager-options"
-                            value={editForm.manager}
-                            onChange={(e) =>
-                              handleEditChange('manager', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                            placeholder="Manager"
-                          />
-                          <datalist id="manager-options">
-                            {managerOptions.map((m) => (
-                              <option key={m} value={m} />
-                            ))}
-                          </datalist>
-                        </div>
-                        {/* Superintendent (not editable yet) */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>
-                            Superintendent
-                          </label>
-                          <input
-                            value={project.superintendent || ''}
-                            disabled
-                            style={{
-                              ...styles.inputStyle,
-                              background: '#faf8f5',
-                              color: colors.textSecondary,
-                            }}
-                            placeholder="Not set"
-                          />
-                        </div>
-                        {/* Owner */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Owner</label>
-                          <input
-                            list="owner-options"
-                            value={editForm.owner}
-                            onChange={(e) =>
-                              handleEditChange('owner', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                            placeholder="Owner"
-                          />
-                          <datalist id="owner-options">
-                            {ownerOptions.map((o) => (
-                              <option key={o} value={o} />
-                            ))}
-                          </datalist>
-                        </div>
-                        {/* Foreman (not editable yet) */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Foreman</label>
-                          <input
-                            value={project.foreman || ''}
-                            disabled
-                            style={{
-                              ...styles.inputStyle,
-                              background: '#faf8f5',
-                              color: colors.textSecondary,
-                            }}
-                            placeholder="Not set"
-                          />
-                        </div>
-                        {/* Stage */}
-                        <div style={styles.formFieldStyle}>
-                          <label style={styles.labelStyle}>Stage</label>
-                          <select
-                            value={editForm.stage_id}
-                            onChange={(e) =>
-                              handleEditChange('stage_id', e.target.value)
-                            }
-                            style={styles.inputStyle}
-                          >
-                            <option value="">Select Stage</option>
-                            {stageOptions.map((s) => (
-                              <option key={s.id} value={s.id}>
-                                {s.order}. {s.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    )}
-                    {!editMode && (
-                      <div>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: colors.gray,
-                            marginBottom: 4,
-                          }}
-                        >
-                          Contract Amount
-                        </p>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 14,
-                            fontWeight: 500,
-                            color: colors.textPrimary,
-                          }}
-                        >
-                          {money(project.contract_amount || 0)}
-                        </p>
-                      </div>
-                    )}
-
-                    {!editMode && (
-                      <div>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: colors.gray,
-                            marginBottom: 4,
-                          }}
-                        >
-                          Start Date
-                        </p>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 14,
-                            fontWeight: 500,
-                            color: colors.textPrimary,
-                          }}
-                        >
-                          {dateStr(project.start_date)}
-                        </p>
-                      </div>
-                    )}
-
-                    {!editMode && (
-                      <div>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: colors.gray,
-                            marginBottom: 4,
-                          }}
-                        >
-                          Finish Date
-                        </p>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 14,
-                            fontWeight: 500,
-                            color: colors.textPrimary,
-                          }}
-                        >
-                          {dateStr(project.end_date)}
-                        </p>
-                      </div>
-                    )}
-
-                    {!editMode && (
-                      <div style={styles.sectionDividerStyle}>
-                        <p style={styles.sectionTitleStyle}>Customer</p>
-                        <DetailItem
-                          label="Customer"
-                          value={project.customer_name}
-                        />
-                        <div style={{ marginTop: 8 }}>
-                          <DetailItem label="Manager" value={project.manager} />
-                        </div>
-                        <div style={{ marginTop: 8 }}>
-                          <DetailItem
-                            label="Superintendent"
-                            value={project.superintendent}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {!editMode && (
-                      <div style={styles.sectionDividerStyle}>
-                        <p style={styles.sectionTitleStyle}>Team</p>
-                        <DetailItem label="Owner" value={project.owner} />
-                        <div style={{ marginTop: 8 }}>
-                          <DetailItem label="Foreman" value={project.foreman} />
-                        </div>
-                      </div>
-                    )}
-
-                    {!editMode && (
-                      <div style={styles.sectionDividerStyle}>
-                        {/* Extracted Subcontractors Section */}
-                        {id && <SubcontractorsSection projectId={id} />}
-                      </div>
-                    )}
-
-                    {/* Project Status moved out of this card */}
-                  </div>
-                </div>{' '}
+                <ProjectInfoCard
+                  project={project}
+                  projectId={id || ''}
+                  editMode={editMode}
+                  editForm={editForm}
+                  onStartEdit={startEdit}
+                  onCancelEdit={cancelEdit}
+                  onSaveEdit={saveEdit}
+                  onChange={(field, value) => handleEditChange(field, value)}
+                  saving={saving}
+                  partiesLoaded={partiesLoaded}
+                  stageOptions={stageOptions}
+                  customerOptions={customerOptions}
+                  managerOptions={managerOptions}
+                  architectOptions={architectOptions}
+                  ownerCompanyOptions={ownerCompanyOptions}
+                  superintendentOptions={superintendentOptions}
+                  userOptions={userOptions}
+                />{' '}
                 {/* End Project Information Card */}
                 {/* Separate Project Status Card moved to right sidebar above comments */}
               </div>
@@ -1159,6 +934,7 @@ export default function ProjectDetail() {
                   [
                     { key: 'overview', label: 'Overview' },
                     { key: 'billing', label: 'Billing' },
+                    { key: 'changeorders', label: 'Change Orders' },
                   ] as const
                 ).map((tab) => (
                   <button
@@ -1171,543 +947,8 @@ export default function ProjectDetail() {
                 ))}
               </div>
 
-              {activeTab === 'overview' && (
-                <>
-                  {/* Stage Progress moved to left sidebar; keeping main area focused on financials */}
-
-                  {/* Financial Overview */}
-                  <div style={styles.cardStyle}>
-                    <h2 style={styles.sectionHeaderStyle}>
-                      Financial Overview
-                    </h2>
-
-                    {/* Financial Grid */}
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: 24,
-                      }}
-                    >
-                      {/* Revenue Column */}
-                      <div>
-                        <h3
-                          style={{
-                            fontSize: 18,
-                            fontWeight: 700,
-                            margin: '0 0 16px 0',
-                            color: colors.textPrimary,
-                          }}
-                        >
-                          Revenue
-                        </h3>
-                        <table
-                          style={{ width: '100%', borderCollapse: 'collapse' }}
-                        >
-                          <tbody>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Contract Amount
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(project?.contract_amount)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Change Orders
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Billings-to-date
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Retainage-to-date
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Remaining Billings
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                % Complete Revenue
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-
-                        {/* Gross Margin */}
-                        <h3
-                          style={{
-                            fontSize: 18,
-                            fontWeight: 700,
-                            margin: '32px 0 16px 0',
-                            color: colors.textPrimary,
-                          }}
-                        >
-                          Gross Margin
-                        </h3>
-                        <table
-                          style={{ width: '100%', borderCollapse: 'collapse' }}
-                        >
-                          <tbody>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Contract GM%
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Change Order GM%
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Total GM %
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Unadjusted GM%
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Expected GM%
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {/* Cost Column */}
-                      <div>
-                        <h3
-                          style={{
-                            fontSize: 18,
-                            fontWeight: 700,
-                            margin: '0 0 16px 0',
-                            color: colors.textPrimary,
-                          }}
-                        >
-                          Cost
-                        </h3>
-                        <table
-                          style={{ width: '100%', borderCollapse: 'collapse' }}
-                        >
-                          <tbody>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Contract Budget
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Change Order Cost Budget
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Total Contract Cost Budget
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Cost-to-date
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Remaining Cost
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                % Complete Cost
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-
-                        {/* Cash Flow */}
-                        <h3
-                          style={{
-                            fontSize: 18,
-                            fontWeight: 700,
-                            margin: '32px 0 16px 0',
-                            color: colors.textPrimary,
-                          }}
-                        >
-                          Cash Flow
-                        </h3>
-                        <table
-                          style={{ width: '100%', borderCollapse: 'collapse' }}
-                        >
-                          <tbody>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Cash In
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Cash Out
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr style={{ borderBottom: '1px solid #e5dfd5' }}>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Net Cash Flow
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {money(0)}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  color: colors.textSecondary,
-                                }}
-                              >
-                                Cash Position (+/-)
-                              </td>
-                              <td
-                                style={{
-                                  padding: '8px 0',
-                                  fontSize: 14,
-                                  textAlign: 'right',
-                                  fontWeight: 600,
-                                }}
-                              >
-                                0%
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </>
+              {activeTab === 'overview' && project && (
+                <FinancialOverview project={project} variant="desktop" />
               )}
 
               {/* Billing Tab with Sub-tabs */}
@@ -1774,6 +1015,11 @@ export default function ProjectDetail() {
                     <PayAppsSection projectId={id} />
                   )}
                 </>
+              )}
+
+              {/* Change Orders Tab */}
+              {activeTab === 'changeorders' && id && (
+                <ChangeOrdersSection projectId={id} />
               )}
             </div>
 
@@ -1878,6 +1124,29 @@ export default function ProjectDetail() {
                       >
                         💰
                       </button>
+                      <button
+                        onClick={() => setActiveTab('changeorders')}
+                        style={{
+                          padding: '12px 20px',
+                          background:
+                            activeTab === 'changeorders'
+                              ? '#1e3a5f'
+                              : '#f0ebe3',
+                          color:
+                            activeTab === 'changeorders' ? '#fff' : '#64748b',
+                          border: '1px solid #e5dfd5',
+                          borderRadius: 8,
+                          fontSize: 24,
+                          cursor: 'pointer',
+                          minWidth: 44,
+                          minHeight: 44,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        📝
+                      </button>
                     </div>
 
                     {/* Close button */}
@@ -1909,422 +1178,8 @@ export default function ProjectDetail() {
                       padding: 20,
                     }}
                   >
-                    {activeTab === 'overview' && (
-                      <>
-                        {/* Financial Overview */}
-                        <div style={styles.cardStyle}>
-                          <h2 style={styles.sectionHeaderStyle}>
-                            Financial Overview
-                          </h2>
-
-                          {/* Financial Grid */}
-                          <div
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '1fr',
-                              gap: 24,
-                            }}
-                          >
-                            {/* Revenue Column */}
-                            <div>
-                              <h3
-                                style={{
-                                  fontSize: 18,
-                                  fontWeight: 700,
-                                  margin: '0 0 16px 0',
-                                  color: colors.textPrimary,
-                                }}
-                              >
-                                Revenue
-                              </h3>
-                              <table
-                                style={{
-                                  width: '100%',
-                                  borderCollapse: 'collapse',
-                                }}
-                              >
-                                <tbody>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Contract Amount
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(project?.contract_amount || 0)}
-                                    </td>
-                                  </tr>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Billed to Date
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Remaining to Bill
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      % Complete Billed
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      0%
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-
-                            {/* Cost Column */}
-                            <div>
-                              <h3
-                                style={{
-                                  fontSize: 18,
-                                  fontWeight: 700,
-                                  margin: '0 0 16px 0',
-                                  color: colors.textPrimary,
-                                }}
-                              >
-                                Cost
-                              </h3>
-                              <table
-                                style={{
-                                  width: '100%',
-                                  borderCollapse: 'collapse',
-                                }}
-                              >
-                                <tbody>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Total Budget Cost
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Spent to Date
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Remaining Cost
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      % Complete Cost
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      0%
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-
-                              {/* Cash Flow */}
-                              <h3
-                                style={{
-                                  fontSize: 18,
-                                  fontWeight: 700,
-                                  margin: '32px 0 16px 0',
-                                  color: colors.textPrimary,
-                                }}
-                              >
-                                Cash Flow
-                              </h3>
-                              <table
-                                style={{
-                                  width: '100%',
-                                  borderCollapse: 'collapse',
-                                }}
-                              >
-                                <tbody>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Cash In
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Cash Out
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      Net Cash Flow
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 700,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-
-                              {/* Gross Profit */}
-                              <h3
-                                style={{
-                                  fontSize: 18,
-                                  fontWeight: 700,
-                                  margin: '32px 0 16px 0',
-                                  color: colors.textPrimary,
-                                }}
-                              >
-                                Gross Profit
-                              </h3>
-                              <table
-                                style={{
-                                  width: '100%',
-                                  borderCollapse: 'collapse',
-                                }}
-                              >
-                                <tbody>
-                                  <tr
-                                    style={{
-                                      borderBottom: '1px solid #e5dfd5',
-                                    }}
-                                  >
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Projected GP
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {money(0)}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        color: colors.textSecondary,
-                                      }}
-                                    >
-                                      Projected GP %
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: '8px 0',
-                                        fontSize: 14,
-                                        textAlign: 'right',
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      0%
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        </div>
-                      </>
+                    {activeTab === 'overview' && project && (
+                      <FinancialOverview project={project} variant="mobile" />
                     )}
 
                     {/* Billing Tab with Sub-tabs */}
@@ -2396,6 +1251,11 @@ export default function ProjectDetail() {
                         )}
                       </>
                     )}
+
+                    {/* Change Orders Tab */}
+                    {activeTab === 'changeorders' && id && (
+                      <ChangeOrdersSection projectId={id} />
+                    )}
                   </div>
                 </div>
               )}
@@ -2403,17 +1263,28 @@ export default function ProjectDetail() {
 
             {/* Right Sidebar: Project Status above Comments */}
             <div style={styles.rightSidebarStyle} className="right-sidebar">
-              {!editMode && (
-                <div style={styles.statusCardStyle} className="status-card">
-                  <ProjectStatusBlock
-                    project={project}
-                    stages={stages}
-                    advancing={advancing}
-                    onAdvanceToNextStage={advanceToNextStage}
-                    onGoToPreviousStage={goToPreviousStage}
-                  />
-                </div>
-              )}
+              <div style={styles.statusCardStyle} className="status-card">
+                <ProjectStatusBlock
+                  project={project}
+                  stages={stages}
+                  advancing={advancing}
+                  onAdvanceToNextStage={advanceToNextStage}
+                  onGoToPreviousStage={goToPreviousStage}
+                  onProjectStageChange={(newStageId) => {
+                    const s = stages.find((st) => st.id === newStageId);
+                    setProject((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            stage_id: newStageId,
+                            stage: s?.name ?? prev.stage,
+                            stage_order: s?.order ?? prev.stage_order,
+                          }
+                        : prev
+                    );
+                  }}
+                />
+              </div>
               {id && (
                 <div className="comments-section">
                   <CommentsSection
@@ -2427,6 +1298,25 @@ export default function ProjectDetail() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modals */}
+      {companiesModal.open && companiesModal.companyType && (
+        <CompaniesModal
+          open={companiesModal.open}
+          onClose={() => {
+            setCompaniesModal({ open: false, companyType: null, label: '' });
+          }}
+          companyType={companiesModal.companyType}
+          label={companiesModal.label}
+        />
+      )}
+
+      {showContactsModal && (
+        <ContactsModal
+          open={showContactsModal}
+          onClose={() => setShowContactsModal(false)}
+        />
       )}
     </div>
   );
@@ -2452,44 +1342,5 @@ const DetailItem = ({
   <div>
     <p style={styles.detailLabelStyle}>{label}</p>
     <p style={styles.detailValueStyle}>{value || '—'}</p>
-  </div>
-);
-
-const ModuleCard = ({
-  title,
-  description,
-  color,
-  onClick,
-}: {
-  title: string;
-  description: string;
-  color: string;
-  onClick: () => void;
-}) => (
-  <div
-    onClick={onClick}
-    style={{
-      padding: 20,
-      background: '#fff',
-      border: '1px solid #e5dfd5',
-      borderRadius: 8,
-      cursor: 'pointer',
-      transition: 'all 0.2s',
-      borderLeft: `4px solid ${color}`,
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.borderColor = color;
-      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.borderColor = '#e5dfd5';
-      e.currentTarget.style.borderLeftColor = color;
-      e.currentTarget.style.boxShadow = 'none';
-    }}
-  >
-    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color }}>{title}</h3>
-    <p style={{ margin: '4px 0 0', fontSize: 14, color: colors.textSecondary }}>
-      {description}
-    </p>
   </div>
 );

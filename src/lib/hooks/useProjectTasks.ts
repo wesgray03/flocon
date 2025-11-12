@@ -50,28 +50,19 @@ export function useProjectTasks(
         .filter((s) => s.order < currentStage.order)
         .map((s) => s.id);
 
-      // Query with LEFT JOIN to get completion status per project
-      const buildQuery = (stageIds: string[]) => `
-        project_tasks.id,
-        project_tasks.name,
-        project_tasks.stage_id,
-        project_tasks.order_num,
-        COALESCE(project_task_completion.complete, false) as complete
-      `;
-
       const [{ data: current }, { data: allPrior }, { data: next }] =
         await Promise.all([
           supabase
-            .from('project_tasks')
+            .from('engagement_tasks')
             .select(
               `
               id,
               name,
               stage_id,
               order_num,
-              project_task_completion!left(
+              engagement_task_completion!left(
                 complete,
-                project_id
+                engagement_id
               )
             `
             )
@@ -79,52 +70,63 @@ export function useProjectTasks(
             .order('order_num', { ascending: true }),
           priorStageIds.length > 0
             ? supabase
-                .from('project_tasks')
+                .from('engagement_tasks')
                 .select(
                   `
                   id,
                   name,
                   stage_id,
                   order_num,
-                  project_task_completion!left(
+                  engagement_task_completion!left(
                     complete,
-                    project_id
+                    engagement_id
                   )
                 `
                 )
                 .in('stage_id', priorStageIds)
                 .order('order_num', { ascending: true })
-            : Promise.resolve({ data: [] as ProjectTask[] } as any),
+            : Promise.resolve({ data: [] as never[] }),
           nextStage
             ? supabase
-                .from('project_tasks')
+                .from('engagement_tasks')
                 .select(
                   `
                   id,
                   name,
                   stage_id,
                   order_num,
-                  project_task_completion!left(
+                  engagement_task_completion!left(
                     complete,
-                    project_id
+                    engagement_id
                   )
                 `
                 )
                 .eq('stage_id', nextStage.id)
                 .order('order_num', { ascending: true })
-            : Promise.resolve({ data: [] as ProjectTask[] } as any),
+            : Promise.resolve({ data: [] as never[] }),
         ]);
 
       // Map the results to flatten the completion data
-      const mapTasks = (data: any[]): ProjectTask[] => {
-        return (data ?? []).map((task: any) => {
-          // Find completion record for THIS project
-          const completion = Array.isArray(task.project_task_completion)
-            ? task.project_task_completion.find(
-                (c: any) => c.project_id === projectId
+      type RawTask = {
+        id: string;
+        name: string;
+        stage_id: string;
+        order_num: number;
+        engagement_task_completion?:
+          | { complete: boolean; engagement_id: string }[]
+          | { complete: boolean; engagement_id: string }
+          | null;
+      };
+      const mapTasks = (data: RawTask[] | null | undefined): ProjectTask[] => {
+        return (data ?? []).map((task: RawTask) => {
+          const completion = Array.isArray(task.engagement_task_completion)
+            ? task.engagement_task_completion.find(
+                (c) => c.engagement_id === projectId
               )
-            : task.project_task_completion?.project_id === projectId
-              ? task.project_task_completion
+            : task.engagement_task_completion &&
+                'engagement_id' in task.engagement_task_completion &&
+                task.engagement_task_completion.engagement_id === projectId
+              ? task.engagement_task_completion
               : null;
 
           return {
@@ -144,7 +146,8 @@ export function useProjectTasks(
     };
 
     load();
-  }, [projectId, currentStage?.id, stages, nextStage?.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, currentStage?.id]);
 
   const reload = async () => {
     if (!projectId || !currentStage) return;
@@ -159,16 +162,16 @@ export function useProjectTasks(
     const [{ data: current }, { data: allPrior }, { data: next }] =
       await Promise.all([
         supabase
-          .from('project_tasks')
+          .from('engagement_tasks')
           .select(
             `
             id,
             name,
             stage_id,
             order_num,
-            project_task_completion!left(
+            engagement_task_completion!left(
               complete,
-              project_id
+              engagement_id
             )
           `
           )
@@ -176,52 +179,73 @@ export function useProjectTasks(
           .order('order_num', { ascending: true }),
         priorStageIds.length > 0
           ? supabase
-              .from('project_tasks')
+              .from('engagement_tasks')
               .select(
                 `
                 id,
                 name,
                 stage_id,
                 order_num,
-                project_task_completion!left(
+                engagement_task_completion!left(
                   complete,
-                  project_id
+                  engagement_id
                 )
               `
               )
               .in('stage_id', priorStageIds)
               .order('order_num', { ascending: true })
-          : Promise.resolve({ data: [] as ProjectTask[] } as any),
+          : Promise.resolve({ data: [] as never[] }),
         nextStage
           ? supabase
-              .from('project_tasks')
+              .from('engagement_tasks')
               .select(
                 `
                 id,
                 name,
                 stage_id,
                 order_num,
-                project_task_completion!left(
+                engagement_task_completion!left(
                   complete,
-                  project_id
+                  engagement_id
                 )
               `
               )
               .eq('stage_id', nextStage.id)
               .order('order_num', { ascending: true })
-          : Promise.resolve({ data: [] as ProjectTask[] } as any),
+          : Promise.resolve({ data: [] as never[] }),
       ]);
 
     // Map the results to flatten the completion data
-    const mapTasks = (data: any[]): ProjectTask[] => {
-      return (data ?? []).map((task: any) => {
-        // Find completion record for THIS project
-        const completion = Array.isArray(task.project_task_completion)
-          ? task.project_task_completion.find(
-              (c: any) => c.project_id === projectId
+    type RawTask2 = {
+      id: string;
+      name: string;
+      stage_id: string;
+      order_num: number;
+      engagement_task_completion?:
+        | { complete: boolean; project_id?: string; engagement_id?: string }[]
+        | { complete: boolean; project_id?: string; engagement_id?: string }
+        | null;
+    };
+    const mapTasks = (data: RawTask2[] | null | undefined): ProjectTask[] => {
+      return (data ?? []).map((task: RawTask2) => {
+        const completion = Array.isArray(task.engagement_task_completion)
+          ? task.engagement_task_completion.find(
+              (c) => c.project_id === projectId || c.engagement_id === projectId
             )
-          : task.project_task_completion?.project_id === projectId
-            ? task.project_task_completion
+          : task.engagement_task_completion &&
+              ((
+                task.engagement_task_completion as {
+                  project_id?: string;
+                  engagement_id?: string;
+                }
+              ).project_id === projectId ||
+                (
+                  task.engagement_task_completion as {
+                    project_id?: string;
+                    engagement_id?: string;
+                  }
+                ).engagement_id === projectId)
+            ? (task.engagement_task_completion as { complete: boolean })
             : null;
 
         return {
@@ -245,9 +269,9 @@ export function useProjectTasks(
 
     // Check if completion record exists
     const { data: existing } = await supabase
-      .from('project_task_completion')
+      .from('engagement_task_completion')
       .select('id')
-      .eq('project_id', projectId)
+      .eq('engagement_id', projectId)
       .eq('task_id', taskId)
       .maybeSingle();
 
@@ -255,14 +279,14 @@ export function useProjectTasks(
     if (existing) {
       // Update existing record
       const result = await supabase
-        .from('project_task_completion')
+        .from('engagement_task_completion')
         .update({ complete: !complete })
         .eq('id', existing.id);
       error = result.error;
     } else {
       // Insert new record
-      const result = await supabase.from('project_task_completion').insert({
-        project_id: projectId,
+      const result = await supabase.from('engagement_task_completion').insert({
+        engagement_id: projectId,
         task_id: taskId,
         complete: !complete,
       });

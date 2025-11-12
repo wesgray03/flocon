@@ -1,0 +1,7 @@
+id,name,company_type,is_customer,is_vendor,is_subcontractor,address,city,state,zip,phone,email
+30000001-0000-0000-0000-000000000001,ABC General Contractors,LLC,true,false,false,123 Main St,Phoenix,AZ,85001,602-555-0101,contact@abcgc.com
+30000002-0000-0000-0000-000000000002,XYZ Commercial Properties,Corporation,true,false,false,456 Commerce Dr,Scottsdale,AZ,85251,480-555-0102,info@xyzprop.com
+30000003-0000-0000-0000-000000000003,Quality Flooring Supplies,LLC,false,true,false,789 Industrial Pkwy,Tempe,AZ,85281,480-555-0103,sales@qualityflooring.com
+30000004-0000-0000-0000-000000000004,Elite Concrete Prep,LLC,false,false,true,321 Trade Center,Mesa,AZ,85201,480-555-0104,jobs@eliteconcrete.com
+30000005-0000-0000-0000-000000000005,"Smith's Demolition & Prep",Sole Proprietor,false,false,true,654 Worker Blvd,Chandler,AZ,85224,480-555-0105,tom@smithsdemo.com
+30000006-0000-0000-0000-000000000006,Phoenix School District,Government,true,false,false,999 Education Way,Phoenix,AZ,85003,602-555-0106,facilities@phxschools.org

@@ -1,0 +1,3 @@
+id,company_id,insurance_status,insurance_exp_date,license_number,license_state,license_exp_date,scope_of_work,compliance_status,notes,created_at
+82000001-0000-0000-0000-000000000001,30000004-0000-0000-0000-000000000004,current,2025-12-31,ROC-12345,AZ,2025-12-31,Concrete prep and leveling,compliant,Excellent track record,2024-01-01
+82000002-0000-0000-0000-000000000002,30000005-0000-0000-0000-000000000005,current,2025-06-30,ROC-67890,AZ,2025-06-30,Demolition and removal,compliant,Reliable for quick jobs,2024-01-01

@@ -1,0 +1,8 @@
+{
+  "tasks": {
+    "notify-mention": "deno run --allow-net --allow-env --allow-read supabase/functions/notify-mention/index.ts"
+  },
+  "compilerOptions": {
+    "strict": true
+  }
+}

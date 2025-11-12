@@ -25,7 +25,7 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    user_type: 'Owner' as 'Owner' | 'Admin' | 'Foreman',
+    user_type: 'Office' as 'Admin' | 'Office' | 'Field',
   });
 
   const load = async () => {
@@ -55,7 +55,6 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
 
   useEffect(() => {
     if (open) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {
@@ -68,7 +67,7 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
   }, [open, onClose]);
 
   const resetForm = () => {
-    setFormData({ name: '', email: '', user_type: 'Owner' });
+    setFormData({ name: '', email: '', user_type: 'Office' });
     setEditingId(null);
     setShowForm(false);
   };
@@ -83,7 +82,7 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
     setFormData({
       name: user.name,
       email: user.email,
-      user_type: user.user_type as 'Owner' | 'Admin' | 'Foreman',
+      user_type: user.user_type as 'Admin' | 'Office' | 'Field',
     });
     setShowForm(true);
   };
@@ -180,14 +179,14 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    user_type: e.target.value as 'Owner' | 'Admin' | 'Foreman',
+                    user_type: e.target.value as 'Admin' | 'Office' | 'Field',
                   })
                 }
                 style={styles.input}
               >
-                <option value="Owner">Owner</option>
                 <option value="Admin">Admin</option>
-                <option value="Foreman">Foreman</option>
+                <option value="Office">Office</option>
+                <option value="Field">Field</option>
               </select>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button type="button" onClick={save} style={styles.btnSave}>
@@ -206,7 +205,9 @@ export function UsersModal({ open, onClose }: UsersModalProps) {
         )}
 
         {loading && <p style={{ color: colors.textSecondary }}>Loading...</p>}
-        {loadError && <p style={{ color: colors.logoRed }}>Error: {loadError}</p>}
+        {loadError && (
+          <p style={{ color: colors.logoRed }}>Error: {loadError}</p>
+        )}
 
         <div style={{ maxHeight: 720, overflowY: 'auto' }}>
           <table style={styles.table}>

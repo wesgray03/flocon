@@ -1,0 +1,32 @@
+name,id,company_id,company_id_1,title,contact_type,is_primary
+Justin Singleton,76fd1934-6c6e-4287-b0e7-1967f015e6e2,65c239f9-2470-480d-9cf0-ad198087ca08,JE Dunn Construction,Project Manager,Project Manager,TRUE
+Kyle Raczka,a1e8f624-6080-40d9-9ac9-d623f2039075,65c239f9-2470-480d-9cf0-ad198087ca08,JE Dunn Construction,Project Manager,Project Manager,TRUE
+Nick Sims,d9d7d177-75ce-49e3-9bf6-44089db9fb0f,4398923e-ecab-49f4-b69f-f1b1db1cda80,"Aagaard-Juergensen, LLC",Project Manager,Project Manager,TRUE
+Sam Debrah,c0af6a8e-86e0-4413-b18f-07ecb1e67ea5,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Cole Cheek,cef6be7c-0bd0-4a79-af2e-0e35efe407db,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Jose Martinez,e84a355b-1ad8-4f38-9496-fa416c992431,b9ed0b05-51f4-4c80-8a33-904432edcbd1,"Reliable Service, LLC",Project Manager,Project Manager,TRUE
+Ted Davidson,d797159d-8365-4157-b3cb-fecd0cb27653,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Chuck Phillips,6fc3749d-2027-4eb1-8711-7b923b4e9300,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Rob Tabeling,d35a40ae-bfb0-4f20-8ac0-2231ae70940c,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Ben Hall,04401236-39e7-42a0-bd76-036591acd051,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Matt Nelson,71489099-02b9-456b-99bf-c365a454172b,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Robert Behanan,b5d2daa3-cfcb-4823-9109-8e84d431d60b,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Greg Estes,8b2e4813-6100-40cc-a7ee-b2d8689f5acd,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Daniel Freeman,89883f91-f05a-4aad-b47e-fc44a95948a6,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+David Miles,54893a57-f35e-4f54-bed9-6d09020e3fe3,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Mike Moore,8e03c189-34a9-4477-aa3d-73925c8618e6,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Adam Russell,bfe50c14-c255-41fb-bfbb-eb595c464ec2,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Wes Elrod,8a7671d4-68a7-4dda-81ba-15e12b3853f8,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Sam Thomas,97b21f5e-3032-49fe-bfc2-0cc9dea5f480,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Ethan Sanders,a330390c-fcff-45d5-8a6c-5f016b5eb507,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Skylar Caldwell,1253eb1f-f00d-421a-82fd-065b48cc07fb,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Jonathan Byrd,4899569e-9d68-4cd4-bba0-d7a190b0f131,4398923e-ecab-49f4-b69f-f1b1db1cda80,"Aagaard-Juergensen, LLC",Project Manager,Project Manager,TRUE
+Chris Scheide,ae9b5144-8295-49d5-a173-5ad492ea4ed9,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Alaena Hacker,b79837b4-2651-4473-ba2a-bcdca2bd81e8,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Dominique Boyd,b356b8f7-5240-418a-98a7-dacc44abb12c,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Matt Herrmsenwhite,f54e1d58-95fd-4e2d-82d3-750b4e7961ff,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+James Rose,b6c3e268-0655-4998-bb6e-14c4151a09e8,ec1eb205-a1c0-42e4-83bf-6929d2308a45,DPR Construction,Project Manager,Project Manager,TRUE
+Joe Tackett,08033be2-1930-4e12-898d-ffbee77dc4e4,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Rachel Aiello,44d7590d-4185-4767-bbeb-ec6b87ff945a,fda317ab-70e1-4a09-96e4-a9206b322aa2,"D.F. Chase, Inc.",Project Manager,Project Manager,TRUE
+Linley Wade,49264aea-b946-4c0e-9d7f-a004e2c404cd,65c239f9-2470-480d-9cf0-ad198087ca08,JE Dunn Construction,Project Manager,Project Manager,TRUE
+Tim Osgood,47cebe71-bae5-4d88-b74d-8e0780d3e01d,652972e5-5f73-452a-9c78-4896ff7da3ed,W Austin,Project Manager,Project Manager,TRUE

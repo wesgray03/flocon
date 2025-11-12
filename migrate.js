@@ -27,7 +27,7 @@ async function initMigrationTable(supabase) {
   `;
 
   const { error } = await supabase.rpc('exec_sql', {
-    sql_query: createTableSQL,
+    sql: createTableSQL,
   });
   if (error) {
     console.error('Error creating migration table:', error);
@@ -125,7 +125,7 @@ async function runMigrations(environment) {
       const sql = fs.readFileSync(path.join(migrationPath, file), 'utf8');
       const checksum = calculateChecksum(sql);
 
-      const { error } = await supabase.rpc('exec_sql', { sql_query: sql });
+      const { error } = await supabase.rpc('exec_sql', { sql });
 
       if (error) {
         console.error(`❌ Error in ${file}:`, error);

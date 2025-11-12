@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 export type Subcontractor = { id: string; name: string };
 export type ProjectSubcontractor = {
   id: string;
-  subcontractor_id: string;
+  company_id: string;
   subcontractor_name: string;
   work_order_number: string | null;
   assigned_date: string | null;
@@ -26,7 +26,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
   >([]);
   const [showAdd, setShowAdd] = useState(false);
   const [newSub, setNewSub] = useState({
-    subcontractor_id: '',
+    company_id: '',
     work_order_number: '',
     assigned_date: '',
     notes: '',
@@ -37,27 +37,37 @@ export default function SubcontractorsSection({ projectId }: Props) {
 
     const load = async () => {
       const [{ data: subs }, { data: projSubs }] = await Promise.all([
-        supabase.from('subcontractors').select('id, name').order('name'),
         supabase
-          .from('project_subcontractors')
-          .select(
-            'id, subcontractor_id, work_order_number, assigned_date, notes'
-          )
-          .eq('project_id', projectId),
+          .from('companies')
+          .select('id, name')
+          .eq('is_subcontractor', true)
+          .order('name'),
+        supabase
+          .from('engagement_subcontractors')
+          .select('id, company_id, work_order_number, assigned_date, notes')
+          .eq('engagement_id', projectId),
       ]);
 
       setAllSubcontractors((subs ?? []) as Subcontractor[]);
 
-      const mapped = (projSubs ?? []).map((ps: any) => ({
-        id: ps.id,
-        subcontractor_id: ps.subcontractor_id,
-        subcontractor_name:
-          (subs ?? []).find((s: any) => s.id === ps.subcontractor_id)?.name ||
-          'Unknown',
-        work_order_number: ps.work_order_number,
-        assigned_date: ps.assigned_date,
-        notes: ps.notes,
-      }));
+      const subsList = (subs ?? []) as Subcontractor[];
+      const mapped = (projSubs ?? []).map(
+        (ps: {
+          id: string;
+          company_id: string;
+          work_order_number: string | null;
+          assigned_date: string | null;
+          notes: string | null;
+        }) => ({
+          id: ps.id,
+          company_id: ps.company_id,
+          subcontractor_name:
+            subsList.find((s) => s.id === ps.company_id)?.name || 'Unknown',
+          work_order_number: ps.work_order_number,
+          assigned_date: ps.assigned_date,
+          notes: ps.notes,
+        })
+      );
       setProjectSubcontractors(mapped);
     };
 
@@ -65,18 +75,18 @@ export default function SubcontractorsSection({ projectId }: Props) {
   }, [projectId]);
 
   const handleAdd = async () => {
-    if (!projectId || !newSub.subcontractor_id) return;
+    if (!projectId || !newSub.company_id) return;
 
     const { data, error } = await supabase
-      .from('project_subcontractors')
+      .from('engagement_subcontractors')
       .insert({
-        project_id: projectId,
-        subcontractor_id: newSub.subcontractor_id,
+        engagement_id: projectId,
+        company_id: newSub.company_id,
         work_order_number: newSub.work_order_number || null,
         assigned_date: newSub.assigned_date || null,
         notes: newSub.notes || null,
       })
-      .select('id, subcontractor_id, work_order_number, assigned_date, notes')
+      .select('id, company_id, work_order_number, assigned_date, notes')
       .single();
 
     if (error) {
@@ -86,9 +96,9 @@ export default function SubcontractorsSection({ projectId }: Props) {
 
     const added: ProjectSubcontractor = {
       id: data.id,
-      subcontractor_id: data.subcontractor_id,
+      company_id: data.company_id,
       subcontractor_name:
-        allSubcontractors.find((s) => s.id === data.subcontractor_id)?.name ||
+        allSubcontractors.find((s) => s.id === data.company_id)?.name ||
         'Unknown',
       work_order_number: data.work_order_number,
       assigned_date: data.assigned_date,
@@ -98,7 +108,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
     setProjectSubcontractors((prev) => [...prev, added]);
     setShowAdd(false);
     setNewSub({
-      subcontractor_id: '',
+      company_id: '',
       work_order_number: '',
       assigned_date: '',
       notes: '',
@@ -110,7 +120,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
     if (!ok) return;
 
     const { error } = await supabase
-      .from('project_subcontractors')
+      .from('engagement_subcontractors')
       .delete()
       .eq('id', id);
 
@@ -133,7 +143,12 @@ export default function SubcontractorsSection({ projectId }: Props) {
         }}
       >
         <p
-          style={{ margin: 0, fontSize: 13, fontWeight: 600, color: colors.textPrimary }}
+          style={{
+            margin: 0,
+            fontSize: 13,
+            fontWeight: 600,
+            color: colors.textPrimary,
+          }}
         >
           Subcontractors
         </p>
@@ -210,11 +225,6 @@ export default function SubcontractorsSection({ projectId }: Props) {
                   <Trash2 size={16} />
                 </button>
               </div>
-              {ps.work_order_number && (
-                <div style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>
-                  WO: {ps.work_order_number}
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -245,9 +255,9 @@ export default function SubcontractorsSection({ projectId }: Props) {
           >
             Subcontractor
             <select
-              value={newSub.subcontractor_id}
+              value={newSub.company_id}
               onChange={(e) =>
-                setNewSub((p) => ({ ...p, subcontractor_id: e.target.value }))
+                setNewSub((p) => ({ ...p, company_id: e.target.value }))
               }
               style={{
                 width: '100%',
@@ -264,59 +274,6 @@ export default function SubcontractorsSection({ projectId }: Props) {
                 </option>
               ))}
             </select>
-          </label>
-          <label
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: colors.textPrimary,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-            }}
-          >
-            Work Order # (optional)
-            <input
-              type="text"
-              value={newSub.work_order_number}
-              onChange={(e) =>
-                setNewSub((p) => ({ ...p, work_order_number: e.target.value }))
-              }
-              placeholder="e.g. WO-123"
-              style={{
-                width: '100%',
-                padding: '6px 8px',
-                fontSize: 13,
-                border: '1px solid #cbd5e1',
-                borderRadius: 4,
-              }}
-            />
-          </label>
-          <label
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: colors.textPrimary,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-            }}
-          >
-            Assigned Date (optional)
-            <input
-              type="date"
-              value={newSub.assigned_date}
-              onChange={(e) =>
-                setNewSub((p) => ({ ...p, assigned_date: e.target.value }))
-              }
-              style={{
-                width: '100%',
-                padding: '6px 8px',
-                fontSize: 13,
-                border: '1px solid #cbd5e1',
-                borderRadius: 4,
-              }}
-            />
           </label>
           <label
             style={{
@@ -366,7 +323,7 @@ export default function SubcontractorsSection({ projectId }: Props) {
               onClick={() => {
                 setShowAdd(false);
                 setNewSub({
-                  subcontractor_id: '',
+                  company_id: '',
                   work_order_number: '',
                   assigned_date: '',
                   notes: '',

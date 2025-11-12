@@ -1,26 +1,29 @@
 // pages/change-orders/[projectId].tsx
-import { colors } from '@/styles/theme';
 import { supabase } from '@/lib/supabaseClient';
+import { colors } from '@/styles/theme';
 import { Pencil, Trash2 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
-
-type Project = {
-  id: string;
-  qbid: string | null;
-  name: string;
-};
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 type ChangeOrder = {
   id: string;
-  project_id: string;
-  co_number: string | null;
+  engagement_id: string;
+  current_status: 'Open' | 'Authorized' | 'Issued' | 'Closed';
   description: string;
+  notes: string | null;
+  date_requested: string;
+  date_authorized: string | null;
+  date_issued: string | null;
   amount: number;
-  status: string | null;
-  date: string | null;
+  customer_co_number: string | null;
   created_at: string;
+  updated_at: string;
+};
+
+type Project = {
+  id: string;
+  name: string;
+  contract_amount: number | null;
 };
 
 export default function ChangeOrdersPage() {
@@ -36,11 +39,11 @@ export default function ChangeOrdersPage() {
   const [editingCO, setEditingCO] = useState<ChangeOrder | null>(null);
 
   const [form, setForm] = useState({
-    co_number: '',
+    current_status: 'Open' as 'Open' | 'Authorized' | 'Issued' | 'Closed',
     description: '',
     amount: '',
-    status: 'Pending',
-    date: '',
+    customer_co_number: '',
+    notes: '',
   });
 
   useEffect(() => {
@@ -50,8 +53,8 @@ export default function ChangeOrdersPage() {
 
       // Load project info
       const { data: proj, error: projErr } = await supabase
-        .from('projects')
-        .select('id,qbid,name')
+        .from('engagements')
+        .select('id,name,contract_amount')
         .eq('id', projectId)
         .single();
 
@@ -64,10 +67,11 @@ export default function ChangeOrdersPage() {
 
       // Load change orders
       const { data: cos, error: cosErr } = await supabase
-        .from('change_orders')
+        .from('engagement_change_orders')
         .select('*')
-        .eq('project_id', projectId)
-        .order('date', { ascending: false });
+        .eq('engagement_id', projectId)
+        .eq('deleted', false)
+        .order('date_requested', { ascending: false });
 
       if (cosErr) {
         console.error(cosErr);
@@ -105,7 +109,9 @@ export default function ChangeOrdersPage() {
   }, [changeOrders]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
@@ -114,11 +120,11 @@ export default function ChangeOrdersPage() {
   const openForNew = () => {
     setEditingCO(null);
     setForm({
-      co_number: '',
+      current_status: 'Open',
       description: '',
       amount: '',
-      status: 'Pending',
-      date: new Date().toISOString().split('T')[0],
+      customer_co_number: '',
+      notes: '',
     });
     setShowModal(true);
   };
@@ -126,11 +132,11 @@ export default function ChangeOrdersPage() {
   const openForEdit = (co: ChangeOrder) => {
     setEditingCO(co);
     setForm({
-      co_number: co.co_number || '',
+      current_status: co.current_status,
       description: co.description,
       amount: co.amount.toString(),
-      status: co.status || 'Pending',
-      date: co.date || '',
+      customer_co_number: co.customer_co_number || '',
+      notes: co.notes || '',
     });
     setShowModal(true);
   };
@@ -143,24 +149,24 @@ export default function ChangeOrdersPage() {
     setSaving(true);
     try {
       const payload = {
-        project_id: projectId,
-        co_number: form.co_number || null,
-        description: form.description,
+        engagement_id: projectId,
+        current_status: form.current_status,
+        description: form.description.trim(),
         amount: Number(form.amount) || 0,
-        status: form.status || 'Pending',
-        date: form.date || null,
+        customer_co_number: form.customer_co_number.trim() || null,
+        notes: form.notes.trim() || null,
       };
 
       let error = null;
       if (editingCO) {
         const { error: err } = await supabase
-          .from('change_orders')
+          .from('engagement_change_orders')
           .update(payload)
           .eq('id', editingCO.id);
         error = err;
       } else {
         const { error: err } = await supabase
-          .from('change_orders')
+          .from('engagement_change_orders')
           .insert([payload]);
         error = err;
       }
@@ -171,10 +177,11 @@ export default function ChangeOrdersPage() {
         setShowModal(false);
         // Reload change orders
         const { data: cos } = await supabase
-          .from('change_orders')
+          .from('engagement_change_orders')
           .select('*')
-          .eq('project_id', projectId)
-          .order('date', { ascending: false });
+          .eq('engagement_id', projectId)
+          .eq('deleted', false)
+          .order('date_requested', { ascending: false });
         setChangeOrders((cos ?? []) as ChangeOrder[]);
       }
     } catch (err) {
@@ -189,7 +196,7 @@ export default function ChangeOrdersPage() {
     if (!confirm('Delete this change order?')) return;
 
     const { error } = await supabase
-      .from('change_orders')
+      .from('engagement_change_orders')
       .delete()
       .eq('id', id);
 
@@ -211,12 +218,20 @@ export default function ChangeOrdersPage() {
       }}
     >
       <div style={{ marginBottom: 16 }}>
-        <Link
-          href="/projects"
-          style={{ color: colors.navy, textDecoration: 'none' }}
+        <button
+          type="button"
+          onClick={() => router.push('/projects')}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: colors.navy,
+            cursor: 'pointer',
+            fontSize: 14,
+            padding: 0,
+          }}
         >
           ← Back to Projects
-        </Link>
+        </button>
       </div>
 
       {loading ? (
@@ -238,14 +253,9 @@ export default function ChangeOrdersPage() {
             <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 8 }}>
               Change Orders
             </h1>
-            <p style={{ color: colors.textSecondary, marginBottom: 4 }}>
+            <p style={{ color: colors.textSecondary, marginBottom: 0 }}>
               Project: <strong>{project.name}</strong>
             </p>
-            {project.qbid && (
-              <p style={{ color: colors.textSecondary, marginBottom: 0 }}>
-                QBID: {project.qbid}
-              </p>
-            )}
           </div>
 
           <div
@@ -269,7 +279,13 @@ export default function ChangeOrdersPage() {
                 <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
                   Change Orders ({changeOrders.length})
                 </h2>
-                <p style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}>
+                <p
+                  style={{
+                    color: colors.textSecondary,
+                    fontSize: 14,
+                    marginTop: 4,
+                  }}
+                >
                   Total: {money(totalAmount)}
                 </p>
               </div>
@@ -292,8 +308,15 @@ export default function ChangeOrdersPage() {
             </div>
 
             {changeOrders.length === 0 ? (
-              <p style={{ color: colors.textSecondary, textAlign: 'center', padding: 24 }}>
-                No change orders yet. Click "+ New Change Order" to add one.
+              <p
+                style={{
+                  color: colors.textSecondary,
+                  textAlign: 'center',
+                  padding: 24,
+                }}
+              >
+                No change orders yet. Click &quot;+ New Change Order&quot; to
+                add one.
               </p>
             ) : (
               <div style={{ overflowX: 'auto' }}>
@@ -306,20 +329,18 @@ export default function ChangeOrdersPage() {
                 >
                   <thead>
                     <tr style={{ background: '#f0ebe3' }}>
-                      <th style={th}>CO #</th>
+                      <th style={th}>Status</th>
                       <th style={th}>Description</th>
                       <th style={thRight}>Amount</th>
-                      <th style={th}>Status</th>
-                      <th style={th}>Date</th>
+                      <th style={th}>Customer CO #</th>
+                      <th style={th}>Date Requested</th>
+                      <th style={th}>Date Authorized</th>
                       <th style={thCenter}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {changeOrders.map((co) => (
                       <tr key={co.id}>
-                        <td style={td}>{co.co_number ?? '—'}</td>
-                        <td style={td}>{co.description}</td>
-                        <td style={tdRight}>{money(co.amount)}</td>
                         <td style={td}>
                           <span
                             style={{
@@ -328,29 +349,39 @@ export default function ChangeOrdersPage() {
                               fontSize: 12,
                               fontWeight: 500,
                               background:
-                                co.status === 'Approved'
+                                co.current_status === 'Closed'
                                   ? '#e0e7ee'
-                                  : co.status === 'Rejected'
-                                    ? '#fee2e2'
-                                    : '#ebe5db',
+                                  : co.current_status === 'Authorized'
+                                    ? '#d1fae5'
+                                    : co.current_status === 'Issued'
+                                      ? '#fef3c7'
+                                      : '#ebe5db',
                               border:
-                                co.status === 'Approved'
+                                co.current_status === 'Closed'
                                   ? '1px solid #64748b'
-                                  : co.status === 'Rejected'
-                                    ? '1px solid #f5c2c7'
-                                    : '1px solid #fde68a',
+                                  : co.current_status === 'Authorized'
+                                    ? '1px solid #34d399'
+                                    : co.current_status === 'Issued'
+                                      ? '1px solid #fde68a'
+                                      : '1px solid #d6d3d1',
                               color:
-                                co.status === 'Approved'
+                                co.current_status === 'Closed'
                                   ? '#475569'
-                                  : co.status === 'Rejected'
-                                    ? '#991b1b'
-                                    : '#854d0e',
+                                  : co.current_status === 'Authorized'
+                                    ? '#065f46'
+                                    : co.current_status === 'Issued'
+                                      ? '#854d0e'
+                                      : '#78716c',
                             }}
                           >
-                            {co.status ?? 'Pending'}
+                            {co.current_status}
                           </span>
                         </td>
-                        <td style={td}>{dateStr(co.date)}</td>
+                        <td style={td}>{co.description}</td>
+                        <td style={tdRight}>{money(co.amount)}</td>
+                        <td style={td}>{co.customer_co_number ?? '—'}</td>
+                        <td style={td}>{dateStr(co.date_requested)}</td>
+                        <td style={td}>{dateStr(co.date_authorized)}</td>
                         <td style={tdCenter}>
                           <button
                             type="button"
@@ -413,47 +444,124 @@ export default function ChangeOrdersPage() {
               <div
                 style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
               >
-                <input
-                  name="co_number"
-                  placeholder="CO Number"
-                  value={form.co_number}
-                  onChange={handleChange}
-                  style={input}
-                />
-                <input
-                  name="description"
-                  placeholder="Description *"
-                  value={form.description}
-                  onChange={handleChange}
-                  style={input}
-                  required
-                />
-                <input
-                  name="amount"
-                  placeholder="Amount"
-                  type="number"
-                  step="0.01"
-                  value={form.amount}
-                  onChange={handleChange}
-                  style={input}
-                />
-                <select
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                  style={input}
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-                <input
-                  name="date"
-                  type="date"
-                  value={form.date}
-                  onChange={handleChange}
-                  style={input}
-                />
+                <div>
+                  <label
+                    htmlFor="current_status"
+                    style={{
+                      fontSize: 12,
+                      color: '#6b5e50',
+                      marginBottom: 4,
+                      display: 'block',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Status *
+                  </label>
+                  <select
+                    id="current_status"
+                    name="current_status"
+                    value={form.current_status}
+                    onChange={handleChange}
+                    style={input}
+                    required
+                  >
+                    <option value="Open">Open</option>
+                    <option value="Authorized">Authorized</option>
+                    <option value="Issued">Issued</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="description"
+                    style={{
+                      fontSize: 12,
+                      color: '#6b5e50',
+                      marginBottom: 4,
+                      display: 'block',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Description *
+                  </label>
+                  <input
+                    id="description"
+                    name="description"
+                    placeholder="Description"
+                    value={form.description}
+                    onChange={handleChange}
+                    style={input}
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="amount"
+                    style={{
+                      fontSize: 12,
+                      color: '#6b5e50',
+                      marginBottom: 4,
+                      display: 'block',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Amount
+                  </label>
+                  <input
+                    id="amount"
+                    name="amount"
+                    placeholder="Amount"
+                    type="number"
+                    step="0.01"
+                    value={form.amount}
+                    onChange={handleChange}
+                    style={input}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="customer_co_number"
+                    style={{
+                      fontSize: 12,
+                      color: '#6b5e50',
+                      marginBottom: 4,
+                      display: 'block',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Customer CO Number
+                  </label>
+                  <input
+                    id="customer_co_number"
+                    name="customer_co_number"
+                    placeholder="Customer CO Number"
+                    value={form.customer_co_number}
+                    onChange={handleChange}
+                    style={input}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="notes"
+                    style={{
+                      fontSize: 12,
+                      color: '#6b5e50',
+                      marginBottom: 4,
+                      display: 'block',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Notes
+                  </label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    placeholder="Notes"
+                    value={form.notes}
+                    onChange={handleChange}
+                    style={{ ...input, minHeight: 80, fontFamily: 'system-ui' }}
+                  />
+                </div>
               </div>
               <div
                 style={{

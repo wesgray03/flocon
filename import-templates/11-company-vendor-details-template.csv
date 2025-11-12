@@ -1,0 +1,2 @@
+id,company_id,account_number,w9_status,payment_terms,preferred_vendor,notes,created_at
+81000001-0000-0000-0000-000000000001,30000003-0000-0000-0000-000000000003,ACCT-QFS-001,received,Net 30,true,Primary flooring supplier,2024-01-01

@@ -1,0 +1,6 @@
+id,company_id,name,title,email,phone,contact_type,is_primary
+40000001-0000-0000-0000-000000000001,30000001-0000-0000-0000-000000000001,Robert Anderson,Project Manager,randerson@abcgc.com,602-555-1001,Project Manager,true
+40000002-0000-0000-0000-000000000002,30000001-0000-0000-0000-000000000001,Lisa Chen,Superintendent,lchen@abcgc.com,602-555-1002,Superintendent,false
+40000003-0000-0000-0000-000000000003,30000002-0000-0000-0000-000000000002,David Martinez,VP of Operations,dmartinez@xyzprop.com,480-555-2001,Executive,true
+40000004-0000-0000-0000-000000000004,30000002-0000-0000-0000-000000000002,Emily Thompson,Facilities Manager,ethompson@xyzprop.com,480-555-2002,Facilities Manager,false
+40000005-0000-0000-0000-000000000005,30000006-0000-0000-0000-000000000006,James Wilson,Director of Facilities,jwilson@phxschools.org,602-555-6001,Director,true

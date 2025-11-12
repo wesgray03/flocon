@@ -1,4 +1,5 @@
 // components/project/PayAppsSection.tsx
+import { toDateString, todayString } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import { colors } from '@/styles/theme';
 import { ExternalLink, Pencil, Plus, Trash2 } from 'lucide-react';
@@ -6,7 +7,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 
 type SOVLine = {
   id: string;
-  project_id: string;
+  engagement_id: string;
   line_code: string | null;
   description: string;
   division: string | null;
@@ -36,7 +37,7 @@ type SOVLineProgress = {
 
 type PayApp = {
   id: string;
-  project_id: string;
+  engagement_id: string;
   pay_app_number: string | null;
   description: string;
   amount: number;
@@ -86,9 +87,9 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
 
       // Load pay apps
       const { data: apps, error: appsErr } = await supabase
-        .from('pay_apps')
+        .from('engagement_pay_apps')
         .select('*')
-        .eq('project_id', projectId)
+        .eq('engagement_id', projectId)
         .order('date_submitted', { ascending: false });
 
       if (appsErr) {
@@ -100,9 +101,9 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
 
       // Load SOV lines
       const { data: sov, error: sovErr } = await supabase
-        .from('sov_lines')
+        .from('engagement_sov_lines')
         .select('*')
-        .eq('project_id', projectId)
+        .eq('engagement_id', projectId)
         .order('line_code', { ascending: true });
 
       if (sovErr) {
@@ -217,9 +218,9 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
     setForm({
       pay_app_number: '',
       description: '',
-      period_start: firstDay.toISOString().split('T')[0],
-      period_end: lastDay.toISOString().split('T')[0],
-      date_submitted: new Date().toISOString().split('T')[0],
+      period_start: toDateString(firstDay),
+      period_end: toDateString(lastDay),
+      date_submitted: todayString(),
       date_paid: '',
       status: 'Submitted',
     });
@@ -227,9 +228,9 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
     // Auto-load continuation sheet data
     if (sovLines.length > 0 && projectId) {
       const { data: previousPayApps } = await supabase
-        .from('pay_apps')
+        .from('engagement_pay_apps')
         .select('*')
-        .eq('project_id', projectId)
+        .eq('engagement_id', projectId)
         .not('id', 'is', null)
         .order('date_submitted', { ascending: false });
 
@@ -246,7 +247,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
       const previousProgressMap = new Map<string, number>();
       if (previousPayApp) {
         const { data: prevProgress } = await supabase
-          .from('sov_line_progress')
+          .from('engagement_sov_line_progress')
           .select(
             'sov_line_id, previous_completed, current_completed, stored_materials'
           )
@@ -298,7 +299,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
     // Load existing continuation sheet data if editing
     if (app.id) {
       const { data: progressData } = await supabase
-        .from('sov_line_progress')
+        .from('engagement_sov_line_progress')
         .select('*')
         .eq('pay_app_id', app.id);
 
@@ -353,7 +354,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
       const balanceToFinish = totalScheduledValue - totalCompletedAndStored;
 
       const payload = {
-        project_id: projectId,
+        engagement_id: projectId,
         pay_app_number: form.pay_app_number || null,
         description: form.description,
         period_start: form.period_start || null,
@@ -376,14 +377,14 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
       let payAppId: string | null = null;
       if (editingPayApp) {
         const { error: err } = await supabase
-          .from('pay_apps')
+          .from('engagement_pay_apps')
           .update(payload)
           .eq('id', editingPayApp.id);
         if (err) throw err;
         payAppId = editingPayApp.id;
       } else {
         const { data, error: err } = await supabase
-          .from('pay_apps')
+          .from('engagement_pay_apps')
           .insert([payload])
           .select('id')
           .single();
@@ -406,11 +407,13 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
 
           if (line.id) {
             await supabase
-              .from('sov_line_progress')
+              .from('engagement_sov_line_progress')
               .update(linePayload)
               .eq('id', line.id);
           } else {
-            await supabase.from('sov_line_progress').insert([linePayload]);
+            await supabase
+              .from('engagement_sov_line_progress')
+              .insert([linePayload]);
           }
         }
       }
@@ -419,9 +422,9 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
       setSovLineProgress([]);
       // Reload pay apps
       const { data: apps } = await supabase
-        .from('pay_apps')
+        .from('engagement_pay_apps')
         .select('*')
-        .eq('project_id', projectId)
+        .eq('engagement_id', projectId)
         .order('date_submitted', { ascending: false });
       setPayApps((apps ?? []) as PayApp[]);
     } catch (err) {
@@ -435,7 +438,10 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
   const deletePayApp = async (id: string) => {
     if (!confirm('Delete this pay application?')) return;
 
-    const { error } = await supabase.from('pay_apps').delete().eq('id', id);
+    const { error } = await supabase
+      .from('engagement_pay_apps')
+      .delete()
+      .eq('id', id);
 
     if (error) {
       alert('Error deleting pay app: ' + error.message);
@@ -604,7 +610,7 @@ export default function PayAppsSection({ projectId }: { projectId: string }) {
                           setViewingPayApp(app);
                           // Load continuation sheet data for this pay app
                           const { data: progressData } = await supabase
-                            .from('sov_line_progress')
+                            .from('engagement_sov_line_progress')
                             .select('*')
                             .eq('pay_app_id', app.id);
 

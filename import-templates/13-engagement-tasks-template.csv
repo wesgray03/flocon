@@ -1,0 +1,8 @@
+id,name,stage_id,order_num,description,created_at
+83000001-0000-0000-0000-000000000001,Submit insurance documents,10000001-0000-0000-0000-000000000001,1,Collect and submit all required insurance documents,2024-01-01
+83000002-0000-0000-0000-000000000002,Review and sign contract,10000001-0000-0000-0000-000000000001,2,Have customer review and sign final contract,2024-01-01
+83000003-0000-0000-0000-000000000003,Schedule kickoff meeting,10000001-0000-0000-0000-000000000001,3,Schedule project kickoff with all stakeholders,2024-01-01
+83000004-0000-0000-0000-000000000004,Submit carpet samples,10000002-0000-0000-0000-000000000002,1,Submit carpet samples for customer approval,2024-01-01
+83000005-0000-0000-0000-000000000005,Get final product selection,10000002-0000-0000-0000-000000000002,2,Obtain customer final product selections,2024-01-01
+83000006-0000-0000-0000-000000000006,Order materials,10000003-0000-0000-0000-000000000003,1,Place order with suppliers for all materials,2024-01-01
+83000007-0000-0000-0000-000000000007,Schedule delivery,10000003-0000-0000-0000-000000000003,2,Schedule material delivery to job site,2024-01-01

@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a Next.js + Supabase project for managing projects, billing, and operational workflows.
 
 ## Getting Started
 
@@ -14,26 +14,37 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Stack: Next.js 16, React 19, TypeScript 5, Supabase JS v2, ESLint 9, Prettier 3.
+- Domains:
+  - Projects: `src/domain/projects` with `useProjectCore`, list hook `useProjectsListCore`, and presentational components under `src/components/project` and `src/components/projects`.
+  - Billing: `src/domain/billing` with `useBillingCore` and planned component extractions under `src/components/billing`.
+- Utilities: `src/lib/format.ts` for currency/date formatting.
 
-## Learn More
+See domain READMEs for detailed responsibilities and roadmaps.
 
-To learn more about Next.js, take a look at the following resources:
+## Recent Changes (as of 2025-11-11)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Projects List
+  - Introduced `useProjectsListCore` with filtering/sorting and localStorage persistence (keys: `projects:list:filters`, `projects:list:sort`).
+  - Extracted `ProjectsTable` and unified stage rendering via `StageBadge` component.
+  - Added CSV export for current filtered/sorted rows.
+- Project Detail
+  - Extracted `ProjectInfoCard` and `FinancialOverview` components to remove duplicated desktop/mobile markup.
+  - Financial Overview redesign: merged “Gross Margin” and “Gross Profit” into a single “Profit” section; consolidated duplicate metrics (Total Profit %, Projected Profit %, Projected Profit $).
+- Billing
+  - Centralized loading in `useBillingCore` with `sovTotal` and `totalBilled` aggregates; component extractions planned (`SOVTable`, `PayAppsTable`, `BillingSummary`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Current Focus
+
+- Wire real financial metrics to `FinancialOverview` via a future `useProjectFinancials` hook.
+- Extract billing tables and add a top-line BillingSummary.
+- Optional: saved views for projects list; tests for hooks and components.
 
 ## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ---
 
@@ -95,3 +106,38 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-public-key>
 
 - Azure uses the tenant authority: `https://login.microsoftonline.com/<TENANT_ID>/v2.0` (no `<` `>`).
 - Supabase Auth callback remains the Supabase URL: `https://<project>.supabase.co/auth/v1/callback`.
+
+## Developer notes: Supabase edge functions (Deno)
+
+Edge functions under `supabase/functions/**` run in the Deno runtime and are intentionally excluded from the Node/Next TypeScript project.
+
+- TypeScript/ESLint: This folder is excluded from `tsconfig.json` and ESLint to avoid Node-specific diagnostics for Deno globals and URL imports.
+- Per-file directive: We add `// @ts-nocheck` to function entry files (e.g. `notify-mention/index.ts`) so VS Code doesn’t show false errors. If you prefer typed editing, see the docs below.
+- How-to and rationale: See `supabase/functions/README.md`.
+
+Quick tasks
+
+- Using Deno directly:
+
+```bash
+deno task notify-mention
+```
+
+- Via npm wrapper:
+
+```bash
+npm run deno:notify
+```
+
+Enable typed Deno editing (optional)
+
+Install the Deno VS Code extension and enable it only for this folder to keep Node/Next types clean:
+
+```jsonc
+{
+  "deno.enable": true,
+  "deno.enablePaths": ["supabase/functions"],
+}
+```
+
+Then you can remove `// @ts-nocheck` from individual function files for full type checking in the editor.

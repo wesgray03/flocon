@@ -72,11 +72,11 @@ export default function SOVSection({ projectId }: { projectId: string }) {
     const load = async () => {
       setLoading(true);
       const { data, error } = await supabase
-        .from('sov_lines')
+        .from('engagement_sov_lines')
         .select(
           'id,line_code,description,division,unit,quantity,unit_cost,extended_cost,category,retainage_percent,created_at'
         )
-        .eq('project_id', projectId)
+        .eq('engagement_id', projectId)
         .order('created_at', { ascending: true });
 
       if (!error) setLines((data ?? []) as SOVLine[]);
@@ -110,20 +110,22 @@ export default function SOVSection({ projectId }: { projectId: string }) {
     const cost = Number(newLine.unit_cost);
     if (Number.isNaN(qty) || Number.isNaN(cost)) return;
 
-    const payload = {
-      project_id: projectId,
-      line_code: newLine.line_code || null,
+    const ins = {
+      engagement_id: projectId,
+      line_code: newLine.line_code,
       description: newLine.description,
-      division: null as string | null,
+      division: null,
       unit: newLine.unit || null,
       quantity: qty,
       unit_cost: cost,
-      category: newLine.category,
+      extended_cost: qty * cost,
+      category: newLine.category || 'Material',
+      retainage_percent: 10,
     };
 
     const { data, error } = await supabase
-      .from('sov_lines')
-      .insert([payload])
+      .from('engagement_sov_lines')
+      .insert([ins])
       .select(
         'id,line_code,description,division,unit,quantity,unit_cost,extended_cost,category,created_at'
       );

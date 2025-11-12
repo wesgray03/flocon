@@ -1,0 +1,357 @@
+[
+  {
+    "id": "a8e1c6f5-42dc-42d2-b4f1-aa14064b4209",
+    "name": "1401 Church St Tower 1",
+    "notes": "Contact: Alex Harrington | Architect: Hastings | Bid: 10/21/2025"
+  },
+  {
+    "id": "7877b6e6-c920-4909-aea9-329a8db726de",
+    "name": "5 City Blvd - 6th Floor TI",
+    "notes": "Contact: Caroline Brophy | Architect: ASD SKY | Bid: 11/21/2024"
+  },
+  {
+    "id": "7d98d624-12da-4868-8f66-5550fa501d90",
+    "name": "8th & Demonbreun",
+    "notes": "Contact: Jessica Wang | Architect: HKS | Bid: 9/10/2024"
+  },
+  {
+    "id": "583048f8-4ee1-4124-afe8-804184339658",
+    "name": "AB Nashville Lvl 17,18,24 Polished Concrete",
+    "notes": "Architect: NA | Bid: 7/28/2025"
+  },
+  {
+    "id": "bbf2b011-386b-4db8-b58c-46668d2d1fcb",
+    "name": "Averitt Express Bowling Green, KY",
+    "notes": "Contact: Sam Thomas | PM: Sam Thomas | Architect: Mollenkopf | Bid: 2/15/2024"
+  },
+  {
+    "id": "234e09c8-7cd5-4a55-8c05-a313124ef11c",
+    "name": "Averitt Express Lebanon, TN",
+    "notes": "Contact: Madison Williams | PM: Madison Williams | Architect: Ware Malcomb | Bid: 1/17/2025"
+  },
+  {
+    "id": "67df863f-e046-4750-9222-e97a6b45bf0c",
+    "name": "Averitt Express Montgomery, AL",
+    "notes": "Contact: Madison Williams | Bid: 8/14/2025"
+  },
+  {
+    "id": "e758c3c0-8678-4714-a50c-9935ef1bef76",
+    "name": "Averitt Express Richland, MS",
+    "notes": "Contact: Chris Gregory | Architect: Mollenkopf | Bid: 4/18/2025"
+  },
+  {
+    "id": "9cc64b1c-deee-4553-ae3c-0f31884a5a7b",
+    "name": "Averitt Express Sunrise, FL",
+    "notes": "Contact: Rob Tabeling | PM: Rob Tabeling | Architect: MDG | Bid: 6/5/2025"
+  },
+  {
+    "id": "f8361ff9-9c3f-4faf-99ce-cfc63af4c573",
+    "name": "Averitt Express West Columbia, SC",
+    "notes": "Contact: Madison Williams | Bid: 8/11/2025"
+  },
+  {
+    "id": "8adaf78a-f460-4efa-80e1-6f8ca8fa1069",
+    "name": "CAA Nashville Yards",
+    "notes": "Contact: Ariane Dunshee | Architect: Cannon Design | Bid: 3/3/2025"
+  },
+  {
+    "id": "12871f1c-71eb-495b-8d6e-56e93c9f2f3f",
+    "name": "Camden Gulch",
+    "notes": "Contact: Brian Malich | Architect: Hastings | Bid: 6/19/2025"
+  },
+  {
+    "id": "96f5e835-cd57-46f2-ac9d-4bfe31cf5bff",
+    "name": "College Grove Athletic Facility - Building B",
+    "notes": "Contact: Jackson Wilson | Architect: C&I Design/Casella  | Bid: 4/30/2025"
+  },
+  {
+    "id": "2493d375-3867-47ea-8179-e2735b4c7cec",
+    "name": "College Grove Athletic Facility - Building X",
+    "notes": "Contact: Jackson Wilson | Architect: C&I Design/Casella  | Bid: 4/30/2025"
+  },
+  {
+    "id": "f607d4b4-3fab-48e2-92c0-157cdf6c2a2d",
+    "name": "Dayton Freight Calhoun, GA",
+    "notes": "Contact: David McNeil | Architect: Mollenkopf | Bid: 1/28/2025"
+  },
+  {
+    "id": "28e1ccc0-e2ca-4374-9e5f-f5caafd5e9e1",
+    "name": "Dayton Freight McKees Rocks, PA",
+    "notes": "Contact: Chris Scheide | PM: Chris Schiede | Architect: Mollenkopf | Bid: 12/16/2024"
+  },
+  {
+    "id": "44092402-7989-4cba-9f8a-8849edeb551c",
+    "name": "DF Chase Office Suite 100",
+    "notes": "Contact: JR Keen | Architect: MJM Architects | Bid: 1/16/2025"
+  },
+  {
+    "id": "3396099b-5354-4470-8bff-14ae852fdf2b",
+    "name": "DF Chase Office Suite 200",
+    "notes": "Contact: JR Keen | Architect: MJM Architects | Bid: 1/16/2025"
+  },
+  {
+    "id": "1aac0389-f8ea-4f52-9a59-c335568a1507",
+    "name": "Emory Decatur Hospital Women's Center & NICU Renovation",
+    "notes": "Contact: David Haley | Architect: HKS | Bid: 10/2/2025"
+  },
+  {
+    "id": "bbe68b17-8f0c-444b-b884-bbd322e9c855",
+    "name": "Estes Express Jeffersonville, IN",
+    "notes": "Contact: Wes Elrod | PM: Wes Elrod | Architect: MDG | Bid: 10/10/2025"
+  },
+  {
+    "id": "10c6d621-f383-4910-8bdd-2d1ece4c5b9b",
+    "name": "Fairington Amenity Buildings",
+    "notes": "Contact: Sam Engel | Architect: Smith Gee Studio | Bid: 10/22/2025"
+  },
+  {
+    "id": "e4947f58-5f61-4e35-a2c8-97b23bd3ca44",
+    "name": "Gaylord Opryland Commissary Renovation 2023",
+    "notes": "Contact: Evan O''Brien | PM: Evan O''Brien | Architect: NA | Bid: 6/20/2023"
+  },
+  {
+    "id": "df3cc66f-6b62-4515-bb5c-332eb02e4bed",
+    "name": "Gaylord Opryland Magnolia Lobby",
+    "notes": "Contact: Ted Davidson | PM: Ted Davidson | Architect: BLUR Workshop | Bid: 2/12/2024"
+  },
+  {
+    "id": "3b641a67-3e71-49f2-85b7-3ba66ecd7efd",
+    "name": "Gaylord Opryland Meeting & Ballroom Expansion",
+    "notes": "Contact: Adam Joiner | PM: Ted Davidson | Architect: BLUR Workshop | Bid: 6/26/2025"
+  },
+  {
+    "id": "3fe2787b-d08d-4d0e-a1da-8bd6d29a25f7",
+    "name": "Gaylord Palms Convention Kitchen Office 108",
+    "notes": "Contact: Bob Wood | Architect: Anthony Lepore | Bid: 1/10/2023"
+  },
+  {
+    "id": "e9531cf1-c870-4fc0-a008-a007d4d0a59a",
+    "name": "Gaylord Palms Emerald Bay Meeting Rooms Renovation",
+    "notes": "Contact: Bob Wood | Architect: BLUR Workshop | Bid: 4/19/2023"
+  },
+  {
+    "id": "67d7069a-8d7c-49a4-8e74-926859c77947",
+    "name": "Gaylord Palms Hall of Cities",
+    "notes": "Contact: Bob Wood | Architect: BLUR Workshop | Bid: 4/19/2023"
+  },
+  {
+    "id": "e02cc839-cc2f-4d68-9064-e43223bfb2b5",
+    "name": "Gaylord Palms Key West MOOR Flooring",
+    "notes": "Contact: Bob Wood | Architect: HBG | Bid: 2/12/2025"
+  },
+  {
+    "id": "3c747df0-c9b0-4494-bbc0-f43debb415c5",
+    "name": "Gaylord Palms Orange Blossom Balcony",
+    "notes": "Contact: Mike Moore | Architect: NA | Bid: 1/30/2025"
+  },
+  {
+    "id": "9e68f94b-ca4a-464c-9dde-48440422d7c2",
+    "name": "Gaylord Palms Sun Ballroom",
+    "notes": "Architect: BLUR Workshop | Bid: 5/29/2024"
+  },
+  {
+    "id": "5b57d63b-ec70-473b-88ff-bb8e31d26b69",
+    "name": "Gaylord Rockies Soundwaves",
+    "notes": "Contact: Seth Cochran | PM: Seth Cochran | Architect: BLUR Workshop | Bid: 7/29/2024"
+  },
+  {
+    "id": "480e9f37-f606-44a3-a9c1-38ea9db3d63b",
+    "name": "Hampton Inn & Home 2 Suites Century Farms",
+    "notes": "Contact: Michael Bouldin | Architect: Origination Design | Bid: 9/17/2024"
+  },
+  {
+    "id": "af6bf685-3612-43ff-930a-93a4cb4276f5",
+    "name": "HCA TriStar NorthCrest NucMed Replacement",
+    "notes": "Contact: Maria Luisa Ferreyros | Architect: Mark E. Watson | Bid: 9/10/2025"
+  },
+  {
+    "id": "efcbc5a0-f9c1-4691-ba65-6c0ebb9908a7",
+    "name": "HCA Tristar Northcrest Radiology CT Scan Equipment Upgrades",
+    "notes": "Contact: Dan Finch | Architect: Mark E. Watson | Bid: 2/27/2025"
+  },
+  {
+    "id": "d0a0da78-2814-42e9-b66f-d32376b55780",
+    "name": "HCA TriStar Summit Lebanon Imaging CT Equipment Upgrade",
+    "notes": "Contact: David Haley | Architect: NA | Bid: 6/9/2025"
+  },
+  {
+    "id": "b6991a8b-74f7-440c-97b0-c5064c2f2f4c",
+    "name": "HMA Mt Juliet Pediatrics TI",
+    "notes": "Contact: Mason Peden | Architect: ESa | Bid: 7/18/2025"
+  },
+  {
+    "id": "062cdbd9-1b4e-4e61-b16a-c8279f0720a9",
+    "name": "HMA Westgate 1: Internal Medicine TI",
+    "notes": "Contact: Mason Peden | Architect: ESa | Bid: 7/15/2025"
+  },
+  {
+    "id": "e48e2777-bff9-4ef2-baf8-0d210bd9d3e7",
+    "name": "Hoxton Hotel",
+    "notes": "Contact: Brett Miller | Architect: GREC/Aime Studio | Bid: 5/20/2025"
+  },
+  {
+    "id": "274f9beb-0cc0-434f-980a-30756a92ac04",
+    "name": "JW San Antonio Hill Guestroom Renovation",
+    "notes": "Contact: Austin Hillburn | PM: Jeff Newton | Architect: Looney Associates | Bid: 11/5/2025"
+  },
+  {
+    "id": "8ebd4c44-80d7-4669-8aa8-10296e478887",
+    "name": "MRMC Cardiac Diagnostic & Cath Lab Reno",
+    "notes": "Contact: Brian Nelson | Architect: Wold Architects and Engineers | Bid: 10/28/2025"
+  },
+  {
+    "id": "c33219b6-a7e6-43dc-be85-652fdec730f7",
+    "name": "Music City Executive Airport",
+    "notes": "Contact: Brian Nelson | Architect: Garver | Bid: 10/14/2025"
+  },
+  {
+    "id": "a3d04241-a9fc-40ec-bf3c-19bcf8191803",
+    "name": "Oak Hill School Pre K Wing Interior Reno",
+    "notes": "Contact: Steven Hotard | Architect: Heather Francis Robers | Bid: 4/11/2025"
+  },
+  {
+    "id": "5271251c-69a4-4f3d-8bcf-17f1738c1d9b",
+    "name": "ODFL Sarasota, FL",
+    "notes": "Contact: Madison Williams | Architect: Mollenkopf | Bid: 7/8/2025"
+  },
+  {
+    "id": "67d1a45a-aa94-4fef-a778-e182a9724ec4",
+    "name": "Park Place Nashville - South Tower",
+    "notes": "Contact: Amber Tannehil | Architect: cube3 | Bid: 7/4/2024"
+  },
+  {
+    "id": "be3a0e0b-11e9-4654-97b1-30d160d8ed0d",
+    "name": "Parkway Tower Nashville",
+    "notes": "Architect: STG Design Studio | Bid: 2/20/2025"
+  },
+  {
+    "id": "99bda675-2b8e-485a-a4ae-8b218f9922bd",
+    "name": "Phybus Women's Surgical Center",
+    "notes": "Contact: James Cooper | Architect: DSC Architects | Bid: 10/15/2025"
+  },
+  {
+    "id": "8a6a87f2-7400-4bd5-bf60-27a2df13bf34",
+    "name": "Preface & Arcane Hotel",
+    "notes": "Contact: Wes Elrod | PM: Wes Elrod | Architect: Pfeffer Torode | Bid: 8/6/2024"
+  },
+  {
+    "id": "611958ee-5bd4-454f-b7b9-9eed83d6a7eb",
+    "name": "R&L Montgomery, IL",
+    "notes": "Contact: Joe Humphrey | PM: Joe Humphrey | Architect: NA | Bid: 9/4/2024"
+  },
+  {
+    "id": "3b1b56dc-15ba-4505-b582-dde689afe2d8",
+    "name": "SAIA Des Moines, IA",
+    "notes": "Contact: Robert Behanan | PM: Robert Behanan | Architect: B&T Design | Bid: 9/26/2025"
+  },
+  {
+    "id": "9e94823a-d39e-40fa-85c2-5b268cc605f6",
+    "name": "SAIA Grand Prairie, TX",
+    "notes": "Contact: Mike Skuski | PM: Mike Skuski | Architect: B&T Design | Bid: 11/21/2023"
+  },
+  {
+    "id": "a026b37b-d58e-4ea1-a30d-a200344cac36",
+    "name": "SEFL Columbus, GA",
+    "notes": "Contact: Billy Gatlin | PM: Billy Gatlin | Architect: Robert Johnson | Bid: 9/12/2025"
+  },
+  {
+    "id": "15b1d7a3-e928-4410-9d7f-ef40ea1b6168",
+    "name": "SEFL Florence, SC",
+    "notes": "Architect: NA | Bid: 2/5/2024"
+  },
+  {
+    "id": "d061e7b0-9850-4b17-90af-61940f0ebb5b",
+    "name": "Lodge2A",
+    "notes": "Contact: Brian Malich | Architect: HLG Studio | Bid: 11/6/2025"
+  },
+  {
+    "id": "01e42a7f-6468-4558-9b92-738112e74eda",
+    "name": "Thermo Fisher",
+    "notes": "Contact: Jeremy Smith | Architect: GLSD | Bid: 9/29/2025"
+  },
+  {
+    "id": "4085da78-95ac-4e2e-bc80-d02f2de36a09",
+    "name": "Hilton Grand Vacation Sales Center Renovation",
+    "notes": "Contact: Michael Ford | Architect: Miles Architecture Group | Bid: 11/6/2025"
+  },
+  {
+    "id": "092621be-e70b-46d1-b825-dcf680fa97ba",
+    "name": "TOA Midtown Nashville",
+    "notes": "Contact: Brian Malich | Architect: Sperides Reiners Architects | Bid: 1/15/2025"
+  },
+  {
+    "id": "23b7a50d-be73-4811-8a73-2bcb011a210d",
+    "name": "TSU Ag Campus Organic Research Lab",
+    "notes": "Contact: Tim Osgood | PM: Tim Osgood | Architect: Melvin Gill Architects | Bid: 2/4/2025"
+  },
+  {
+    "id": "f3eba23e-7edb-47ac-b498-351d1aafadfc",
+    "name": "Vanderbilt First Year Commons",
+    "notes": "Contact: Stephanie Wigger | Architect: Hastings | Bid: 10/20/2025"
+  },
+  {
+    "id": "8e23133d-2625-4e5a-94b9-b88f73dca343",
+    "name": "Unity Humboldt Renovations",
+    "notes": "Contact: Gary New | Architect: Bendure Harder | Bid: 9/26/2025"
+  },
+  {
+    "id": "bcdf43f3-24f3-4184-8336-83bf129ec645",
+    "name": "UTK Art & Architecture Office Renovation",
+    "notes": "Contact: Alexis Dean | Architect: Smith Gee Studio | Bid: 6/10/2025"
+  },
+  {
+    "id": "af488830-f843-4a36-8382-62bc36b54b3e",
+    "name": "Vanderbilt Baker Building Suite 110 Renovation",
+    "notes": "Contact: Adam Russell | Architect: John TeSelle | Bid: 2/12/2025"
+  },
+  {
+    "id": "e176e418-d97e-4576-a245-665d741b728a",
+    "name": "Vanderbilt SC-6 New Building",
+    "notes": "Contact: Linley Wade | Architect: DLR Group | Bid: 6/20/2025"
+  },
+  {
+    "id": "3ede3e3e-b48d-4b7a-9c8b-575666ec4501",
+    "name": "VOCE Hotel + Residence",
+    "notes": "Contact: Amber Tannehil | Architect: Preston Partnership | Bid: 10/18/2024"
+  },
+  {
+    "id": "9a29f09a-1782-4ed7-ba33-b134cc8d8a11",
+    "name": "VTS Smyrna: Building 603 Latrine Repairs and Upgrades ",
+    "notes": "Contact: Tim Osgood | Architect: OLG | Bid: 7/15/2025"
+  },
+  {
+    "id": "d37b99c9-d837-441f-aa9d-182ebf452d6b",
+    "name": "VU Seigenthaler Center Renovations",
+    "notes": "Contact: Ben Hunter | Architect: Orcutt Winslow | Bid: 4/1/2025"
+  },
+  {
+    "id": "017bf39f-8fbb-4c01-b174-2768262ddc71",
+    "name": "VUMC Concierge Medicine Carothers Interior Renovation",
+    "notes": "Contact: Karas Ebrahim | Architect: Casella | Bid: 1/8/2025"
+  },
+  {
+    "id": "96e2833c-fe3e-4723-93be-a72302777631",
+    "name": "VUMC Crystal Terrace Clinical Reno",
+    "notes": "Contact: Emory Norris | Architect: TMPartners | Bid: 4/16/2025"
+  },
+  {
+    "id": "8bbfcde1-fe5f-49c6-b30d-9201b1de617a",
+    "name": "VUMC MRB IV MICRO BSL3 Facility",
+    "notes": "Contact: Ariane Dunshee | Architect: Blair + Mui Dowd | Bid: 10/9/2024"
+  },
+  {
+    "id": "024c4988-03cd-4791-8aea-94b08c033cb3",
+    "name": "VUMC TVC Radiation Oncology Office Reno R1",
+    "notes": "Contact: Taha Naiem | Architect: Blair + Mui Dowd | Bid: 7/9/2025"
+  },
+  {
+    "id": "6799e494-bdc6-4982-9d69-5714eab26640",
+    "name": "Xxentria Manufacturing Facility - Phase 1",
+    "notes": "Contact: DeMarco Gatti | Bid: 10/15/2025"
+  },
+  {
+    "id": "0f591860-6fc5-43c9-b951-483870e4a49e",
+    "name": "AAA Cooper Savannah, GA",
+    "notes": "Contact: Cole Cheek | PM: Cole Cheek | Architect: MDG | Bid: 10/15/2025"
+  }
+]

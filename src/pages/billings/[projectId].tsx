@@ -1,32 +1,16 @@
 // pages/billings/[projectId].tsx
+import {
+  useBillingCore,
+  type PayApp,
+  type SOVLine,
+} from '@/domain/billing/useBillingCore';
+import { dateStr, money, todayString } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import { colors } from '@/styles/theme';
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
-
-type Project = {
-  id: string;
-  qbid: string | null;
-  name: string;
-  contract_amount?: number;
-};
-
-type SOVLine = {
-  id: string;
-  project_id: string;
-  line_code: string | null;
-  description: string;
-  division: string | null;
-  unit: string | null;
-  quantity: number | null;
-  unit_cost: number | null;
-  extended_cost: number;
-  category: string | null;
-  retainage_percent: number;
-  created_at: string;
-};
+import { useEffect, useState, type FormEvent } from 'react';
 
 type SOVLineProgress = {
   id?: string;
@@ -43,39 +27,23 @@ type SOVLineProgress = {
   retainage_percent: number;
 };
 
-type PayApp = {
-  id: string;
-  project_id: string;
-  pay_app_number: string | null;
-  description: string;
-  amount: number;
-  period_start: string | null;
-  period_end: string | null;
-  date_submitted: string | null;
-  date_paid: string | null;
-  status: string | null;
-  // AIA G703S fields
-  total_completed_and_stored: number;
-  retainage_completed_work: number;
-  retainage_stored_materials: number;
-  total_retainage: number;
-  total_earned_less_retainage: number;
-  previous_payments: number;
-  current_payment_due: number;
-  balance_to_finish: number;
-  created_at: string;
-};
-
 export default function BillingsPage() {
   const router = useRouter();
   const rawId = router.query.projectId;
   const projectId = Array.isArray(rawId) ? rawId[0] : rawId;
 
-  const [project, setProject] = useState<Project | null>(null);
-  const [payApps, setPayApps] = useState<PayApp[]>([]);
-  const [sovLines, setSovLines] = useState<SOVLine[]>([]);
+  const {
+    project,
+    setProject,
+    payApps,
+    setPayApps,
+    sovLines,
+    setSovLines,
+    sovTotal,
+    totalBilled,
+    loading,
+  } = useBillingCore(projectId);
   const [sovLineProgress, setSovLineProgress] = useState<SOVLineProgress[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showSOVModal, setShowSOVModal] = useState(false);
   const [showContinuationSheet, setShowContinuationSheet] = useState(false);
@@ -107,58 +75,7 @@ export default function BillingsPage() {
     retainage_percent: '5.00',
   });
 
-  useEffect(() => {
-    if (!projectId) return;
-    const load = async () => {
-      setLoading(true);
-
-      // Load project info
-      const { data: proj, error: projErr } = await supabase
-        .from('projects')
-        .select('id,qbid,name')
-        .eq('id', projectId)
-        .single();
-
-      if (projErr) {
-        console.error(projErr);
-        setProject(null);
-      } else {
-        setProject(proj as Project);
-      }
-
-      // Load pay apps
-      const { data: apps, error: appsErr } = await supabase
-        .from('pay_apps')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('date_submitted', { ascending: false });
-
-      if (appsErr) {
-        console.error(appsErr);
-        setPayApps([]);
-      } else {
-        setPayApps((apps ?? []) as PayApp[]);
-      }
-
-      // Load SOV lines
-      const { data: sov, error: sovErr } = await supabase
-        .from('sov_lines')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('line_code', { ascending: true });
-
-      if (sovErr) {
-        console.error(sovErr);
-        setSovLines([]);
-      } else {
-        setSovLines((sov ?? []) as SOVLine[]);
-      }
-
-      setLoading(false);
-    };
-
-    load();
-  }, [projectId]);
+  // Data loading handled via useBillingCore
 
   // Close modal on Escape
   useEffect(() => {
@@ -170,17 +87,7 @@ export default function BillingsPage() {
     return () => document.removeEventListener('keydown', onKey);
   }, [showModal]);
 
-  const money = (n: number | null | undefined) =>
-    n == null
-      ? '—'
-      : n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-
-  const dateStr = (d: string | null) =>
-    d ? new Date(d).toLocaleDateString() : '—';
-
-  const totalAmount = useMemo(() => {
-    return payApps.reduce((sum, app) => sum + (app.amount ?? 0), 0);
-  }, [payApps]);
+  // money/dateStr imported from shared formatter; totals computed in hook
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -196,7 +103,7 @@ export default function BillingsPage() {
       description: '',
       period_start: '',
       period_end: '',
-      date_submitted: new Date().toISOString().split('T')[0],
+      date_submitted: todayString(),
       date_paid: '',
       status: 'Submitted',
     });
@@ -218,7 +125,7 @@ export default function BillingsPage() {
     // Load existing continuation sheet data if editing
     if (app.id) {
       const { data: progressData } = await supabase
-        .from('sov_line_progress')
+        .from('engagement_sov_line_progress')
         .select('*')
         .eq('pay_app_id', app.id);
 
@@ -273,7 +180,7 @@ export default function BillingsPage() {
       const balanceToFinish = totalScheduledValue - totalCompletedAndStored;
 
       const payload = {
-        project_id: projectId,
+        engagement_id: projectId,
         pay_app_number: form.pay_app_number || null,
         description: form.description,
         period_start: form.period_start || null,
@@ -296,14 +203,14 @@ export default function BillingsPage() {
       let payAppId: string | null = null;
       if (editingPayApp) {
         const { error: err } = await supabase
-          .from('pay_apps')
+          .from('engagement_pay_apps')
           .update(payload)
           .eq('id', editingPayApp.id);
         if (err) throw err;
         payAppId = editingPayApp.id;
       } else {
         const { data, error: err } = await supabase
-          .from('pay_apps')
+          .from('engagement_pay_apps')
           .insert([payload])
           .select('id')
           .single();
@@ -326,11 +233,13 @@ export default function BillingsPage() {
 
           if (line.id) {
             await supabase
-              .from('sov_line_progress')
+              .from('engagement_sov_line_progress')
               .update(linePayload)
               .eq('id', line.id);
           } else {
-            await supabase.from('sov_line_progress').insert([linePayload]);
+            await supabase
+              .from('engagement_sov_line_progress')
+              .insert([linePayload]);
           }
         }
       }
@@ -340,9 +249,9 @@ export default function BillingsPage() {
       setSovLineProgress([]);
       // Reload pay apps
       const { data: apps } = await supabase
-        .from('pay_apps')
+        .from('engagement_pay_apps')
         .select('*')
-        .eq('project_id', projectId)
+        .eq('engagement_id', projectId)
         .order('date_submitted', { ascending: false });
       setPayApps((apps ?? []) as PayApp[]);
     } catch (err) {
@@ -356,7 +265,10 @@ export default function BillingsPage() {
   const deletePayApp = async (id: string) => {
     if (!confirm('Delete this pay application?')) return;
 
-    const { error } = await supabase.from('pay_apps').delete().eq('id', id);
+    const { error } = await supabase
+      .from('engagement_pay_apps')
+      .delete()
+      .eq('id', id);
 
     if (error) {
       alert('Error deleting pay app: ' + error.message);
@@ -414,7 +326,7 @@ export default function BillingsPage() {
       const cost = Number(sovForm.unit_cost) || 0;
 
       const payload = {
-        project_id: projectId,
+        engagement_id: projectId,
         line_code: sovForm.line_code || null,
         description: sovForm.description,
         division: sovForm.division || null,
@@ -428,13 +340,13 @@ export default function BillingsPage() {
       let error = null;
       if (editingSOVLine) {
         const { error: err } = await supabase
-          .from('sov_lines')
+          .from('engagement_sov_lines')
           .update(payload)
           .eq('id', editingSOVLine.id);
         error = err;
       } else {
         const { error: err } = await supabase
-          .from('sov_lines')
+          .from('engagement_sov_lines')
           .insert([payload]);
         error = err;
       }
@@ -445,9 +357,9 @@ export default function BillingsPage() {
         setShowSOVModal(false);
         // Reload SOV lines
         const { data: sov } = await supabase
-          .from('sov_lines')
+          .from('engagement_sov_lines')
           .select('*')
-          .eq('project_id', projectId)
+          .eq('engagement_id', projectId)
           .order('line_code', { ascending: true });
         setSovLines((sov ?? []) as SOVLine[]);
       }
@@ -462,7 +374,10 @@ export default function BillingsPage() {
   const deleteSOVLine = async (id: string) => {
     if (!confirm('Delete this SOV line item?')) return;
 
-    const { error } = await supabase.from('sov_lines').delete().eq('id', id);
+    const { error } = await supabase
+      .from('engagement_sov_lines')
+      .delete()
+      .eq('id', id);
 
     if (error) {
       alert('Error deleting SOV line: ' + error.message);
@@ -471,9 +386,7 @@ export default function BillingsPage() {
     }
   };
 
-  const sovTotal = useMemo(() => {
-    return sovLines.reduce((sum, line) => sum + (line.extended_cost || 0), 0);
-  }, [sovLines]);
+  // sovTotal now provided by useBillingCore
 
   return (
     <div
@@ -516,9 +429,9 @@ export default function BillingsPage() {
             <p style={{ color: colors.textSecondary, marginBottom: 4 }}>
               Project: <strong>{project.name}</strong>
             </p>
-            {project.qbid && (
+            {project.project_number && (
               <p style={{ color: colors.textSecondary, marginBottom: 0 }}>
-                QBID: {project.qbid}
+                Project #: {project.project_number}
               </p>
             )}
           </div>
@@ -614,7 +527,13 @@ export default function BillingsPage() {
                   <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
                     Schedule of Values
                   </h2>
-                  <p style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}>
+                  <p
+                    style={{
+                      color: colors.textSecondary,
+                      fontSize: 14,
+                      marginTop: 4,
+                    }}
+                  >
                     Total Contract Amount: {money(sovTotal)}
                   </p>
                 </div>
@@ -812,8 +731,14 @@ export default function BillingsPage() {
                   <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
                     Pay Applications ({payApps.length})
                   </h2>
-                  <p style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}>
-                    Total Billed: {money(totalAmount)}
+                  <p
+                    style={{
+                      color: colors.textSecondary,
+                      fontSize: 14,
+                      marginTop: 4,
+                    }}
+                  >
+                    Total Billed: {money(totalBilled)}
                   </p>
                 </div>
                 <button
@@ -836,9 +761,14 @@ export default function BillingsPage() {
 
               {payApps.length === 0 ? (
                 <p
-                  style={{ color: colors.textSecondary, textAlign: 'center', padding: 24 }}
+                  style={{
+                    color: colors.textSecondary,
+                    textAlign: 'center',
+                    padding: 24,
+                  }}
                 >
-                  No pay applications yet. Click "+ New Pay App" to add one.
+                  No pay applications yet. Click &quot;+ New Pay App&quot; to
+                  add one.
                 </p>
               ) : (
                 <div style={{ overflowX: 'auto' }}>
@@ -866,7 +796,12 @@ export default function BillingsPage() {
                       {payApps.map((app) => (
                         <tr key={app.id}>
                           <td style={td}>
-                            <span style={{ fontWeight: 600, color: colors.textPrimary }}>
+                            <span
+                              style={{
+                                fontWeight: 600,
+                                color: colors.textPrimary,
+                              }}
+                            >
                               {app.pay_app_number ?? '—'}
                             </span>
                           </td>
@@ -885,7 +820,9 @@ export default function BillingsPage() {
                             </span>
                           </td>
                           <td style={tdRight}>
-                            <strong style={{ color: colors.navy, fontSize: 15 }}>
+                            <strong
+                              style={{ color: colors.navy, fontSize: 15 }}
+                            >
                               {money(
                                 app.current_payment_due || app.amount || 0
                               )}
@@ -928,7 +865,7 @@ export default function BillingsPage() {
                               onClick={async () => {
                                 setViewingPayApp(app);
                                 const { data: progressData } = await supabase
-                                  .from('sov_line_progress')
+                                  .from('engagement_sov_line_progress')
                                   .select('*')
                                   .eq('pay_app_id', app.id);
 
@@ -1415,7 +1352,7 @@ export default function BillingsPage() {
                       const previousPayApp = previousPayApps[0];
 
                       // Load previous pay app's continuation sheet data
-                      let previousProgressMap = new Map<string, number>();
+                      const previousProgressMap = new Map<string, number>();
                       if (previousPayApp) {
                         console.log(
                           'Loading progress from pay app:',
@@ -1423,7 +1360,7 @@ export default function BillingsPage() {
                           previousPayApp.pay_app_number
                         );
                         const { data: prevProgress } = await supabase
-                          .from('sov_line_progress')
+                          .from('engagement_sov_line_progress')
                           .select(
                             'sov_line_id, previous_completed, current_completed, stored_materials'
                           )
@@ -1539,10 +1476,10 @@ export default function BillingsPage() {
                 fontStyle: 'italic',
               }}
             >
-              "Previous (D)" is auto-filled from the prior pay application's
-              totals. "Remaining" shows work left to complete (Scheduled Value -
-              Previous). Enter "This Period (E)" and "Materials (F)" for each
-              line item.
+              &quot;Previous (D)&quot; is auto-filled from the prior pay
+              application&apos;s totals. &quot;Remaining&quot; shows work left
+              to complete (Scheduled Value - Previous). Enter &quot;This Period
+              (E)&quot; and &quot;Materials (F)&quot; for each line item.
             </p>
             <div style={{ overflowX: 'auto', marginBottom: 16 }}>
               <table
@@ -1611,7 +1548,12 @@ export default function BillingsPage() {
                           />
                         </td>
                         <td style={tdRight}>
-                          <span style={{ fontWeight: 500, color: colors.textPrimary }}>
+                          <span
+                            style={{
+                              fontWeight: 500,
+                              color: colors.textPrimary,
+                            }}
+                          >
                             ${remaining.toLocaleString()}
                           </span>
                         </td>
