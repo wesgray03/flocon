@@ -28,6 +28,17 @@ export type LeadSource =
   | 'gc_relationship'
   | 'other';
 
+// Lost reason lookup type
+export interface LostReason {
+  id: string;
+  reason: string;
+  description: string | null;
+  is_active: boolean;
+  display_order: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Core engagement type (both prospects and projects)
 // Note: Party relationships (customer, PM, architect) are managed via engagement_parties junction table
 export interface Engagement {
@@ -58,9 +69,14 @@ export interface Engagement {
 
   // Prospect-specific fields (null for projects)
   // Note: pipeline_status removed - not in current schema
-  probability: number | null; // 0-100
+  probability_level_id: string | null; // FK to probability_levels table
   lead_source: LeadSource | null;
-  lost_reason: string | null;
+  lost_reason: string | null; // Legacy text field
+  lost_reason_id: string | null; // FK to lost_reasons table
+
+  // Tracking fields
+  last_call: string | null; // Date of last contact
+  active: boolean; // Whether engagement is actively being pursued
 
   // Project-specific fields (null for prospects)
   sharepoint_folder: string | null;
@@ -93,12 +109,15 @@ export interface Prospect {
   sales_contact_phone: string | null;
 
   // Note: pipeline_status removed - not in current schema
-  probability: number | null;
+  probability_level_id: string | null;
   expected_close_date: string | null;
   lead_source: LeadSource | null;
   bid_amount: number | null;
   est_start_date: string | null;
   lost_reason: string | null;
+  lost_reason_id: string | null;
+  last_call: string | null;
+  active: boolean;
 
   // Aggregated trade info
   trade_count: number;

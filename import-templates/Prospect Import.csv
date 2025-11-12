@@ -1,0 +1,70 @@
+Project,Type,Customer,Prospect Contact,Project Manager,Architect,Sales,Bid Date,Estimating_type,last_call,Active,Probability,Est. Start,06 61 13,09 30 00,09 64 00,09 65 00,09 68 00,10 28 13,10 28 19,12 36 00,22 40 00,bid_amount
+"AB Nashville Lvl 17,18,24 Polished Concrete",Prospect,Layton Construction Co,,,,Matt White,45866,Construction,,TRUE,Probable,,,,,,,,,,,0
+HCA TriStar NorthCrest NucMed Replacement,Prospect,DPR Construction,Maria Luisa Ferreyros,,Mark E. Watson,Josh Gebhardt,45910,Construction,,TRUE,Questionable,,0,0,0,4420,0,0,0,0,0,4420
+"Estes Express Jeffersonville, IN",Prospect,"D.F. Chase, Inc.",Wes Elrod,Wes Elrod,MDG,Necati Aksoy,45940,Construction,,TRUE,Questionable,,,,,5750,,,,,,5750
+"SEFL Florence, SC",Prospect,SEFL,,,,Necati Aksoy,45327,Construction,,TRUE,Doubtful,,0,0,0,,7603,0,0,0,0,7603
+HCA TriStar Summit Lebanon Imaging CT Equipment Upgrade,Prospect,DPR Construction,David Haley,,,Mladen Jerkovic,45817,Construction,,TRUE,Questionable,,0,0,0,7980,0,0,0,0,0,7980
+TSU Ag Campus Organic Research Lab,Prospect,"Beech Construction Services, Inc.",Tim Osgood,Tim Osgood,Melvin Gill Architects,Mladen Jerkovic,45692,Construction,,TRUE,Doubtful,,0,1200,0,6700,0,0,0,300,0,8200
+Gaylord Palms Convention Kitchen Office 108,Prospect,"Aagaard-Juergensen, LLC",Bob Wood,,Anthony Lepore,Mladen Jerkovic,44936,Construction,,TRUE,Doubtful,,0,8510,0,0,0,0,0,0,0,8510
+HCA Tristar Northcrest Radiology CT Scan Equipment Upgrades,Prospect,DPR Construction,Dan Finch,,Mark E. Watson,Mladen Jerkovic,45715,Construction,,TRUE,Questionable,,0,0,0,13170,0,0,0,0,0,13170
+HMA Westgate 1: Internal Medicine TI,Prospect,JE Dunn Construction,Mason Peden,,ESa,Mladen Jerkovic,45853,Construction,,TRUE,Doubtful,,0,6100,0,9600,0,0,0,0,0,15700
+Oak Hill School Pre K Wing Interior Reno,Prospect,DPR Construction,Steven Hotard,,Heather Francis Robers,Mladen Jerkovic,45758,Budget,,TRUE,Doubtful,,0,0,0,15800,0,0,0,0,0,15800
+"Averitt Express Lebanon, TN",Prospect,"D.F. Chase, Inc.",Madison Williams,Madison Williams,Ware Malcomb,Necati Aksoy,45674,Construction,,TRUE,Probable,,0,0,0,18200,0,0,0,0,0,18200
+Gaylord Palms Key West MOOR Flooring,Prospect,"Aagaard-Juergensen, LLC",Bob Wood,,HBG,Matt White,45700,Construction,,TRUE,Doubtful,,,,,,24780,,,,,24780
+UTK Art & Architecture Office Renovation,Prospect,JE Dunn Construction,Alexis Dean,,Smith Gee Studio,Mladen Jerkovic,45818,Construction,,TRUE,Doubtful,,0,0,0,0,25700,0,0,0,0,25700
+DF Chase Office Suite 100,Prospect,"D.F. Chase, Inc.",JR Keen,,MJM Architects,Mladen Jerkovic,45673,Construction,,TRUE,Doubtful,,0,28200,0,0,0,0,0,0,0,28200
+DF Chase Office Suite 200,Prospect,"D.F. Chase, Inc.",JR Keen,,MJM Architects,Mladen Jerkovic,45673,Construction,,TRUE,Doubtful,,0,44200,0,0,0,0,0,0,0,44200
+VTS Smyrna: Building 603 Latrine Repairs and Upgrades,Prospect,"Beech Construction Services, Inc.",Tim Osgood,,OLG,Mladen Jerkovic,45853,Construction,,TRUE,Doubtful,,0,55300,0,0,1800,0,0,0,0,57100
+"Averitt Express Bowling Green, KY",Prospect,"D.F. Chase, Inc.",Sam Thomas,Sam Thomas,Mollenkopf,Necati Aksoy,45337,Construction,,TRUE,Probable,,0,66395,0,0,0,0,0,0,0,66395
+Vanderbilt Baker Building Suite 110 Renovation,Prospect,DPR Construction,Adam Russell,,John TeSelle,Mladen Jerkovic,45700,Construction,,TRUE,Doubtful,,0,900,0,10050,44770,0,0,11300,0,67020
+Gaylord Palms Hall of Cities,Prospect,"Aagaard-Juergensen, LLC",Bob Wood,,BLUR Workshop,Matt White,45035,Construction,,TRUE,Doubtful,,,,,,68083,,,,,68083
+"SEFL Columbus, GA",Prospect,"D.F. Chase, Inc.",Billy Gatlin,Billy Gatlin,Robert Johnson,Necati Aksoy,45912,Construction,,TRUE,Probable,,,25060,,27900,15190,,,,,68150
+VUMC TVC Radiation Oncology Office Reno R1,Prospect,DPR Construction,Taha Naiem,,Blair + Mui Dowd,Mladen Jerkovic,45847,Construction,,TRUE,Questionable,,0,0,0,36702,36991,0,0,0,0,73693
+VUMC Crystal Terrace Clinical Reno,Prospect,Layton Construction Co,Emory Norris,,TMPartners,Mladen Jerkovic,45763,Construction,,TRUE,Doubtful,,0,88100,0,0,0,0,0,0,0,88100
+Music City Executive Airport,Prospect,Doster Construction,Brian Nelson,,Garver,Josh Gebhardt,45944,Construction,,TRUE,Questionable,,,48600,,41600,,,,,,90200
+Phybus Women's Surgical Center,Prospect,Batten & Shaw,James Cooper,,DSC Architects,Josh Gebhardt,45945,Construction,,TRUE,Questionable,,,25979,,65370,,,,,,91349
+Gaylord Palms Orange Blossom Balcony,Prospect,"Aagaard-Juergensen, LLC",Mike Moore,,,Matt White,45687,Construction,,TRUE,Doubtful,,,92033,,,,,,,,92033
+VUMC Concierge Medicine Carothers Interior Renovation,Prospect,Batten & Shaw,Karas Ebrahim,,Casella,Mladen Jerkovic,45665,Construction,,TRUE,Doubtful,,0,21900,0,70800,0,0,0,0,0,92700
+Unity Humboldt Renovations,Prospect,Crain Construction,Gary New,,Bendure Harder,Josh Gebhardt,45926,Construction,45944,TRUE,Questionable,,,,,92700,1500,,,,,94200
+"AAA Cooper Savannah, GA",Prospect,"D.F. Chase, Inc.",Cole Cheek,Cole Cheek,MDG,Necati Aksoy,45945,Construction,,TRUE,Probable,,,78315,,16200,,,,,,94515
+"ODFL Sarasota, FL",Prospect,"D.F. Chase, Inc.",Madison Williams,,Mollenkopf,Necati Aksoy,45846,Construction,,TRUE,Probable,,,92133,,11867,,,,,,104000
+"Dayton Freight Calhoun, GA",Prospect,"D.F. Chase, Inc.",David McNeil,,Mollenkopf,Necati Aksoy,45685,Construction,,TRUE,Probable,,0,55254,0,50424,0,0,0,0,0,105678
+Hilton Grand Vacation Sales Center Renovation,Prospect,Batten & Shaw,Michael Ford,,Miles Architecture Group,Josh Gebhardt,45967,Budget,,TRUE,Questionable,,,58200,,6500,44600,,,,,109300
+"Averitt Express West Columbia, SC",Prospect,"D.F. Chase, Inc.",Madison Williams,,,Necati Aksoy,45880,Construction,,TRUE,Probable,,,102427,,12223,,,,,,114650
+Gaylord Palms Emerald Bay Meeting Rooms Renovation,Prospect,"Aagaard-Juergensen, LLC",Bob Wood,,BLUR Workshop,Mladen Jerkovic,45035,Construction,,TRUE,Doubtful,,0,89534,0,0,27398,0,0,0,0,116932
+Gaylord Palms Sun Ballroom,Prospect,"D.F. Chase, Inc.",,,BLUR Workshop,Mladen Jerkovic,45441,Construction,,TRUE,Questionable,,0,0,0,0,125800,0,0,0,0,125800
+"SAIA Grand Prairie, TX",Prospect,"D.F. Chase, Inc.",Mike Skuski,Mike Skuski,B&T Design,Necati Aksoy,45251,Construction,45230,TRUE,Probable,,0,129688,0,0,0,0,0,0,0,129688
+Lodge2A,Prospect,Layton Construction Co,Brian Malich,,HLG Studio,Josh Gebhardt,45967,Budget,,TRUE,Questionable,,,60250,55200,4220,28300,,,,,147970
+"Dayton Freight McKees Rocks, PA",Prospect,"D.F. Chase, Inc.",Chris Scheide,Chris Schiede,Mollenkopf,Necati Aksoy,45642,Construction,,TRUE,Probable,,0,59240,0,90230,0,0,0,0,0,149470
+"Averitt Express Richland, MS",Prospect,"D.F. Chase, Inc.",Chris Gregory,,Mollenkopf,Necati Aksoy,45765,Construction,45765,TRUE,Probable,,0,139230,0,10380,0,0,0,0,0,149610
+Thermo Fisher,Prospect,Whiting - Turner,Jeremy Smith,,GLSD,Josh Gebhardt,45929,Budget,,TRUE,Questionable,,,138497,,12361,,,,,,150858
+Xxentria Manufacturing Facility - Phase 1,Prospect,Arco Murray,DeMarco Gatti,,,Necati Aksoy,45945,Construction,,TRUE,Questionable,,,65425,,67282,24510,,,,,157217
+5 City Blvd - 6th Floor TI,Prospect,JE Dunn Construction,Caroline Brophy,,ASD SKY,Mladen Jerkovic,45617,Construction,,TRUE,Doubtful,,0,10562,0,29595,119483,0,0,0,0,159640
+HMA Mt Juliet Pediatrics TI,Prospect,JE Dunn Construction,Mason Peden,,ESa,Mladen Jerkovic,45856,Construction,,TRUE,Doubtful,,0,50400,0,120530,0,0,0,0,0,170930
+"Averitt Express Sunrise, FL",Prospect,"D.F. Chase, Inc.",Rob Tabeling,Rob Tabeling,MDG,Necati Aksoy,45813,Construction,,TRUE,Probable,,,190693,,15307,,,,,,206000
+Fairington Amenity Buildings,Prospect,Choate,Sam Engel,,Smith Gee Studio,Josh Gebhardt,45952,Construction,,TRUE,Questionable,,,116600,,100700,,,,,,217300
+MRMC Cardiac Diagnostic & Cath Lab Reno,Prospect,Doster Construction,Brian Nelson,,Wold Architects and Engineers,Josh Gebhardt,45958,Budget,,TRUE,Questionable,,,44250,,184420,1600,,,,,230270
+"Averitt Express Montgomery, AL",Prospect,"D.F. Chase, Inc.",Madison Williams,,,Necati Aksoy,45883,Construction,,TRUE,Probable,,,238108,,18042,,,,,,256150
+"R&L Montgomery, IL",Prospect,"D.F. Chase, Inc.",Joe Humphrey,Joe Humphrey,,Necati Aksoy,45539,Budget,,TRUE,Doubtful,,0,264740,0,0,0,0,0,0,0,264740
+"SAIA Des Moines, IA",Prospect,"D.F. Chase, Inc.",Robert Behanan,Robert Behanan,B&T Design,Necati Aksoy,45926,Construction,,TRUE,Probable,,,278285,,15225,,,,,,293510
+College Grove Athletic Facility - Building B,Prospect,JE Dunn Construction,Jackson Wilson,,C&I Design/Casella ,Mladen Jerkovic,45777,Budget,,TRUE,Questionable,,0,165700,0,11200,159850,0,0,0,0,336750
+VU Seigenthaler Center Renovations,Prospect,JE Dunn Construction,Ben Hunter,,Orcutt Winslow,Mladen Jerkovic,45748,Construction,,TRUE,Doubtful,,0,85257,35810,41251,191078,0,0,0,0,353396
+Gaylord Opryland Commissary Renovation 2023,Prospect,"Beech Construction Services, Inc.",Evan O'Brien,Evan O'Brien,,Mladen Jerkovic,45097,Budget,,TRUE,Doubtful,,0,350124,0,20856,0,0,0,0,0,370980
+Vanderbilt First Year Commons,Prospect,DPR Construction,Stephanie Wigger,,Hastings,Josh Gebhardt,45950,Budget,,TRUE,Questionable,,117045,118900,,287500,52500,,,,,575945
+TOA Midtown Nashville,Prospect,Layton Construction Co,Brian Malich,,Sperides Reiners Architects,Mladen Jerkovic,45672,Budget,,TRUE,Questionable,,0,78600,0,520000,0,0,0,0,0,598600
+Hampton Inn & Home 2 Suites Century Farms,Prospect,Premier Contracting,Michael Bouldin,,Origination Design,Mladen Jerkovic,45552,Construction,,TRUE,Doubtful,,73600,500163,0,34600,146074,0,40950,0,47600,842987
+College Grove Athletic Facility - Building X,Prospect,JE Dunn Construction,Jackson Wilson,,C&I Design/Casella ,Mladen Jerkovic,45777,Budget,,TRUE,Questionable,,0,455520,0,374740,80650,0,0,0,0,910910
+Gaylord Rockies Soundwaves,Prospect,"D.F. Chase, Inc.",Seth Cochran,Seth Cochran,BLUR Workshop,Mladen Jerkovic,45502,Budget,,TRUE,Doubtful,,0,941500,0,0,0,0,0,0,0,941500
+Gaylord Opryland Magnolia Lobby,Prospect,"D.F. Chase, Inc.",Ted Davidson,Ted Davidson,BLUR Workshop,Mladen Jerkovic,45334,Budget,,TRUE,Questionable,,0,1137688,0,0,0,0,0,0,0,1137688
+1401 Church St Tower 1,Prospect,Axiom Builders,Alex Harrington,,Hastings,Mladen Jerkovic,45951,Construction,45909,TRUE,Doubtful,,0,1522700,0,0,0,0,0,0,0,1522700
+Parkway Tower Nashville,Prospect,"D.F. Chase, Inc.",,,STG Design Studio,Mladen Jerkovic,45708,Budget,,TRUE,Questionable,,0,729205,0,482560,522000,0,0,0,0,1733765
+Gaylord Opryland Meeting & Ballroom Expansion,Prospect,"D.F. Chase, Inc.",Adam Joiner,Ted Davidson,BLUR Workshop,Mladen Jerkovic,45834,Construction,,TRUE,Landed,,0,1861580,0,30000,326050,0,0,0,0,2217630
+Vanderbilt SC-6 New Building,Prospect,JE Dunn Construction,Linley Wade,,DLR Group,Mladen Jerkovic,45828,Budget,,TRUE,Questionable,,0,373900,0,1784264,273000,0,0,0,10000,2441164
+Emory Decatur Hospital Women's Center & NICU Renovation,Prospect,DPR Construction,David Haley,,HKS,Josh Gebhardt,45932,Budget,45950,TRUE,Doubtful,,0,1133385,0,2097820,0,0,0,0,0,3231205
+Hoxton Hotel,Prospect,JE Dunn Construction,Brett Miller,,GREC/Aime Studio,Mladen Jerkovic,45797,Budget,,TRUE,Doubtful,,0,2351740,994000,95750,219950,0,0,0,0,3661440
+Preface & Arcane Hotel,Prospect,"D.F. Chase, Inc.",Wes Elrod,Wes Elrod,Pfeffer Torode,Mladen Jerkovic,45510,Construction,,TRUE,Doubtful,,0,2700416,1151272,92267,42017,0,0,481494,0,4467466
+VOCE Hotel + Residence,Prospect,Layton Construction Co,Amber Tannehil,,Preston Partnership,Mladen Jerkovic,45583,Budget,,TRUE,Doubtful,,0,2878606,1917990,96756,128500,0,0,0,0,5021852
+Camden Gulch,Prospect,Layton Construction Co,Brian Malich,,Hastings,Mladen Jerkovic,45827,Construction,45930,TRUE,Probable,,0,2043000,0,2560000,0,0,0,0,451000,5054000
+8th & Demonbreun,Prospect,DPR Construction,Jessica Wang,,HKS,Mladen Jerkovic,45545,Construction,45925,TRUE,Doubtful,,0,6615618,482367,892204,761300,0,0,0,690464,9441953
+Park Place Nashville - South Tower,Prospect,Layton Construction Co,Amber Tannehil,,cube3,Mladen Jerkovic,45477,Budget,,TRUE,Questionable,,0,14719000,0,244700,200000,0,0,0,0,15163700
+JW San Antonio Hill Guestroom Renovation,Prospect,HITT Contracting Inc,Austin Hillburn,Jeff Newton,Looney Associates,Mladen Jerkovic,45966,Construction,,TRUE,Questionable,,0,13981000,0,1007000,235000,0,0,0,0,15223000

@@ -3,6 +3,7 @@ import { DashboardHeader } from '@/components/layout/DashboardHeader';
 import { SharedMenu } from '@/components/layout/SharedMenu';
 import { CompaniesModal } from '@/components/modals/CompaniesModal';
 import { ContactsModal } from '@/components/modals/ContactsModal';
+import { LostReasonsModal } from '@/components/modals/LostReasonsModal';
 import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import {
@@ -27,7 +28,8 @@ type Filters = {
   contact: string[];
   owner: string[];
   architect: string[];
-  probability: string[];
+  estimating_type: string[];
+  probability_level: string[];
 };
 
 type SortKey =
@@ -35,8 +37,8 @@ type SortKey =
   | 'name'
   | 'customer_name'
   | 'owner_name'
-  | 'probability'
-  | 'probability_percent'
+  | 'probability_level_name'
+  | 'probability_percentage'
   | 'extended'
   | 'estimating_type'
   | 'bid_amount';
@@ -59,11 +61,12 @@ interface Prospect {
   stage: string | null;
   last_call: string | null;
   status: string | null;
-  probability: string | null;
+  probability_level_id: string | null;
+  probability_level_name: string | null;
+  probability_percentage: number | null;
   est_start: string | null;
   trades: { id: string; code: string; name: string; amount: number }[]; // include trade_id for editing
   extended: number | null;
-  probability_percent: number | null;
   bid_amount: number | null;
   sharepoint_folder: string | null;
 }
@@ -81,6 +84,7 @@ export default function ProspectsPage() {
   }>({ open: false, companyType: null, label: '' });
   const [showContactsModal, setShowContactsModal] = useState(false);
   const [showUsersModal, setShowUsersModal] = useState(false);
+  const [showLostReasonsModal, setShowLostReasonsModal] = useState(false);
 
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,7 +99,8 @@ export default function ProspectsPage() {
     contact: [],
     owner: [],
     architect: [],
-    probability: [],
+    estimating_type: [],
+    probability_level: [],
   });
 
   // Edit/Delete state
@@ -110,9 +115,11 @@ export default function ProspectsPage() {
     owner: '',
     architect_id: '',
     estimating_type: 'Budget' as 'Budget' | 'Construction',
-    probability: 'Doubtful',
-    probability_percent: '',
+    probability_level_id: '',
     bid_date: '',
+    last_call: '',
+    active: 'true',
+    lost_reason_id: '',
     sharepoint_folder: '',
   });
 
@@ -136,6 +143,9 @@ export default function ProspectsPage() {
   >([]);
   const [probabilityLevels, setProbabilityLevels] = useState<
     { id: string; name: string; percentage: number; color: string }[]
+  >([]);
+  const [lostReasons, setLostReasons] = useState<
+    { id: string; reason: string }[]
   >([]);
   const [tradeOptions, setTradeOptions] = useState<
     { id: string; code: string; name: string }[]
@@ -165,9 +175,18 @@ export default function ProspectsPage() {
           prospects.map((p) => p.architect_name).filter((v): v is string => !!v)
         )
       ),
-      probability: Array.from(
+      estimating_type: Array.from(
         new Set(
-          prospects.map((p) => p.probability).filter((v): v is string => !!v)
+          prospects
+            .map((p) => p.estimating_type)
+            .filter((v): v is string => !!v)
+        )
+      ),
+      probability_level: Array.from(
+        new Set(
+          prospects
+            .map((p) => p.probability_level_name)
+            .filter((v): v is string => !!v)
         )
       ),
     }),
@@ -237,6 +256,19 @@ export default function ProspectsPage() {
         }))
       );
 
+      // Load active lost reasons
+      const { data: lostReasonsData } = await supabase
+        .from('lost_reasons')
+        .select('id, reason')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true, nullsFirst: false });
+      setLostReasons(
+        (lostReasonsData ?? []).map((lr) => ({
+          id: lr.id,
+          reason: lr.reason,
+        }))
+      );
+
       // Load active trade options
       const { data: tradesData } = await supabase
         .from('trades')
@@ -264,8 +296,13 @@ export default function ProspectsPage() {
   type EngagementRow = {
     id: string;
     name: string;
-    probability: string | null;
-    probability_percent: number | null;
+    probability_level_id: string | null;
+    probability_level?: {
+      id: string;
+      name: string;
+      percentage: number;
+      color: string | null;
+    } | null;
     user_id: string | null;
     bid_date: string | null;
     estimating_type: 'Budget' | 'Construction' | null;
@@ -285,6 +322,7 @@ export default function ProspectsPage() {
         .select(
           `
           *,
+          probability_level:probability_levels ( id, name, percentage, color ),
           engagement_trades (
             trade_id,
             estimated_amount,
@@ -343,8 +381,8 @@ export default function ProspectsPage() {
             })
           );
           const extended = trades.reduce((sum, t) => sum + t.amount, 0);
-          const probabilityPercent = item.probability_percent || 0;
-          const revenueEst = extended * (probabilityPercent / 100);
+          const probabilityPercentage = item.probability_level?.percentage || 0;
+          const revenueEst = extended * (probabilityPercentage / 100);
 
           const customer = partyByKey.get(`${item.id}-customer`);
           const pm = partyByKey.get(`${item.id}-prospect_contact`);
@@ -367,11 +405,12 @@ export default function ProspectsPage() {
             stage: 'Construction',
             last_call: null,
             status: 'Active',
-            probability: item.probability,
+            probability_level_id: item.probability_level_id,
+            probability_level_name: item.probability_level?.name || null,
+            probability_percentage: probabilityPercentage,
             est_start: item.est_start_date,
             trades,
             extended,
-            probability_percent: probabilityPercent,
             bid_amount: revenueEst,
             sharepoint_folder: item.sharepoint_folder,
           };
@@ -490,16 +529,7 @@ export default function ProspectsPage() {
     >
   ) => {
     const { name, value } = e.target;
-    if (name === 'probability') {
-      const autoPercent = getProbabilityPercent(value);
-      setForm((f) => ({
-        ...f,
-        [name]: value,
-        probability_percent: autoPercent,
-      }));
-    } else {
-      setForm((f) => ({ ...f, [name]: value }));
-    }
+    setForm((f) => ({ ...f, [name]: value }));
   };
 
   const openForEdit = (prospect: Prospect) => {
@@ -511,9 +541,11 @@ export default function ProspectsPage() {
       owner: prospect.user_id || '',
       architect_id: prospect.architect_id || '',
       estimating_type: prospect.estimating_type || 'Budget',
-      probability: prospect.probability || 'Doubtful',
-      probability_percent: prospect.probability_percent?.toString() || '',
+      probability_level_id: prospect.probability_level_id || '',
       bid_date: prospect.bid_date || '',
+      last_call: prospect.last_call || '',
+      active: 'true',
+      lost_reason_id: '',
       sharepoint_folder: prospect.sharepoint_folder || '',
     });
     setTradeLines(
@@ -547,14 +579,15 @@ export default function ProspectsPage() {
         name: form.name,
         user_id: null,
         estimating_type: form.estimating_type,
+        type: 'prospect' as const,
         sharepoint_folder: form.sharepoint_folder
           ? form.sharepoint_folder.trim()
           : null,
-        probability: form.probability,
-        probability_percent: form.probability_percent
-          ? Number(form.probability_percent)
-          : null,
+        probability_level_id: form.probability_level_id || null,
         bid_date: form.bid_date ? form.bid_date : null,
+        last_call: form.last_call ? form.last_call : null,
+        active: form.active === 'true',
+        lost_reason_id: form.lost_reason_id || null,
       };
 
       let engagementId: string | null = null;
@@ -671,7 +704,11 @@ export default function ProspectsPage() {
         matchesTokens(prospect.contact_name, filters.contact) &&
         matchesTokens(prospect.owner_name, filters.owner) &&
         matchesTokens(prospect.architect_name, filters.architect) &&
-        matchesTokens(prospect.probability, filters.probability)
+        matchesTokens(prospect.estimating_type, filters.estimating_type) &&
+        matchesTokens(
+          prospect.probability_level_name,
+          filters.probability_level
+        )
     );
 
     if (sortKey === 'none') return filtered;
@@ -741,6 +778,7 @@ export default function ProspectsPage() {
             }}
             onOpenContacts={() => setShowContactsModal(true)}
             onOpenUsers={() => setShowUsersModal(true)}
+            onOpenLostReasons={() => setShowLostReasonsModal(true)}
           />
         }
         actionButton={
@@ -774,9 +812,11 @@ export default function ProspectsPage() {
                 owner: '',
                 architect_id: '',
                 estimating_type: 'Budget',
-                probability: 'Doubtful',
-                probability_percent: '',
+                probability_level_id: '',
                 bid_date: '',
+                last_call: '',
+                active: 'true',
+                lost_reason_id: '',
                 sharepoint_folder: '',
               });
               setTradeLines([]);
@@ -875,9 +915,9 @@ export default function ProspectsPage() {
                   </th>
                   <th
                     style={thStatus}
-                    onClick={() => handleSort('probability')}
+                    onClick={() => handleSort('probability_level_name')}
                   >
-                    Probability{sortIndicator('probability')}
+                    Probability{sortIndicator('probability_level_name')}
                   </th>
                   <th style={thBidDate}>Bid Date</th>
                   <th style={thMoney} onClick={() => handleSort('extended')}>
@@ -941,21 +981,21 @@ export default function ProspectsPage() {
                   </th>
                   <th style={thStatus}>
                     <MultiFilterInput
-                      values={filters.probability}
+                      values={filters.estimating_type}
                       onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, probability: vals }))
+                        setFilters((f) => ({ ...f, estimating_type: vals }))
                       }
-                      suggestions={uniqueValues.probability}
+                      suggestions={uniqueValues.estimating_type}
                       placeholder="Filter type..."
                     />
                   </th>
                   <th style={thStatus}>
                     <MultiFilterInput
-                      values={filters.probability}
+                      values={filters.probability_level}
                       onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, probability: vals }))
+                        setFilters((f) => ({ ...f, probability_level: vals }))
                       }
-                      suggestions={uniqueValues.probability}
+                      suggestions={uniqueValues.probability_level}
                       placeholder="Filter probability..."
                     />
                   </th>
@@ -1062,11 +1102,22 @@ export default function ProspectsPage() {
                           borderRadius: 4,
                           fontSize: 12,
                           fontWeight: 600,
-                          background:
-                            getProbabilityColor(prospect.probability) + '20',
-                          color: getProbabilityColor(prospect.probability),
+                          background: prospect.probability_level_name
+                            ? getProbabilityColor(
+                                prospect.probability_level_name
+                              ) + '20'
+                            : '#64748b20',
+                          color: prospect.probability_level_name
+                            ? getProbabilityColor(
+                                prospect.probability_level_name
+                              )
+                            : '#64748b',
                         }}
-                      >{`${formatProbability(prospect.probability)}${prospect.probability_percent ? ` (${prospect.probability_percent}%)` : ''}`}</span>
+                      >
+                        {prospect.probability_level_name
+                          ? `${prospect.probability_level_name}${prospect.probability_percentage ? ` (${prospect.probability_percentage}%)` : ''}`
+                          : '—'}
+                      </span>
                     </td>
                     <td style={td}>{prospect.bid_date || '—'}</td>
                     <td
@@ -1324,15 +1375,53 @@ export default function ProspectsPage() {
                 <div>
                   <label style={labelStyle}>Probability</label>
                   <select
-                    name="probability"
-                    value={form.probability}
+                    name="probability_level_id"
+                    value={form.probability_level_id}
                     onChange={handleChange}
                     style={inputStyle}
                   >
                     <option value="">Select probability...</option>
                     {probabilityLevels.map((level) => (
-                      <option key={level.id} value={level.name}>
+                      <option key={level.id} value={level.id}>
                         {level.name} ({level.percentage}%)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Last Call / Follow-Up</label>
+                  <input
+                    type="date"
+                    name="last_call"
+                    value={form.last_call}
+                    onChange={handleChange}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Status</label>
+                  <select
+                    name="active"
+                    value={form.active}
+                    onChange={handleChange}
+                    style={inputStyle}
+                  >
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Lost Reason</label>
+                  <select
+                    name="lost_reason_id"
+                    value={form.lost_reason_id}
+                    onChange={handleChange}
+                    style={inputStyle}
+                  >
+                    <option value="">Not lost / Still pursuing</option>
+                    {lostReasons.map((reason) => (
+                      <option key={reason.id} value={reason.id}>
+                        {reason.reason}
                       </option>
                     ))}
                   </select>
@@ -1595,6 +1684,15 @@ export default function ProspectsPage() {
         <UsersModal
           open={showUsersModal}
           onClose={() => setShowUsersModal(false)}
+        />
+      )}
+      {showLostReasonsModal && (
+        <LostReasonsModal
+          open={showLostReasonsModal}
+          onClose={() => {
+            setShowLostReasonsModal(false);
+            loadOptions(); // Reload lost reasons after editing
+          }}
         />
       )}
     </div>

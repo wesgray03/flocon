@@ -82,6 +82,12 @@ export function ProjectsTable({
             <th style={thCustomer} onClick={() => onSort('customer_name')}>
               Customer{sortIndicator('customer_name')}
             </th>
+            <th
+              style={thProjectManager}
+              onClick={() => onSort('project_manager')}
+            >
+              Project Manager{sortIndicator('project_manager')}
+            </th>
             <th style={thOwner} onClick={() => onSort('owner')}>
               Project Lead{sortIndicator('owner')}
             </th>
@@ -143,6 +149,7 @@ export function ProjectsTable({
                 placeholder="Filter customer..."
               />
             </th>
+            <th style={thProjectManager}></th>
             <th style={thOwner}>
               <MultiFilterInput
                 values={filters.owner}
@@ -258,6 +265,7 @@ export function ProjectsTable({
                 ) : null}
               </td>
               <td style={td}>{r.customer_name ?? '—'}</td>
+              <td style={td}>{r.project_manager ?? '—'}</td>
               <td style={td}>{r.owner ?? '—'}</td>
               <td style={td}>
                 <StageBadge stage={r.stage} order={r.stage_order} />
@@ -356,6 +364,11 @@ const thQBID: React.CSSProperties = {
 };
 const thProjectName: React.CSSProperties = { ...th, width: 250, minWidth: 200 };
 const thCustomer: React.CSSProperties = { ...th, width: 180, minWidth: 150 };
+const thProjectManager: React.CSSProperties = {
+  ...th,
+  width: 180,
+  minWidth: 150,
+};
 const thOwner: React.CSSProperties = { ...th, width: 140, minWidth: 120 };
 const thStage: React.CSSProperties = { ...th, width: 160, minWidth: 140 };
 const thMoney: React.CSSProperties = { ...thRight, width: 110, minWidth: 100 };

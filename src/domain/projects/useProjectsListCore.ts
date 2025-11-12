@@ -15,6 +15,7 @@ export type ProjectListRow = {
   project_number: string | null;
   project_name: string;
   customer_name: string | null;
+  project_manager: string | null;
   owner: string | null;
   superintendent: string | null;
   foreman: string | null;
@@ -220,6 +221,7 @@ export function useProjectsListCore() {
         const customer = partyByKey.get(`${r.id}-customer`);
         const architect = partyByKey.get(`${r.id}-architect`);
         const superintendent = partyByKey.get(`${r.id}-superintendent`);
+        const projectManager = partyByKey.get(`${r.id}-project_manager`);
         const owner = userRoleByKey.get(`${r.id}-project_lead`) ?? null;
         const foreman = userRoleByKey.get(`${r.id}-foreman`) ?? null;
         const financial = financialByEngagement.get(r.id) ?? {
@@ -243,6 +245,7 @@ export function useProjectsListCore() {
           project_number: r.project_number ?? null,
           project_name: r.name,
           customer_name: customer?.name ?? null,
+          project_manager: projectManager?.name ?? null,
           owner,
           superintendent: superintendent?.name ?? null,
           foreman,

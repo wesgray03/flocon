@@ -43,6 +43,7 @@ interface SharedMenuProps {
   ) => void;
   onOpenContacts?: () => void;
   onOpenUsers?: () => void;
+  onOpenLostReasons?: () => void;
 }
 
 export function SharedMenu({
@@ -51,6 +52,7 @@ export function SharedMenu({
   onOpenCompanies,
   onOpenContacts,
   onOpenUsers,
+  onOpenLostReasons,
 }: SharedMenuProps) {
   const router = useRouter();
 
@@ -237,6 +239,24 @@ export function SharedMenu({
         }}
       >
         Project Tasks
+      </button>
+      <button
+        type="button"
+        style={menuItemButton}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = '#f0ebe3';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+        }}
+        onClick={() => {
+          onClose();
+          if (onOpenLostReasons) {
+            onOpenLostReasons();
+          }
+        }}
+      >
+        Lost Reasons
       </button>
 
       <div
