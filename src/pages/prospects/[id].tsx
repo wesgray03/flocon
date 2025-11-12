@@ -34,8 +34,7 @@ type Prospect = {
   start_date?: string | null;
   bid_date?: string | null;
   estimating_type?: 'Budget' | 'Construction' | null;
-  probability?: string | null;
-  probability_percent?: number | null;
+  probability_level_id?: string | null;
   sharepoint_folder?: string | null;
   trades?: { id: string; code: string; name: string; amount: number }[];
   extended?: number | null;
@@ -84,8 +83,7 @@ export default function ProspectDetailPage() {
     start_date: '',
     bid_date: '',
     estimating_type: '',
-    probability: '',
-    probability_percent: '',
+    probability_level_id: '',
     sharepoint_folder: '',
   });
 
@@ -144,7 +142,7 @@ export default function ProspectDetailPage() {
     setLoading(true);
     try {
       const { data: prospectData, error: prospectError } = await supabase
-        .from('engagements')
+        .from('prospects_v')
         .select(
           `
           *,
@@ -156,7 +154,6 @@ export default function ProspectDetailPage() {
         `
         )
         .eq('id', id)
-        .eq('type', 'prospect')
         .maybeSingle();
 
       if (prospectError) throw prospectError;
@@ -166,8 +163,7 @@ export default function ProspectDetailPage() {
             id: prospectData.id,
             name: prospectData.name,
             estimating_type: prospectData.estimating_type,
-            probability: prospectData.probability,
-            probability_percent: prospectData.probability_percent,
+            probability_level_id: prospectData.probability_level_id,
             start_date: prospectData.est_start_date,
             bid_date: prospectData.bid_date,
             sharepoint_folder: prospectData.sharepoint_folder,
@@ -295,8 +291,7 @@ export default function ProspectDetailPage() {
           start_date: data.start_date || '',
           bid_date: data.bid_date || '',
           estimating_type: data.estimating_type || '',
-          probability: data.probability || '',
-          probability_percent: data.probability_percent?.toString() || '',
+          probability_level_id: data.probability_level_id || '',
           sharepoint_folder: data.sharepoint_folder || '',
         });
         setTradeLines(
@@ -527,8 +522,7 @@ export default function ProspectDetailPage() {
         start_date: prospect.start_date || '',
         bid_date: prospect.bid_date || '',
         estimating_type: prospect.estimating_type || '',
-        probability: prospect.probability || '',
-        probability_percent: prospect.probability_percent?.toString() || '',
+        probability_level_id: prospect.probability_level_id || '',
         sharepoint_folder: prospect.sharepoint_folder || '',
       });
       setTradeLines(
@@ -551,10 +545,7 @@ export default function ProspectDetailPage() {
         .update({
           name: editForm.name,
           estimating_type: editForm.estimating_type || null,
-          probability: editForm.probability || null,
-          probability_percent: editForm.probability_percent
-            ? Number(editForm.probability_percent)
-            : null,
+          probability_level_id: editForm.probability_level_id || null,
           est_start_date: editForm.start_date || null,
           bid_date: editForm.bid_date || null,
           sharepoint_folder: editForm.sharepoint_folder || null,
@@ -973,22 +964,18 @@ export default function ProspectDetailPage() {
                         <div>
                           <label style={styles.labelStyle}>Probability</label>
                           <select
-                            value={editForm.probability}
+                            value={editForm.probability_level_id}
                             onChange={(e) => {
-                              const newProbability = e.target.value;
-                              const autoPercent =
-                                getProbabilityPercent(newProbability);
                               setEditForm({
                                 ...editForm,
-                                probability: newProbability,
-                                probability_percent: autoPercent,
+                                probability_level_id: e.target.value,
                               });
                             }}
                             style={styles.inputStyle}
                           >
                             <option value="">Select probability...</option>
                             {probabilityLevels.map((level) => (
-                              <option key={level.id} value={level.name}>
+                              <option key={level.id} value={level.id}>
                                 {level.name} ({level.percentage}%)
                               </option>
                             ))}
@@ -1187,14 +1174,15 @@ export default function ProspectDetailPage() {
                         <div>
                           <p style={styles.detailLabelStyle}>Probability</p>
                           <p style={styles.detailValueStyle}>
-                            {prospect.probability
+                            {prospect.probability_level_id
                               ? (() => {
                                   const level = probabilityLevels.find(
-                                    (l) => l.name === prospect.probability
+                                    (l) =>
+                                      l.id === prospect.probability_level_id
                                   );
                                   return level
                                     ? `${level.name} (${level.percentage}%)`
-                                    : prospect.probability;
+                                    : '—';
                                 })()
                               : '—'}
                           </p>

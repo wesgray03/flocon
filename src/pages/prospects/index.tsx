@@ -318,7 +318,7 @@ export default function ProspectsPage() {
     setError(null);
     try {
       const { data: engagementsData, error: engagementsError } = await supabase
-        .from('engagements')
+        .from('prospects_v')
         .select(
           `
           *,
@@ -330,7 +330,6 @@ export default function ProspectsPage() {
           )
         `
         )
-        .eq('type', 'prospect')
         .order('name', { ascending: true });
 
       if (engagementsError) throw engagementsError;
@@ -577,7 +576,6 @@ export default function ProspectsPage() {
     try {
       const payload = {
         name: form.name,
-        user_id: null,
         estimating_type: form.estimating_type,
         type: 'prospect' as const,
         sharepoint_folder: form.sharepoint_folder

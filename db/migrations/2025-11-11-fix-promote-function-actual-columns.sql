@@ -45,15 +45,11 @@ BEGIN
   
   -- Perform the promotion
   -- Only update fields that actually exist in the engagements table
+  -- Keep prospect fields (probability_level_id, lead_source, lost_reason_id) for historical reference
   UPDATE public.engagements
   SET 
     type = 'project',
-    probability = NULL,              -- Clear prospect fields if they exist
-    probability_percent = NULL,
-    lead_source = NULL,
-    expected_close_date = NULL,
-    lost_reason = NULL,
-    contract_amount = COALESCE(p_contract_amount, contract_amount, bid_amount),
+    contract_amount = COALESCE(p_contract_amount, contract_amount),
     stage_id = p_initial_stage_id,
     converted_to_project_at = now(),
     converted_by_user_id = CASE WHEN v_user_exists THEN v_user_id ELSE NULL END,
