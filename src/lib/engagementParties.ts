@@ -39,47 +39,79 @@ export async function getPrimaryPartiesForEngagements(
   roles: PartyRole[]
 ): Promise<EngagementPartyDetailed[]> {
   if (engagementIds.length === 0) return [];
-  
-  // Query directly with joins instead of using view
-  const { data, error } = await supabase
+
+  // Fetch the parties first (without joins to avoid PostgREST complexity)
+  const { data: parties, error: partiesError } = await supabase
     .from('engagement_parties')
-    .select(`
-      id,
-      engagement_id,
-      party_type,
-      party_id,
-      role,
-      is_primary,
-      notes,
-      created_at,
-      updated_at,
-      engagements!inner(name),
-      contacts(name, email, phone, company_type:contact_type),
-      companies(name, email, phone, company_type)
-    `)
+    .select('*')
     .in('engagement_id', engagementIds)
     .in('role', roles)
     .eq('is_primary', true);
-  
-  if (error) throw error;
-  
-  // Map to the detailed format
-  return (data ?? []).map((row: any) => ({
-    id: row.id,
-    engagement_id: row.engagement_id,
-    party_type: row.party_type,
-    party_id: row.party_id,
-    role: row.role,
-    is_primary: row.is_primary,
-    notes: row.notes,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-    engagement_name: row.engagements?.name || '',
-    party_name: row.party_type === 'contact' ? row.contacts?.name : row.companies?.name,
-    party_email: row.party_type === 'contact' ? row.contacts?.email : row.companies?.email,
-    party_phone: row.party_type === 'contact' ? row.contacts?.phone : row.companies?.phone,
-    company_type: row.party_type === 'contact' ? row.contacts?.company_type : row.companies?.company_type,
-  })) as EngagementPartyDetailed[];
+
+  if (partiesError) throw partiesError;
+  if (!parties || parties.length === 0) return [];
+
+  // Separate party IDs by type
+  const contactIds = parties
+    .filter((p) => p.party_type === 'contact')
+    .map((p) => p.party_id);
+  const companyIds = parties
+    .filter((p) => p.party_type === 'company')
+    .map((p) => p.party_id);
+
+  // Fetch engagements, contacts, and companies in parallel
+  const [engagementsRes, contactsRes, companiesRes] = await Promise.all([
+    supabase.from('engagements').select('id, name').in('id', engagementIds),
+    contactIds.length > 0
+      ? supabase
+          .from('contacts')
+          .select('id, name, email, phone, contact_type')
+          .in('id', contactIds)
+      : Promise.resolve({ data: [], error: null }),
+    companyIds.length > 0
+      ? supabase
+          .from('companies')
+          .select('id, name, email, phone, company_type')
+          .in('id', companyIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (engagementsRes.error) throw engagementsRes.error;
+  if (contactsRes.error) throw contactsRes.error;
+  if (companiesRes.error) throw companiesRes.error;
+
+  // Build lookup maps
+  const engagementsMap = new Map(
+    (engagementsRes.data || []).map((e) => [e.id, e])
+  );
+  const contactsMap = new Map((contactsRes.data || []).map((c) => [c.id, c]));
+  const companiesMap = new Map((companiesRes.data || []).map((c) => [c.id, c]));
+
+  // Map to detailed format
+  return parties.map((party) => {
+    const engagement = engagementsMap.get(party.engagement_id);
+    const contact =
+      party.party_type === 'contact' ? contactsMap.get(party.party_id) : null;
+    const company =
+      party.party_type === 'company' ? companiesMap.get(party.party_id) : null;
+
+    return {
+      id: party.id,
+      engagement_id: party.engagement_id,
+      party_type: party.party_type as PartyType,
+      party_id: party.party_id,
+      role: party.role as PartyRole,
+      is_primary: party.is_primary,
+      notes: party.notes,
+      created_at: party.created_at,
+      updated_at: party.updated_at,
+      engagement_name: engagement?.name || '',
+      party_name: contact?.name || company?.name || null,
+      party_email: contact?.email || company?.email || null,
+      party_phone: contact?.phone || company?.phone || null,
+      company_type: contact?.contact_type || company?.company_type || null,
+    };
+  }) as EngagementPartyDetailed[];
 }
 
 // Set primary party for a role, clearing any previous primary
