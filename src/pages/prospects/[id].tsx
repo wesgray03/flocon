@@ -936,7 +936,7 @@ export default function ProspectDetailPage() {
                       e.currentTarget.style.background = colors.navy;
                     }}
                   >
-                    {converting ? 'Converting…' : 'Convert to Project'}
+                    {converting ? 'Converting…' : '🚀 Convert to Project'}
                   </button>
                 </>
               )}
