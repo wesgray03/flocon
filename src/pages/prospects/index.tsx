@@ -832,7 +832,7 @@ export default function ProspectsPage() {
                       p.estimating_type,
                       p.probability_level_name,
                       p.probability_percentage,
-                      p.start_date,
+                      p.est_start,
                       p.bid_date,
                       p.extended,
                       tradeBreakdown,
@@ -938,20 +938,15 @@ export default function ProspectsPage() {
             type="button"
             onClick={() => {
               setEditingProspect(null);
-              setFormData({
+              setForm({
                 name: '',
-                customer_name: '',
-                contact_name: '',
-                architect: '',
-                company_owner: '',
+                company_id: '',
+                contact_id: '',
                 owner: '',
-                start_date: '',
-                bid_date: '',
+                architect_id: '',
                 estimating_type: 'Budget',
                 probability_level_id: '',
-                notes: '',
-                next_step: '',
-                follow_up_date: '',
+                bid_date: '',
                 last_call: '',
                 active: 'true',
                 lost_reason_id: '',
