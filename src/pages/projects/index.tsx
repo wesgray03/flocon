@@ -976,8 +976,22 @@ export default function ProjectsPage() {
                 if (error) throw error;
                 await refresh();
               } catch (err) {
-                const errorMessage =
-                  err instanceof Error ? err.message : String(err);
+                let errorMessage = 'Unknown error';
+                if (err && typeof err === 'object') {
+                  const anyErr: any = err;
+                  if (anyErr.message) errorMessage = anyErr.message;
+                  const detailsParts: string[] = [];
+                  if (anyErr.code) detailsParts.push(`code=${anyErr.code}`);
+                  if (anyErr.details) detailsParts.push(anyErr.details);
+                  if (anyErr.hint) detailsParts.push(anyErr.hint);
+                  if (detailsParts.length) {
+                    errorMessage += ` ( ${detailsParts.join(' | ')} )`;
+                  }
+                } else if (err instanceof Error) {
+                  errorMessage = err.message;
+                } else {
+                  errorMessage = String(err);
+                }
                 alert(`Delete failed: ${errorMessage}`);
               }
             }}
