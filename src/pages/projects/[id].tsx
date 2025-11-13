@@ -9,14 +9,14 @@ import type { Project } from '@/domain/projects/types';
 import { useProjectCore } from '@/domain/projects/useProjectCore';
 import { useMenuModals } from '@/hooks/useMenuModals';
 import {
-  getPrimaryPartiesForEngagements,
-  setPrimaryParty,
-  type PartyRole,
+    getPrimaryPartiesForEngagements,
+    setPrimaryParty,
+    type PartyRole,
 } from '@/lib/engagementParties';
 import {
-  getPrimaryUserRolesForEngagements,
-  setPrimaryUserRole,
-  type UserRole,
+    getPrimaryUserRolesForEngagements,
+    setPrimaryUserRole,
+    type UserRole,
 } from '@/lib/engagementUserRoles';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
@@ -24,8 +24,8 @@ import { colors } from '@/styles/theme';
 // Icon imports moved into ProjectInfoCard; FinancialOverview centralizes financial tables
 import { FinancialOverview } from '@/components/project/FinancialOverview';
 import {
-  ProjectInfoCard,
-  type EditForm,
+    ProjectInfoCard,
+    type EditForm,
 } from '@/components/project/ProjectInfoCard';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';

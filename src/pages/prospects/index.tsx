@@ -884,10 +884,12 @@ export default function ProspectsPage() {
           )}
 
         {!loading && !error && filteredAndSortedProspects.length > 0 && (
-          <div style={{ overflowX: 'auto' }}>
-            <table
-              style={{
-                width: '100%',
+          <>
+            {/* Desktop Table View */}
+            <div className="prospects-table-container" style={{ overflowX: 'auto' }}>
+              <table
+                style={{
+                  width: '100%',
                 fontSize: 14,
                 borderCollapse: 'collapse',
               }}
@@ -1238,6 +1240,160 @@ export default function ProspectsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Mobile Cards View */}
+          <div className="prospects-mobile-cards" style={{ display: 'none' }}>
+            {filteredAndSortedProspects.map((prospect) => (
+              <div
+                key={prospect.id}
+                className="prospect-card"
+                onClick={() => router.push(`/prospects/${prospect.id}`)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="project-card-header">
+                  <div>
+                    <h3 className="project-card-title">{prospect.name}</h3>
+                    {prospect.customer_name && (
+                      <div className="project-card-qbid">
+                        {prospect.customer_name}
+                      </div>
+                    )}
+                  </div>
+                  <div className="project-card-actions">
+                    {prospect.sharepoint_folder && (
+                      <a
+                        href={prospect.sharepoint_folder}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          color: colors.navy,
+                          padding: 8,
+                          display: 'flex',
+                        }}
+                      >
+                        <Folder size={20} />
+                      </a>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openForEdit(prospect);
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: colors.navy,
+                        padding: 8,
+                        cursor: 'pointer',
+                        display: 'flex',
+                      }}
+                    >
+                      <Pencil size={20} />
+                    </button>
+                  </div>
+                </div>
+
+                {prospect.contact_name && (
+                  <div className="project-card-row">
+                    <span className="project-card-label">Contact</span>
+                    <span className="project-card-value">
+                      {prospect.contact_name}
+                    </span>
+                  </div>
+                )}
+
+                {prospect.owner_name && (
+                  <div className="project-card-row">
+                    <span className="project-card-label">Sales Lead</span>
+                    <span className="project-card-value">
+                      {prospect.owner_name}
+                    </span>
+                  </div>
+                )}
+
+                {prospect.architect_name && (
+                  <div className="project-card-row">
+                    <span className="project-card-label">Architect</span>
+                    <span className="project-card-value">
+                      {prospect.architect_name}
+                    </span>
+                  </div>
+                )}
+
+                <div className="project-card-row">
+                  <span className="project-card-label">Type</span>
+                  <span
+                    className="project-card-value"
+                    style={{
+                      fontWeight: 600,
+                      color:
+                        prospect.estimating_type === 'Construction'
+                          ? '#4CAF50'
+                          : '#2196F3',
+                    }}
+                  >
+                    {prospect.estimating_type || 'Budget'}
+                  </span>
+                </div>
+
+                {prospect.probability_level_name && (
+                  <div className="project-card-row">
+                    <span className="project-card-label">Probability</span>
+                    <span
+                      className="project-card-value"
+                      style={{
+                        fontWeight: 600,
+                        color: getProbabilityColor(
+                          prospect.probability_level_name
+                        ),
+                      }}
+                    >
+                      {prospect.probability_level_name}
+                      {prospect.probability_percentage
+                        ? ` (${prospect.probability_percentage}%)`
+                        : ''}
+                    </span>
+                  </div>
+                )}
+
+                {prospect.bid_date && (
+                  <div className="project-card-row">
+                    <span className="project-card-label">Bid Date</span>
+                    <span className="project-card-value">
+                      {prospect.bid_date}
+                    </span>
+                  </div>
+                )}
+
+                <div
+                  className="project-card-row"
+                  style={{
+                    borderTop: '1px solid #e5dfd5',
+                    paddingTop: 12,
+                    marginTop: 8,
+                  }}
+                >
+                  <span className="project-card-label">Bid Amount</span>
+                  <span className="project-card-value project-card-money">
+                    {prospect.extended ? formatCurrency(prospect.extended) : '—'}
+                  </span>
+                </div>
+
+                {prospect.extended && prospect.probability_percentage && (
+                  <div className="project-card-row">
+                    <span className="project-card-label">Revenue Est.</span>
+                    <span className="project-card-value project-card-money">
+                      {formatCurrency(
+                        prospect.extended * (prospect.probability_percentage / 100)
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
         )}
       </div>
 

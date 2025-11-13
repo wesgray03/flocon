@@ -3,8 +3,8 @@ import { DashboardHeader } from '@/components/layout/DashboardHeader';
 import { SharedMenu } from '@/components/layout/SharedMenu';
 import { useMenuModals } from '@/hooks/useMenuModals';
 import {
-  getPrimaryPartiesForEngagements,
-  type PartyRole,
+    getPrimaryPartiesForEngagements,
+    type PartyRole,
 } from '@/lib/engagementParties';
 import { supabase } from '@/lib/supabaseClient';
 import { colors } from '@/styles/theme';

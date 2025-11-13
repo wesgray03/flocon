@@ -6,14 +6,14 @@ import { ContactsModal } from '@/components/modals/ContactsModal';
 import { CommentsSection } from '@/components/project/CommentsSection';
 import { useMenuModals } from '@/hooks/useMenuModals';
 import {
-  getPrimaryPartiesForEngagements,
-  setPrimaryParty,
-  type PartyRole,
+    getPrimaryPartiesForEngagements,
+    setPrimaryParty,
+    type PartyRole,
 } from '@/lib/engagementParties';
 import {
-  getPrimaryUserRolesForEngagements,
-  setPrimaryUserRole,
-  type UserRole,
+    getPrimaryUserRolesForEngagements,
+    setPrimaryUserRole,
+    type UserRole,
 } from '@/lib/engagementUserRoles';
 import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
@@ -791,6 +791,7 @@ export default function ProspectDetailPage() {
         <div style={styles.contentWrapperStyle} className="content-wrapper">
           {/* 3-Column Layout: Prospect Info + Main Content + Comments */}
           <div
+            className="prospect-detail-layout three-column-layout"
             style={{
               display: 'grid',
               gridTemplateColumns: '300px 1fr 350px',
@@ -799,7 +800,7 @@ export default function ProspectDetailPage() {
             }}
           >
             {/* Left Sidebar - Prospect Information */}
-            <div>
+            <div className="prospect-info-card left-sidebar">
               <div style={{ position: 'sticky', top: 24 }}>
                 {/* Prospect Information Card */}
                 <div
@@ -809,6 +810,7 @@ export default function ProspectDetailPage() {
                     borderRadius: 12,
                     padding: 20,
                   }}
+                  className="project-info-card"
                 >
                   {/* Header with Edit/Save/Cancel Buttons */}
                   <div
@@ -1306,7 +1308,7 @@ export default function ProspectDetailPage() {
             </div>
 
             {/* Main Content Area - Bid & Trades */}
-            <div>
+            <div className="prospect-trades-card main-content">
               <div
                 style={{
                   background: '#faf8f5',
@@ -1708,7 +1710,7 @@ export default function ProspectDetailPage() {
             </div>
 
             {/* Right Sidebar - Comments */}
-            <div>
+            <div className="right-sidebar">
               <div style={{ position: 'sticky', top: 24 }}>
                 {id && typeof id === 'string' && (
                   <CommentsSection

@@ -219,6 +219,17 @@
     justify-content: center !important;
   }
 
+  /* Toggle styling improvements for mobile */
+  .projects-header-center a {
+    min-width: 60px !important;
+    min-height: 32px !important;
+  }
+
+  .projects-header-center span {
+    font-size: 14px !important;
+    white-space: nowrap;
+  }
+
   /* Hide email on mobile */
   .projects-header-email {
     display: none !important;
@@ -340,11 +351,57 @@
     font-weight: 600;
     color: #1e3a5f;
   }
+
+  /* ========================= PROSPECTS LIST MOBILE ========================= */
+
+  /* Hide the prospects table on mobile */
+  .prospects-table-container {
+    display: none !important;
+  }
+
+  /* Show the mobile cards view for prospects */
+  .prospects-mobile-cards {
+    display: block !important;
+  }
+
+  /* Prospect card styling (reuses project-card classes) */
+  .prospect-card {
+    background: #fff;
+    border: 1px solid #e5dfd5;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .prospect-card:active {
+    background: #f0ebe3;
+  }
+
+  /* ========================= PROSPECT DETAIL MOBILE ========================= */
+
+  /* Use same three-column layout as projects */
+  .prospect-detail-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .prospect-info-card {
+    order: 1 !important;
+  }
+
+  .prospect-trades-card {
+    order: 2 !important;
+  }
 }
 
 /* Desktop: hide mobile cards and filters, show table */
 @media (min-width: 769px) {
   .projects-mobile-cards {
+    display: none !important;
+  }
+
+  .prospects-mobile-cards {
     display: none !important;
   }
 
