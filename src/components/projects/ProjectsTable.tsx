@@ -288,7 +288,11 @@ export function ProjectsTable({
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.open(r.sharepoint_folder!, '_blank', 'noopener,noreferrer');
+                      window.open(
+                        r.sharepoint_folder!,
+                        '_blank',
+                        'noopener,noreferrer'
+                      );
                     }}
                     title="Open project folder in SharePoint"
                     aria-label="Open project folder"

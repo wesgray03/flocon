@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
  * Automated Production → Staging Data Sync
- * 
+ *
  * What it does:
  * 1. Backs up production data (safety net)
  * 2. Dumps all production table data
  * 3. Wipes staging tables (preserves schema)
  * 4. Restores production data to staging
- * 
+ *
  * Usage:
  *   node sync-prod-to-staging.js
- * 
+ *
  * Prerequisites:
  *   - .env.production.local with production credentials
  *   - .env.staging.local with staging credentials
@@ -26,7 +26,9 @@ const PROD_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const PROD_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Load staging credentials
-const stagingEnv = require('dotenv').parse(fs.readFileSync('.env.staging.local'));
+const stagingEnv = require('dotenv').parse(
+  fs.readFileSync('.env.staging.local')
+);
 const STAGING_URL = stagingEnv.NEXT_PUBLIC_SUPABASE_URL;
 const STAGING_KEY = stagingEnv.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -143,10 +145,14 @@ async function copyTable(sourceClient, targetClient, table) {
     let inserted = 0;
     for (let i = 0; i < rows.length; i += batchSize) {
       const batch = rows.slice(i, i + batchSize);
-      const { error: insertError } = await targetClient.from(table).insert(batch);
+      const { error: insertError } = await targetClient
+        .from(table)
+        .insert(batch);
 
       if (insertError) {
-        console.warn(`    ⚠️  Batch ${i}-${i + batch.length} failed: ${insertError.message}`);
+        console.warn(
+          `    ⚠️  Batch ${i}-${i + batch.length} failed: ${insertError.message}`
+        );
       } else {
         inserted += batch.length;
       }
