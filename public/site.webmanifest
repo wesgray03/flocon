@@ -1,0 +1,13 @@
+{
+  "name": "Flocon",
+  "short_name": "Flocon",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d1b2a",
+  "icons": [
+    { "src": "/flocon-logo-v2.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/flocon-logo-v2.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/flocon-logo-v2.png", "sizes": "180x180", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -11,6 +11,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
         />
+        {/* Site icons for bookmarks, tabs, and home screens */}
+        <link rel="icon" href="/flocon-logo-v2.png" sizes="any" />
+        <link rel="icon" type="image/svg+xml" href="/file.svg" />
+        <link rel="apple-touch-icon" href="/flocon-logo-v2.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#0d1b2a" />
+        <meta name="msapplication-TileColor" content="#0d1b2a" />
       </Head>
       <Component {...pageProps} />
     </>
