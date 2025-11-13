@@ -850,9 +850,10 @@ export default function ProspectDetailPage() {
         ) : (
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
+              display: 'grid',
+              gridTemplateColumns: '1fr auto 1fr',
               alignItems: 'center',
+              gap: 16,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -877,9 +878,7 @@ export default function ProspectDetailPage() {
               style={{
                 display: 'flex',
                 gap: 16,
-                flex: '1',
                 justifyContent: 'center',
-                alignItems: 'center',
               }}
               className="prospect-action-buttons"
             >
@@ -942,6 +941,7 @@ export default function ProspectDetailPage() {
                 </>
               )}
             </div>
+            <div style={{ width: 0 }} />
           </div>
         )}
       </div>
