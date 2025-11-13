@@ -80,6 +80,7 @@ export function DashboardHeader({
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
+        minHeight: 69,
         marginBottom: 24,
         background: colors.cardBackground,
         padding: '12px 20px',
