@@ -791,16 +791,12 @@ export default function ProspectDetailPage() {
         <div style={styles.contentWrapperStyle} className="content-wrapper">
           {/* 3-Column Layout: Prospect Info + Main Content + Comments */}
           <div
+            style={styles.threeColumnLayoutStyle}
             className="prospect-detail-layout three-column-layout"
-            style={{
-              display: 'flex',
-              gap: 24,
-              alignItems: 'start',
-            }}
           >
             {/* Left Sidebar - Prospect Information */}
-            <div className="prospect-info-card left-sidebar">
-              <div style={{ position: 'sticky', top: 24 }}>
+            <div style={styles.leftSidebarStyle} className="prospect-info-card left-sidebar">
+              <div style={styles.stickyContainerStyle}>
                 {/* Prospect Information Card */}
                 <div
                   style={{
@@ -1307,7 +1303,7 @@ export default function ProspectDetailPage() {
             </div>
 
             {/* Main Content Area - Bid & Trades */}
-            <div className="prospect-trades-card main-content">
+            <div style={styles.mainContentStyle} className="prospect-trades-card main-content">
               <div
                 style={{
                   background: '#faf8f5',
@@ -1709,7 +1705,7 @@ export default function ProspectDetailPage() {
             </div>
 
             {/* Right Sidebar - Comments */}
-            <div className="right-sidebar">
+            <div style={styles.rightSidebarStyle} className="right-sidebar">
               <div style={{ position: 'sticky', top: 24 }}>
                 {id && typeof id === 'string' && (
                   <CommentsSection
