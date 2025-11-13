@@ -12,8 +12,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
         />
         {/* Site icons for bookmarks, tabs, and home screens */}
-        <link rel="icon" href="/flocon-logo-small.png?v=1" sizes="any" />
-        <link rel="icon" type="image/svg+xml" href="/file.svg" />
+        <link rel="icon" type="image/png" href="/flocon-logo-small.png?v=1" sizes="32x32" />
+        <link rel="shortcut icon" type="image/png" href="/flocon-logo-small.png?v=1" />
         <link rel="apple-touch-icon" href="/flocon-logo-small.png?v=1" />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#0d1b2a" />
