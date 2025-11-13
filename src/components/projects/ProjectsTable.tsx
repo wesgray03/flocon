@@ -244,25 +244,6 @@ export function ProjectsTable({
                 <span style={{ color: colors.textPrimary, fontWeight: 500 }}>
                   {r.project_name}
                 </span>
-                {r.sharepoint_folder ? (
-                  <a
-                    href={r.sharepoint_folder}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Open project folder in SharePoint"
-                    style={{
-                      marginLeft: 8,
-                      color: colors.navy,
-                      textDecoration: 'none',
-                      display: 'inline-flex',
-                      verticalAlign: 'middle',
-                    }}
-                    aria-label="Open project folder"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Folder size={16} />
-                  </a>
-                ) : null}
               </td>
               <td style={td}>{r.customer_name ?? '—'}</td>
               <td style={td}>{r.project_manager ?? '—'}</td>
@@ -292,6 +273,29 @@ export function ProjectsTable({
               <td style={td}>{dateStr(r.start_date)}</td>
               <td style={td}>{dateStr(r.end_date)}</td>
               <td style={tdCenter} onClick={(e) => e.stopPropagation()}>
+                {r.sharepoint_folder && (
+                  <button
+                    type="button"
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 4,
+                      color: colors.navy,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(r.sharepoint_folder!, '_blank', 'noopener,noreferrer');
+                    }}
+                    title="Open project folder in SharePoint"
+                    aria-label="Open project folder"
+                  >
+                    <Folder size={16} />
+                  </button>
+                )}
                 <button
                   type="button"
                   style={{
