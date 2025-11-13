@@ -43,7 +43,8 @@ type SortKey =
   | 'probability_percentage'
   | 'extended'
   | 'estimating_type'
-  | 'bid_amount';
+  | 'bid_amount'
+  | 'bid_date';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -1066,7 +1067,9 @@ export default function ProspectsPage() {
                   >
                     Probability{sortIndicator('probability_level_name')}
                   </th>
-                  <th style={thBidDate}>Bid Date</th>
+                  <th style={thBidDate} onClick={() => handleSort('bid_date')}>
+                    Bid Date{sortIndicator('bid_date')}
+                  </th>
                   <th style={thMoney} onClick={() => handleSort('extended')}>
                     Bid Amount{sortIndicator('extended')}
                   </th>
