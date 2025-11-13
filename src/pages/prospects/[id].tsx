@@ -1410,24 +1410,6 @@ export default function ProspectDetailPage() {
                             </p>
                           )}
                         </div>
-
-                        {prospect.sharepoint_folder && (
-                          <div style={styles.sectionDividerStyle}>
-                            <p style={styles.sectionTitleStyle}>Links</p>
-                            <a
-                              href={prospect.sharepoint_folder}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                color: colors.navy,
-                                fontSize: 14,
-                                textDecoration: 'none',
-                              }}
-                            >
-                              📁 SharePoint Folder
-                            </a>
-                          </div>
-                        )}
                       </>
                     )}
                   </div>
