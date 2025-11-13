@@ -804,68 +804,92 @@ export default function ProspectDetailPage() {
         menuItems={
           <SharedMenu onClose={() => setMenuOpen(false)} {...menuCallbacks} />
         }
+        actionButton={
+          <div style={{ width: 145, minWidth: 145, visibility: 'hidden' }} />
+        }
+        exportButton={
+          <button
+            disabled
+            style={{
+              background: '#f5f5f5',
+              color: '#999',
+              border: '1px solid #e5dfd5',
+              borderRadius: 8,
+              padding: '8px 14px',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'not-allowed',
+              opacity: 0,
+              pointerEvents: 'none',
+            }}
+          >
+            Export CSV
+          </button>
+        }
       />
 
       {/* Header */}
-      <div style={{ ...styles.headerStyle, paddingTop: 0 }}>
-        <div style={{ maxWidth: 1600, margin: '0 auto' }}>
-          <Link
-            href="/prospects"
+      <div style={styles.headerStyle}>
+        <Link
+          href="/prospects"
+          style={{
+            color: colors.navy,
+            textDecoration: 'none',
+            fontSize: 14,
+            marginBottom: 8,
+            display: 'inline-block',
+          }}
+        >
+          ← Back to Prospects
+        </Link>
+
+        {loading ? (
+          <p style={{ color: colors.textSecondary }}>Loading…</p>
+        ) : !prospect ? (
+          <p style={{ color: colors.textSecondary }}>Prospect not found.</p>
+        ) : (
+          <div
             style={{
-              color: colors.navy,
-              textDecoration: 'none',
-              fontSize: 14,
-              marginBottom: 8,
-              display: 'inline-block',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            ← Back to Prospects
-          </Link>
-
-          {loading ? (
-            <p style={{ color: colors.textSecondary }}>Loading…</p>
-          ) : !prospect ? (
-            <p style={{ color: colors.textSecondary }}>Prospect not found.</p>
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <h1 style={styles.titleStyle}>{prospect.name}</h1>
+            <h1 style={styles.titleStyle}>{prospect.name}</h1>
+            <div style={{ display: 'flex', gap: 12, flex: '0 0 auto', minWidth: 377, justifyContent: 'flex-end' }}>
               {!editMode && !editTradesMode && (
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <button
-                    onClick={handleMarkAsLost}
-                    disabled={converting}
-                    style={{
-                      padding: '10px 20px',
-                      background: '#f87171',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: 8,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: converting ? 'not-allowed' : 'pointer',
-                      opacity: converting ? 0.7 : 1,
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!converting) {
-                        e.currentTarget.style.background = '#ef4444';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#f87171';
-                    }}
-                  >
-                    <span style={{ fontSize: '16px', marginRight: '6px' }}>
-                      💣
-                    </span>
-                    {converting ? 'Processing…' : 'Mark as Lost'}
-                  </button>
+                <>
+                    <button
+                      onClick={handleMarkAsLost}
+                      disabled={converting}
+                      style={{
+                        padding: '10px 20px',
+                        background: '#f87171',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 8,
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: converting ? 'not-allowed' : 'pointer',
+                        opacity: converting ? 0.7 : 1,
+                        transition: 'all 0.2s',
+                        minWidth: 165,
+                        width: 165,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!converting) {
+                          e.currentTarget.style.background = '#ef4444';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#f87171';
+                      }}
+                    >
+                      <span style={{ fontSize: '16px', marginRight: '6px' }}>
+                        💣
+                      </span>
+                      {converting ? 'Processing…' : 'Mark as Lost'}
+                    </button>
                   <button
                     onClick={handleConvertToProject}
                     disabled={converting}
@@ -880,6 +904,8 @@ export default function ProspectDetailPage() {
                       cursor: converting ? 'not-allowed' : 'pointer',
                       opacity: converting ? 0.7 : 1,
                       transition: 'all 0.2s',
+                      minWidth: 200,
+                      width: 200,
                     }}
                     onMouseEnter={(e) => {
                       if (!converting) {
@@ -892,11 +918,11 @@ export default function ProspectDetailPage() {
                   >
                     {converting ? 'Converting…' : '🚀 Convert to Project'}
                   </button>
-                </div>
-              )}
+                  </>
+                )}
+              </div>
             </div>
           )}
-        </div>
       </div>
 
       {loading || !prospect ? null : (

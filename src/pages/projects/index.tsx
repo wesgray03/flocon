@@ -791,74 +791,76 @@ export default function ProjectsPage() {
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               display: 'none',
+              minWidth: 145,
+              width: 145,
             }}
           >
             + New Project
           </button>
         }
         exportButton={
-          filteredAndSortedRows.length > 0 && (
-            <button
-              type="button"
-              className="projects-export-button"
-              onClick={() => {
-                if (!filteredAndSortedRows.length) return;
-                const headers = [
-                  'id',
-                  'project_number',
-                  'project_name',
-                  'customer_name',
-                  'owner',
-                  'stage',
-                  'contract_amt',
-                  'co_amt',
-                  'total_amt',
-                  'billed_amt',
-                  'balance',
-                  'start_date',
-                  'end_date',
-                ];
-                const lines = [
-                  headers.join(','),
-                  ...filteredAndSortedRows.map((r) =>
-                    headers
-                      .map((h) => {
-                        const val = (r as any)[h];
-                        if (val == null) return '';
-                        const str = String(val).replace(/"/g, '""');
-                        return /[",\n]/.test(str) ? `"${str}"` : str;
-                      })
-                      .join(',')
-                  ),
-                ];
-                const blob = new Blob([lines.join('\n')], {
-                  type: 'text/csv',
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `projects-export-${new Date()
-                  .toISOString()
-                  .slice(0, 10)}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              }}
-              style={{
-                background: '#ebe5db',
-                color: colors.textPrimary,
-                border: '1px solid #e5dfd5',
-                borderRadius: 8,
-                padding: '8px 14px',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              Export CSV
-            </button>
-          )
+          <button
+            type="button"
+            className="projects-export-button"
+            onClick={() => {
+              if (!filteredAndSortedRows.length) return;
+              const headers = [
+                'id',
+                'project_number',
+                'project_name',
+                'customer_name',
+                'owner',
+                'stage',
+                'contract_amt',
+                'co_amt',
+                'total_amt',
+                'billed_amt',
+                'balance',
+                'start_date',
+                'end_date',
+              ];
+              const lines = [
+                headers.join(','),
+                ...filteredAndSortedRows.map((r) =>
+                  headers
+                    .map((h) => {
+                      const val = (r as any)[h];
+                      if (val == null) return '';
+                      const str = String(val).replace(/"/g, '""');
+                      return /[",\n]/.test(str) ? `"${str}"` : str;
+                    })
+                    .join(',')
+                ),
+              ];
+              const blob = new Blob([lines.join('\n')], {
+                type: 'text/csv',
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `projects-export-${new Date()
+                .toISOString()
+                .slice(0, 10)}.csv`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }}
+            disabled={filteredAndSortedRows.length === 0}
+            style={{
+              background: filteredAndSortedRows.length > 0 ? '#ebe5db' : '#f5f5f5',
+              color: filteredAndSortedRows.length > 0 ? colors.textPrimary : '#999',
+              border: '1px solid #e5dfd5',
+              borderRadius: 8,
+              padding: '8px 14px',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: filteredAndSortedRows.length > 0 ? 'pointer' : 'not-allowed',
+              opacity: filteredAndSortedRows.length > 0 ? 1 : 0.5,
+            }}
+          >
+            Export CSV
+          </button>
         }
       />
 

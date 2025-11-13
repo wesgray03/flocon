@@ -125,7 +125,10 @@
   box-sizing: border-box;
 }
 
-html,
+html {
+  overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+}
+
 body,
 #__next {
   width: 100%;

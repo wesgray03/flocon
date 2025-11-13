@@ -130,12 +130,16 @@ export const pageContainerStyle: React.CSSProperties = {
   minHeight: '100vh',
   background: '#f5f1ea',
   fontFamily: 'system-ui',
+  padding: 24,
 };
 
 export const headerStyle: React.CSSProperties = {
   background: '#faf8f5',
   borderBottom: '1px solid #e5dfd5',
-  padding: '16px 24px',
+  padding: '12px 20px',
+  borderRadius: 12,
+  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+  marginBottom: 24,
 };
 
 export const contentWrapperStyle: React.CSSProperties = {

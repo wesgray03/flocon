@@ -830,92 +830,94 @@ export default function ProspectsPage() {
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               display: 'none',
+              minWidth: 145,
+              width: 145,
             }}
           >
             + New Prospect
           </button>
         }
         exportButton={
-          filteredAndSortedProspects.length > 0 && (
-            <button
-              type="button"
-              className="projects-export-button"
-              onClick={() => {
-                if (!filteredAndSortedProspects.length) return;
-                const headers = [
-                  'id',
-                  'name',
-                  'customer_name',
-                  'contact_name',
-                  'architect_name',
-                  'owner_name',
-                  'estimating_type',
-                  'probability_level_name',
-                  'probability_percentage',
-                  'start_date',
-                  'bid_date',
-                  'extended',
-                  'trade_breakdown',
-                ];
-                const lines = [
-                  headers.join(','),
-                  ...filteredAndSortedProspects.map((p) => {
-                    const tradeBreakdown =
-                      p.trades
-                        ?.map((t) => `${t.code}-${t.name}: $${t.amount}`)
-                        .join('; ') || '';
-                    const values = [
-                      p.id,
-                      p.name,
-                      p.customer_name,
-                      p.contact_name,
-                      p.architect_name,
-                      p.owner_name,
-                      p.estimating_type,
-                      p.probability_level_name,
-                      p.probability_percentage,
-                      p.est_start,
-                      p.bid_date,
-                      p.extended,
-                      tradeBreakdown,
-                    ];
-                    return values
-                      .map((val) => {
-                        if (val == null) return '';
-                        const str = String(val).replace(/"/g, '""');
-                        return /[",\n]/.test(str) ? `"${str}"` : str;
-                      })
-                      .join(',');
-                  }),
-                ];
-                const blob = new Blob([lines.join('\n')], {
-                  type: 'text/csv',
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `prospects-export-${new Date()
-                  .toISOString()
-                  .slice(0, 10)}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              }}
-              style={{
-                background: '#ebe5db',
-                color: colors.textPrimary,
-                border: '1px solid #e5dfd5',
-                borderRadius: 8,
-                padding: '8px 14px',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              Export CSV
-            </button>
-          )
+          <button
+            type="button"
+            className="projects-export-button"
+            onClick={() => {
+              if (!filteredAndSortedProspects.length) return;
+              const headers = [
+                'id',
+                'name',
+                'customer_name',
+                'contact_name',
+                'architect_name',
+                'owner_name',
+                'estimating_type',
+                'probability_level_name',
+                'probability_percentage',
+                'start_date',
+                'bid_date',
+                'extended',
+                'trade_breakdown',
+              ];
+              const lines = [
+                headers.join(','),
+                ...filteredAndSortedProspects.map((p) => {
+                  const tradeBreakdown =
+                    p.trades
+                      ?.map((t) => `${t.code}-${t.name}: $${t.amount}`)
+                      .join('; ') || '';
+                  const values = [
+                    p.id,
+                    p.name,
+                    p.customer_name,
+                    p.contact_name,
+                    p.architect_name,
+                    p.owner_name,
+                    p.estimating_type,
+                    p.probability_level_name,
+                    p.probability_percentage,
+                    p.est_start,
+                    p.bid_date,
+                    p.extended,
+                    tradeBreakdown,
+                  ];
+                  return values
+                    .map((val) => {
+                      if (val == null) return '';
+                      const str = String(val).replace(/"/g, '""');
+                      return /[",\n]/.test(str) ? `"${str}"` : str;
+                    })
+                    .join(',');
+                }),
+              ];
+              const blob = new Blob([lines.join('\n')], {
+                type: 'text/csv',
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `prospects-export-${new Date()
+                .toISOString()
+                .slice(0, 10)}.csv`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }}
+            disabled={filteredAndSortedProspects.length === 0}
+            style={{
+              background: filteredAndSortedProspects.length > 0 ? '#ebe5db' : '#f5f5f5',
+              color: filteredAndSortedProspects.length > 0 ? colors.textPrimary : '#999',
+              border: '1px solid #e5dfd5',
+              borderRadius: 8,
+              padding: '8px 14px',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: filteredAndSortedProspects.length > 0 ? 'pointer' : 'not-allowed',
+              opacity: filteredAndSortedProspects.length > 0 ? 1 : 0.5,
+            }}
+          >
+            Export CSV
+          </button>
         }
       />
 

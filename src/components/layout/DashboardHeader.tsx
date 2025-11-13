@@ -77,7 +77,7 @@ export function DashboardHeader({
       className="projects-header"
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr auto 1fr',
+        gridTemplateColumns: 'minmax(150px, auto) 1fr minmax(150px, auto)',
         alignItems: 'center',
         minHeight: 69,
         marginBottom: 24,
@@ -95,6 +95,8 @@ export function DashboardHeader({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'flex-start',
+          minWidth: 0,
+          flex: '0 0 auto',
         }}
       >
         <Image
@@ -115,6 +117,8 @@ export function DashboardHeader({
           alignItems: 'center',
           gap: 12,
           justifyContent: 'center',
+          flex: '0 0 auto',
+          minWidth: 'fit-content',
         }}
       >
         <span
@@ -123,6 +127,7 @@ export function DashboardHeader({
             fontWeight: 600,
             color:
               activeTab === 'prospects' ? colors.navy : colors.textSecondary,
+            whiteSpace: 'nowrap',
           }}
         >
           Prospects
@@ -139,6 +144,7 @@ export function DashboardHeader({
             transition: 'all 0.3s ease',
             display: 'inline-block',
             textDecoration: 'none',
+            flex: '0 0 auto',
           }}
         >
           <div
@@ -161,6 +167,7 @@ export function DashboardHeader({
             fontWeight: 600,
             color:
               activeTab === 'projects' ? colors.navy : colors.textSecondary,
+            whiteSpace: 'nowrap',
           }}
         >
           Projects
@@ -175,11 +182,14 @@ export function DashboardHeader({
           alignItems: 'center',
           gap: 12,
           justifyContent: 'flex-end',
+          minWidth: 0,
         }}
       >
-        {actionButton}
-        {exportButton}
-        <div style={{ position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: '0 0 auto' }}>
+          {actionButton}
+          {exportButton}
+        </div>
+        <div style={{ position: 'relative', flex: '0 0 auto' }}>
           <button
             type="button"
             className="projects-menu-button"

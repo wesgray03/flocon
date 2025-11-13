@@ -870,39 +870,59 @@ export default function ProjectDetail() {
         menuItems={
           <SharedMenu onClose={() => setMenuOpen(false)} {...menuCallbacks} />
         }
+        actionButton={
+          <div style={{ width: 145, minWidth: 145, visibility: 'hidden' }} />
+        }
+        exportButton={
+          <button
+            disabled
+            style={{
+              background: '#f5f5f5',
+              color: '#999',
+              border: '1px solid #e5dfd5',
+              borderRadius: 8,
+              padding: '8px 14px',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'not-allowed',
+              opacity: 0,
+              pointerEvents: 'none',
+            }}
+          >
+            Export CSV
+          </button>
+        }
       />
 
       {/* Header */}
-      <div style={{ ...styles.headerStyle, paddingTop: 0 }}>
-        <div style={{ maxWidth: 1600, margin: '0 auto' }}>
-          <Link
-            href="/projects"
-            style={{
-              color: colors.navy,
-              textDecoration: 'none',
-              fontSize: 14,
-              marginBottom: 8,
-              display: 'inline-block',
-            }}
-          >
-            ← Back to Projects
-          </Link>
+      <div style={styles.headerStyle}>
+        <Link
+          href="/projects"
+          style={{
+            color: colors.navy,
+            textDecoration: 'none',
+            fontSize: 14,
+            marginBottom: 8,
+            display: 'inline-block',
+          }}
+        >
+          ← Back to Projects
+        </Link>
 
-          {loading ? (
-            <p style={{ color: colors.textSecondary }}>Loading…</p>
-          ) : !project ? (
-            <p style={{ color: colors.textSecondary }}>Project not found.</p>
-          ) : (
-            <div>
-              <h1 style={styles.titleStyle}>{project.name}</h1>
-              <p style={styles.subtitleStyle}>
-                {project.project_number
-                  ? `Project #: ${project.project_number}`
-                  : 'No project number assigned'}
-              </p>
-            </div>
-          )}
-        </div>
+        {loading ? (
+          <p style={{ color: colors.textSecondary }}>Loading…</p>
+        ) : !project ? (
+          <p style={{ color: colors.textSecondary }}>Project not found.</p>
+        ) : (
+          <div>
+            <h1 style={styles.titleStyle}>{project.name}</h1>
+            <p style={styles.subtitleStyle}>
+              {project.project_number
+                ? `Project #: ${project.project_number}`
+                : 'No project number assigned'}
+            </p>
+          </div>
+        )}
       </div>
 
       {loading || !project ? null : (
