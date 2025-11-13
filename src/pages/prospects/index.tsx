@@ -17,6 +17,7 @@ import {
     getPrimaryUserRolesForEngagements,
     setPrimaryUserRole,
 } from '@/lib/engagementUserRoles';
+import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectStyles';
 import { colors } from '@/styles/theme';
@@ -1270,7 +1271,7 @@ export default function ProspectsPage() {
                           : '—'}
                       </span>
                     </td>
-                    <td style={td}>{prospect.bid_date || '—'}</td>
+                    <td style={td}>{dateStr(prospect.bid_date)}</td>
                     <td
                       style={tdRight}
                       title={
@@ -1498,7 +1499,7 @@ export default function ProspectsPage() {
                   <div className="project-card-row">
                     <span className="project-card-label">Bid Date</span>
                     <span className="project-card-value">
-                      {prospect.bid_date}
+                      {dateStr(prospect.bid_date)}
                     </span>
                   </div>
                 )}
