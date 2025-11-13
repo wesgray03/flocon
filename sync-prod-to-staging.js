@@ -140,18 +140,29 @@ async function copyTable(sourceClient, targetClient, table) {
       return 0;
     }
 
-    // Insert in batches
+    // Insert in batches (with per-table transforms if needed)
     const batchSize = 500;
     let inserted = 0;
     for (let i = 0; i < rows.length; i += batchSize) {
-      const batch = rows.slice(i, i + batchSize);
+      let batch = rows.slice(i, i + batchSize);
+
+      // Compatibility fix: map legacy role names to current ones
+      if (table === 'engagement_user_roles') {
+        batch = batch.map((r) => {
+          if (!r || typeof r !== 'object') return r;
+          const role = r.role;
+          if (role === 'prospect_owner') return { ...r, role: 'sales_lead' };
+          if (role === 'project_owner') return { ...r, role: 'project_lead' };
+          return r;
+        });
+      }
       const { error: insertError } = await targetClient
         .from(table)
         .insert(batch);
 
       if (insertError) {
         console.warn(
-          `    ⚠️  Batch ${i}-${i + batch.length} failed: ${insertError.message}`
+          `    ⚠️  Batch ${i}-${i + batch.length} failed in ${table}: ${insertError.message}`
         );
       } else {
         inserted += batch.length;
