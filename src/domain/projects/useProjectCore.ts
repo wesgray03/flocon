@@ -85,6 +85,7 @@ export function useProjectCore(id?: string | string[]) {
             stage: null,
             stage_id: proj.stage_id,
             stage_order: null,
+            sharepoint_folder: proj.sharepoint_folder ?? null,
           }
         : null;
 

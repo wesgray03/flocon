@@ -17,6 +17,7 @@ export type Project = {
   stage?: string | null; // Stage name
   stage_id?: string | null;
   stage_order?: number | null;
+  sharepoint_folder?: string | null;
 };
 
 export type Stage = {

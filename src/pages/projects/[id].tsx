@@ -22,54 +22,17 @@ import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
 // Icon imports moved into ProjectInfoCard; FinancialOverview centralizes financial tables
+import BillingModule from '@/components/billing/BillingModule';
 import { FinancialOverview } from '@/components/project/FinancialOverview';
 import {
   ProjectInfoCard,
   type EditForm,
 } from '@/components/project/ProjectInfoCard';
+import { Folder } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-
-const SOVSection = dynamic(() => import('@/components/project/SOVSection'), {
-  ssr: false,
-  loading: () => (
-    <div
-      style={{
-        background: '#faf8f5',
-        border: '1px solid #e5dfd5',
-        borderRadius: 12,
-        padding: 24,
-        marginBottom: 24,
-      }}
-    >
-      <p style={{ margin: 0, color: colors.textSecondary }}>Loading SOV…</p>
-    </div>
-  ),
-});
-
-const PayAppsSection = dynamic(
-  () => import('@/components/project/PayAppsSection'),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        style={{
-          background: '#faf8f5',
-          border: '1px solid #e5dfd5',
-          borderRadius: 12,
-          padding: 24,
-          marginBottom: 24,
-        }}
-      >
-        <p style={{ margin: 0, color: colors.textSecondary }}>
-          Loading Pay Apps…
-        </p>
-      </div>
-    ),
-  }
-);
 
 const ChangeOrdersSection = dynamic(
   () => import('@/components/project/ChangeOrdersSection'),
@@ -121,7 +84,6 @@ export default function ProjectDetail() {
   const [activeTab, setActiveTab] = useState<
     'overview' | 'billing' | 'changeorders'
   >('overview');
-  const [billingSubTab, setBillingSubTab] = useState<'sov' | 'payapps'>('sov');
   const [showModuleMenu, setShowModuleMenu] = useState(false);
   // SOV data is now loaded lazily by SOVSection component
 
@@ -913,7 +875,24 @@ export default function ProjectDetail() {
           <p style={{ color: colors.textSecondary }}>Project not found.</p>
         ) : (
           <div>
-            <h1 style={styles.titleStyle}>{project.name}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <h1 style={styles.titleStyle}>{project.name}</h1>
+              {project.sharepoint_folder && (
+                <a
+                  href={project.sharepoint_folder}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open SharePoint Folder"
+                  style={{
+                    color: colors.navy,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Folder size={18} />
+                </a>
+              )}
+            </div>
             <p style={styles.subtitleStyle}>
               {project.project_number
                 ? `Project #: ${project.project_number}`
@@ -986,70 +965,9 @@ export default function ProjectDetail() {
                 <FinancialOverview project={project} variant="desktop" />
               )}
 
-              {/* Billing Tab with Sub-tabs */}
-              {activeTab === 'billing' && (
-                <>
-                  {/* Sub-tabs for Billing */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: 8,
-                      marginBottom: 16,
-                      borderBottom: '2px solid #e5dfd5',
-                      paddingBottom: 8,
-                    }}
-                  >
-                    <button
-                      onClick={() => setBillingSubTab('sov')}
-                      style={{
-                        padding: '8px 16px',
-                        background: 'transparent',
-                        border: 'none',
-                        borderBottom:
-                          billingSubTab === 'sov'
-                            ? '2px solid #1e3a5f'
-                            : '2px solid transparent',
-                        cursor: 'pointer',
-                        fontWeight: billingSubTab === 'sov' ? 600 : 400,
-                        fontSize: 14,
-                        color: billingSubTab === 'sov' ? '#1e3a5f' : '#64748b',
-                        marginBottom: -10,
-                      }}
-                    >
-                      Schedule of Values
-                    </button>
-                    <button
-                      onClick={() => setBillingSubTab('payapps')}
-                      style={{
-                        padding: '8px 16px',
-                        background: 'transparent',
-                        border: 'none',
-                        borderBottom:
-                          billingSubTab === 'payapps'
-                            ? '2px solid #1e3a5f'
-                            : '2px solid transparent',
-                        cursor: 'pointer',
-                        fontWeight: billingSubTab === 'payapps' ? 600 : 400,
-                        fontSize: 14,
-                        color:
-                          billingSubTab === 'payapps' ? '#1e3a5f' : '#64748b',
-                        marginBottom: -10,
-                      }}
-                    >
-                      Pay Applications
-                    </button>
-                  </div>
-
-                  {/* SOV Sub-tab Content */}
-                  {billingSubTab === 'sov' && id && (
-                    <SOVSection projectId={id} />
-                  )}
-
-                  {/* Pay Apps Sub-tab Content */}
-                  {billingSubTab === 'payapps' && id && (
-                    <PayAppsSection projectId={id} />
-                  )}
-                </>
+              {/* Billing Tab */}
+              {activeTab === 'billing' && id && (
+                <BillingModule projectId={id} />
               )}
 
               {/* Change Orders Tab */}
@@ -1217,74 +1135,9 @@ export default function ProjectDetail() {
                       <FinancialOverview project={project} variant="mobile" />
                     )}
 
-                    {/* Billing Tab with Sub-tabs */}
-                    {activeTab === 'billing' && (
-                      <>
-                        {/* Sub-tabs for Billing */}
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: 8,
-                            marginBottom: 16,
-                            borderBottom: '2px solid #e5dfd5',
-                            paddingBottom: 8,
-                          }}
-                        >
-                          <button
-                            onClick={() => setBillingSubTab('sov')}
-                            style={{
-                              padding: '8px 16px',
-                              background: 'transparent',
-                              border: 'none',
-                              borderBottom:
-                                billingSubTab === 'sov'
-                                  ? '2px solid #1e3a5f'
-                                  : '2px solid transparent',
-                              cursor: 'pointer',
-                              fontWeight: billingSubTab === 'sov' ? 600 : 400,
-                              fontSize: 14,
-                              color:
-                                billingSubTab === 'sov' ? '#1e3a5f' : '#64748b',
-                              marginBottom: -10,
-                            }}
-                          >
-                            Schedule of Values
-                          </button>
-                          <button
-                            onClick={() => setBillingSubTab('payapps')}
-                            style={{
-                              padding: '8px 16px',
-                              background: 'transparent',
-                              border: 'none',
-                              borderBottom:
-                                billingSubTab === 'payapps'
-                                  ? '2px solid #1e3a5f'
-                                  : '2px solid transparent',
-                              cursor: 'pointer',
-                              fontWeight:
-                                billingSubTab === 'payapps' ? 600 : 400,
-                              fontSize: 14,
-                              color:
-                                billingSubTab === 'payapps'
-                                  ? '#1e3a5f'
-                                  : '#64748b',
-                              marginBottom: -10,
-                            }}
-                          >
-                            Pay Applications
-                          </button>
-                        </div>
-
-                        {/* SOV Sub-tab Content */}
-                        {billingSubTab === 'sov' && id && (
-                          <SOVSection projectId={id} />
-                        )}
-
-                        {/* Pay Apps Sub-tab Content */}
-                        {billingSubTab === 'payapps' && id && (
-                          <PayAppsSection projectId={id} />
-                        )}
-                      </>
+                    {/* Billing Tab */}
+                    {activeTab === 'billing' && id && (
+                      <BillingModule projectId={id} />
                     )}
 
                     {/* Change Orders Tab */}

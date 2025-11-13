@@ -21,7 +21,7 @@ import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectStyles';
 import { colors } from '@/styles/theme';
-import { Folder, Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -1307,7 +1307,28 @@ export default function ProspectsPage() {
                       </td>
                       <td style={td}>{prospect.customer_name || '—'}</td>
                       <td style={td}>{prospect.contact_name || '—'}</td>
-                      <td style={td}>{prospect.owner_name || '—'}</td>
+                      <td style={td}>
+                        <div>
+                          <div>{prospect.owner_name || '—'}</div>
+                          {prospect.sharepoint_folder && (
+                            <div style={{ marginTop: 4 }}>
+                              <a
+                                href={prospect.sharepoint_folder}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                  color: colors.navy,
+                                  fontSize: 12,
+                                  textDecoration: 'underline',
+                                }}
+                              >
+                                Open SharePoint Folder
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </td>
                       <td style={td}>{prospect.architect_name || '—'}</td>
                       <td style={td}>
                         <span
@@ -1394,30 +1415,7 @@ export default function ProspectsPage() {
                             alignItems: 'center',
                           }}
                         >
-                          {prospect.sharepoint_folder && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openSharePointFolder(
-                                  prospect.sharepoint_folder
-                                );
-                              }}
-                              style={{
-                                background: 'transparent',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: 4,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: colors.navy,
-                                transition: 'color 0.2s',
-                              }}
-                              title="Open SharePoint Folder"
-                            >
-                              <Folder size={16} />
-                            </button>
-                          )}
+                          {/* SharePoint link moved under Sales Lead column */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1485,21 +1483,6 @@ export default function ProspectsPage() {
                       )}
                     </div>
                     <div className="project-card-actions">
-                      {prospect.sharepoint_folder && (
-                        <a
-                          href={prospect.sharepoint_folder}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          style={{
-                            color: colors.navy,
-                            padding: 8,
-                            display: 'flex',
-                          }}
-                        >
-                          <Folder size={20} />
-                        </a>
-                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1532,7 +1515,23 @@ export default function ProspectsPage() {
                     <div className="project-card-row">
                       <span className="project-card-label">Sales Lead</span>
                       <span className="project-card-value">
-                        {prospect.owner_name}
+                        <div>{prospect.owner_name}</div>
+                        {prospect.sharepoint_folder && (
+                          <div style={{ marginTop: 4 }}>
+                            <a
+                              href={prospect.sharepoint_folder}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              style={{
+                                color: colors.navy,
+                                textDecoration: 'underline',
+                              }}
+                            >
+                              Open SharePoint Folder
+                            </a>
+                          </div>
+                        )}
                       </span>
                     </div>
                   )}

@@ -19,7 +19,7 @@ import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
-import { Pencil, Plus, Save, X } from 'lucide-react';
+import { Folder, Pencil, Plus, Save, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
@@ -855,7 +855,24 @@ export default function ProspectDetailPage() {
               alignItems: 'center',
             }}
           >
-            <h1 style={styles.titleStyle}>{prospect.name}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <h1 style={styles.titleStyle}>{prospect.name}</h1>
+              {prospect.sharepoint_folder && (
+                <a
+                  href={prospect.sharepoint_folder}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open SharePoint Folder"
+                  style={{
+                    color: colors.navy,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Folder size={18} />
+                </a>
+              )}
+            </div>
             <div
               style={{
                 display: 'flex',

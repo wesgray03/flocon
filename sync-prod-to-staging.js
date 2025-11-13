@@ -156,6 +156,15 @@ async function copyTable(sourceClient, targetClient, table) {
           return r;
         });
       }
+
+      // Staging schema compatibility: let defaults apply for certain users columns
+      if (table === 'users') {
+        batch = batch.map((r) => {
+          if (!r || typeof r !== 'object') return r;
+          const { can_manage_prospects, can_manage_projects, ...rest } = r;
+          return rest;
+        });
+      }
       const { error: insertError } = await targetClient
         .from(table)
         .insert(batch);

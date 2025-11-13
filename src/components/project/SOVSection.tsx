@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import { colors } from '@/styles/theme';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 
 export type SOVLine = {
@@ -57,13 +58,14 @@ const inputStyle: React.CSSProperties = {
 export default function SOVSection({ projectId }: { projectId: string }) {
   const [lines, setLines] = useState<SOVLine[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editingLine, setEditingLine] = useState<SOVLine | null>(null);
   const [newLine, setNewLine] = useState({
     line_code: '',
     description: '',
     unit: 'EA',
     quantity: '',
     unit_cost: '',
-    category: 'Material' as 'Material' | 'Labor' | 'Other',
+    category: 'Material' as 'Material' | 'Labor' | 'Other' | 'MatLab',
   });
 
   useEffect(() => {
@@ -92,12 +94,13 @@ export default function SOVSection({ projectId }: { projectId: string }) {
         const ext = l.extended_cost ?? 0;
         const cat = (l.category ?? 'Material').toLowerCase();
         if (cat === 'labor') acc.labor += ext;
+        else if (cat === 'matlab') acc.matlab += ext;
         else if (cat === 'other') acc.other += ext;
         else acc.materials += ext;
         acc.total += ext;
         return acc;
       },
-      { materials: 0, labor: 0, other: 0, total: 0 }
+      { materials: 0, labor: 0, matlab: 0, other: 0, total: 0 }
     );
   }, [lines]);
 
@@ -110,36 +113,111 @@ export default function SOVSection({ projectId }: { projectId: string }) {
     const cost = Number(newLine.unit_cost);
     if (Number.isNaN(qty) || Number.isNaN(cost)) return;
 
-    const ins = {
-      engagement_id: projectId,
-      line_code: newLine.line_code,
-      description: newLine.description,
-      division: null,
-      unit: newLine.unit || null,
-      quantity: qty,
-      unit_cost: cost,
-      extended_cost: qty * cost,
-      category: newLine.category || 'Material',
-      retainage_percent: 10,
-    };
+    if (editingLine) {
+      // Update existing line
+      const upd = {
+        line_code: newLine.line_code || null,
+        description: newLine.description,
+        unit: newLine.unit || null,
+        quantity: qty,
+        unit_cost: cost,
+        category: newLine.category || 'Material',
+      };
 
-    const { data, error } = await supabase
+      const { data, error } = await supabase
+        .from('engagement_sov_lines')
+        .update(upd)
+        .eq('id', editingLine.id)
+        .select(
+          'id,line_code,description,division,unit,quantity,unit_cost,extended_cost,category,retainage_percent,created_at'
+        );
+
+      if (!error && data) {
+        setLines((prev) =>
+          prev.map((l) => (l.id === editingLine.id ? (data[0] as SOVLine) : l))
+        );
+        setEditingLine(null);
+        setNewLine({
+          line_code: '',
+          description: '',
+          unit: 'EA',
+          quantity: '',
+          unit_cost: '',
+          category: 'Material' as 'Material' | 'Labor' | 'MatLab' | 'Other',
+        });
+      }
+    } else {
+      // Insert new line
+      const ins = {
+        engagement_id: projectId,
+        line_code: newLine.line_code || null,
+        description: newLine.description,
+        division: null,
+        unit: newLine.unit || null,
+        quantity: qty,
+        unit_cost: cost,
+        extended_cost: qty * cost,
+        category: newLine.category || 'Material',
+        retainage_percent: 10,
+      };
+
+      const { data, error } = await supabase
+        .from('engagement_sov_lines')
+        .insert([ins])
+        .select(
+          'id,line_code,description,division,unit,quantity,unit_cost,extended_cost,category,retainage_percent,created_at'
+        );
+
+      if (!error && data) {
+        setLines((prev) => [...prev, ...(data as SOVLine[])]);
+        setNewLine({
+          line_code: '',
+          description: '',
+          unit: 'EA',
+          quantity: '',
+          unit_cost: '',
+          category: 'Material' as 'Material' | 'Labor' | 'MatLab' | 'Other',
+        });
+      }
+    }
+  };
+
+  const editLine = (line: SOVLine) => {
+    setEditingLine(line);
+    setNewLine({
+      line_code: line.line_code || '',
+      description: line.description,
+      unit: line.unit || 'EA',
+      quantity: String(line.quantity || ''),
+      unit_cost: String(line.unit_cost || ''),
+      category:
+        (line.category as 'Material' | 'Labor' | 'MatLab' | 'Other') ||
+        'Material',
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingLine(null);
+    setNewLine({
+      line_code: '',
+      description: '',
+      unit: 'EA',
+      quantity: '',
+      unit_cost: '',
+      category: 'Material' as 'Material' | 'Labor' | 'MatLab' | 'Other',
+    });
+  };
+
+  const deleteLine = async (lineId: string) => {
+    if (!confirm('Delete this line item?')) return;
+
+    const { error } = await supabase
       .from('engagement_sov_lines')
-      .insert([ins])
-      .select(
-        'id,line_code,description,division,unit,quantity,unit_cost,extended_cost,category,created_at'
-      );
+      .delete()
+      .eq('id', lineId);
 
-    if (!error && data) {
-      setLines((prev) => [...prev, ...(data as SOVLine[])]);
-      setNewLine({
-        line_code: '',
-        description: '',
-        unit: 'EA',
-        quantity: '',
-        unit_cost: '',
-        category: 'Material',
-      });
+    if (!error) {
+      setLines((prev) => prev.filter((l) => l.id !== lineId));
     }
   };
 
@@ -169,6 +247,9 @@ export default function SOVSection({ projectId }: { projectId: string }) {
             <b>Labor:</b> {money(totals.labor)}
           </div>
           <div>
+            <b>MatLab:</b> {money(totals.matlab)}
+          </div>
+          <div>
             <b>Other:</b> {money(totals.other)}
           </div>
           <div>
@@ -195,6 +276,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
                 <th style={thRight}>Unit Cost</th>
                 <th style={thCenter}>Category</th>
                 <th style={thRight}>Extended</th>
+                <th style={thCenter}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -207,6 +289,48 @@ export default function SOVSection({ projectId }: { projectId: string }) {
                   <td style={tdRight}>{money(line.unit_cost)}</td>
                   <td style={tdCenter}>{line.category ?? '—'}</td>
                   <td style={tdRight}>{money(line.extended_cost)}</td>
+                  <td style={tdCenter}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: 8,
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => editLine(line)}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 4,
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: colors.navy,
+                        }}
+                        title="Edit line"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteLine(line.id)}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 4,
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: '#ef4444',
+                        }}
+                        title="Delete line"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -215,9 +339,35 @@ export default function SOVSection({ projectId }: { projectId: string }) {
       )}
 
       <form onSubmit={addLine} style={{ marginTop: 24 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>
-          Add New Line
-        </h3>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 12,
+          }}
+        >
+          <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
+            {editingLine ? 'Edit Line' : 'Add New Line'}
+          </h3>
+          {editingLine && (
+            <button
+              type="button"
+              onClick={cancelEdit}
+              style={{
+                padding: '6px 12px',
+                background: '#6b7280',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 6,
+                cursor: 'pointer',
+                fontSize: 13,
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
         <div
           className="sov-add-form"
           style={{
@@ -276,13 +426,18 @@ export default function SOVSection({ projectId }: { projectId: string }) {
             onChange={(e) =>
               setNewLine((s) => ({
                 ...s,
-                category: e.target.value as 'Material' | 'Labor' | 'Other',
+                category: e.target.value as
+                  | 'Material'
+                  | 'Labor'
+                  | 'MatLab'
+                  | 'Other',
               }))
             }
             style={inputStyle}
           >
             <option>Material</option>
             <option>Labor</option>
+            <option>MatLab</option>
             <option>Other</option>
           </select>
           <button
@@ -297,7 +452,7 @@ export default function SOVSection({ projectId }: { projectId: string }) {
               fontWeight: 500,
             }}
           >
-            Save
+            {editingLine ? 'Update' : 'Save'}
           </button>
         </div>
       </form>

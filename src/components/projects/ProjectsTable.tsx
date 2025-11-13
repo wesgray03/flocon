@@ -8,7 +8,6 @@ import type {
 import { dateStr, money } from '@/lib/format';
 import { colors } from '@/styles/theme';
 import { Folder, Pencil, Trash2 } from 'lucide-react';
-import Link from 'next/link';
 import React from 'react';
 
 export type UniqueValues = {
@@ -252,23 +251,9 @@ export function ProjectsTable({
                 <StageBadge stage={r.stage} order={r.stage_order} />
               </td>
               <td style={tdRight}>{money(r.contract_amt)}</td>
-              <td style={tdRight}>
-                <Link
-                  href={`/change-orders/${r.id}`}
-                  style={{ color: colors.navy, textDecoration: 'none' }}
-                >
-                  {money(r.co_amt)}
-                </Link>
-              </td>
+              <td style={tdRight}>{money(r.co_amt)}</td>
               <td style={tdRight}>{money(r.total_amt)}</td>
-              <td style={tdRight}>
-                <Link
-                  href={`/billings/${r.id}`}
-                  style={{ color: colors.navy, textDecoration: 'none' }}
-                >
-                  {money(r.billed_amt)}
-                </Link>
-              </td>
+              <td style={tdRight}>{money(r.billed_amt)}</td>
               <td style={tdRight}>{money(r.balance)}</td>
               <td style={td}>{dateStr(r.start_date)}</td>
               <td style={td}>{dateStr(r.end_date)}</td>
