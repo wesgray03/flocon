@@ -76,9 +76,8 @@ export function DashboardHeader({
     <div
       className="projects-header"
       style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
         minHeight: 69,
         marginBottom: 24,
@@ -95,7 +94,7 @@ export function DashboardHeader({
         style={{
           display: 'flex',
           alignItems: 'center',
-          order: 1,
+          justifyContent: 'flex-start',
         }}
       >
         <Image
@@ -115,7 +114,7 @@ export function DashboardHeader({
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          order: 2,
+          justifyContent: 'center',
         }}
       >
           <span
@@ -175,7 +174,7 @@ export function DashboardHeader({
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          order: 3,
+          justifyContent: 'flex-end',
         }}
       >
         {exportButton}
