@@ -61,6 +61,7 @@ interface DashboardHeaderProps {
   setMenuOpen: (open: boolean) => void;
   menuItems: React.ReactNode;
   actionButton?: React.ReactNode;
+  exportButton?: React.ReactNode;
 }
 
 export function DashboardHeader({
@@ -69,12 +70,14 @@ export function DashboardHeader({
   setMenuOpen,
   menuItems,
   actionButton,
+  exportButton,
 }: DashboardHeaderProps) {
   return (
     <div
       className="projects-header"
       style={{
         display: 'flex',
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 24,
@@ -82,6 +85,7 @@ export function DashboardHeader({
         padding: '12px 20px',
         borderRadius: 12,
         boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        gap: 16,
       }}
     >
       {/* Left: FloCon Logo */}
@@ -90,7 +94,7 @@ export function DashboardHeader({
         style={{
           display: 'flex',
           alignItems: 'center',
-          flex: 1,
+          order: 1,
         }}
       >
         <Image
@@ -110,71 +114,70 @@ export function DashboardHeader({
           display: 'flex',
           alignItems: 'center',
           gap: 12,
+          order: 2,
         }}
       >
-        <span
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color:
-              activeTab === 'prospects' ? colors.navy : colors.textSecondary,
-          }}
-        >
-          Prospects
-        </span>
-        <Link
-          href={activeTab === 'prospects' ? '/projects' : '/prospects'}
-          style={{
-            position: 'relative',
-            width: 56,
-            height: 28,
-            background: colors.navy,
-            borderRadius: 14,
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'inline-block',
-            textDecoration: 'none',
-          }}
-        >
-          <div
+          <span
             style={{
-              position: 'absolute',
-              top: 2,
-              left: activeTab === 'prospects' ? 2 : 28,
-              width: 24,
-              height: 24,
-              background: '#fff',
-              borderRadius: '50%',
-              transition: 'left 0.3s ease',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+              fontSize: 13,
+              fontWeight: 600,
+              color:
+                activeTab === 'prospects' ? colors.navy : colors.textSecondary,
             }}
-          />
-        </Link>
-        <span
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color:
-              activeTab === 'projects' ? colors.navy : colors.textSecondary,
-          }}
-        >
-          Projects
-        </span>
-      </div>
+          >
+            Prospects
+          </span>
+          <Link
+            href={activeTab === 'prospects' ? '/projects' : '/prospects'}
+            style={{
+              position: 'relative',
+              width: 56,
+              height: 28,
+              background: colors.navy,
+              borderRadius: 14,
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              display: 'inline-block',
+              textDecoration: 'none',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 2,
+                left: activeTab === 'prospects' ? 2 : 28,
+                width: 24,
+                height: 24,
+                background: '#fff',
+                borderRadius: '50%',
+                transition: 'left 0.3s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+              }}
+            />
+          </Link>
+          <span
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color:
+                activeTab === 'projects' ? colors.navy : colors.textSecondary,
+            }}
+          >
+            Projects
+          </span>
+        </div>
 
-      {/* Right: Actions and User Info */}
+      {/* Right: Export Button + Menu Button */}
       <div
         className="projects-header-right"
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          flex: 1,
-          justifyContent: 'flex-end',
+          order: 3,
         }}
       >
-        {actionButton}
-
+        {exportButton}
         <div style={{ position: 'relative' }}>
           <button
             type="button"

@@ -775,162 +775,11 @@ export default function ProjectsPage() {
             onOpenLostReasons={() => setShowLostReasonsModal(true)}
           />
         }
-        actionButton={
-          <button
-            type="button"
-            style={{
-              background: colors.navy,
-              color: '#fff',
-              border: 'none',
-              borderRadius: 8,
-              padding: '12px 24px',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = colors.navyHover;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = colors.navy;
-            }}
-            onClick={openForNew}
-          >
-            + New Project
-          </button>
-        }
-      />
-
-      {/* Mobile Filters Button */}
-      <div className="projects-mobile-filters" style={{ display: 'none' }}>
-        <button
-          type="button"
-          onClick={() => setShowFiltersModal(true)}
-          style={{
-            width: '100%',
-            background: '#1e3a5f',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            padding: '12px 16px',
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-          }}
-        >
-          🔍 Filters
-          {(filters.project_name.length > 0 ||
-            filters.customer_name.length > 0 ||
-            filters.stage.length > 0 ||
-            filters.owner.length > 0 ||
-            filters.project_number.length > 0) && (
-            <span
-              style={{
-                background: '#c8102e',
-                color: '#fff',
-                borderRadius: '50%',
-                width: 20,
-                height: 20,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-              }}
-            >
-              {filters.project_name.length +
-                filters.customer_name.length +
-                filters.stage.length +
-                filters.owner.length +
-                filters.project_number.length}
-            </span>
-          )}
-        </button>
-        {/* Quick CSV Export (mobile accessible) */}
-        <button
-          type="button"
-          onClick={() => {
-            if (!filteredAndSortedRows.length) return;
-            const headers = [
-              'id',
-              'project_number',
-              'project_name',
-              'customer_name',
-              'owner',
-              'stage',
-              'contract_amt',
-              'co_amt',
-              'total_amt',
-              'billed_amt',
-              'balance',
-              'start_date',
-              'end_date',
-            ];
-            const lines = [
-              headers.join(','),
-              ...filteredAndSortedRows.map((r) =>
-                headers
-                  .map((h) => {
-                    const val = (r as any)[h];
-                    if (val == null) return '';
-                    const str = String(val).replace(/"/g, '""');
-                    return /[",\n]/.test(str) ? `"${str}"` : str;
-                  })
-                  .join(',')
-              ),
-            ];
-            const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `projects-export-${new Date()
-              .toISOString()
-              .slice(0, 10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          }}
-          style={{
-            width: '100%',
-            marginTop: 8,
-            background: '#ebe5db',
-            color: colors.textPrimary,
-            border: '1px solid #e5dfd5',
-            borderRadius: 8,
-            padding: '10px 16px',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
-          ⬇ Export CSV
-        </button>
-      </div>
-
-      {/* Body */}
-      {loading ? (
-        <p style={{ color: colors.textSecondary }}>Loading…</p>
-      ) : filteredAndSortedRows.length === 0 ? (
-        <p style={{ color: colors.textSecondary }}>No projects yet.</p>
-      ) : (
-        <>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginBottom: 12,
-            }}
-          >
-            <div />
+        exportButton={
+          filteredAndSortedRows.length > 0 && (
             <button
               type="button"
+              className="projects-export-button"
               onClick={() => {
                 if (!filteredAndSortedRows.length) return;
                 const headers = [
@@ -988,7 +837,99 @@ export default function ProjectsPage() {
             >
               Export CSV
             </button>
-          </div>
+          )
+        }
+      />
+
+      {/* Mobile Filters Button + New Project Button */}
+      <div className="projects-mobile-filters">
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => setShowFiltersModal(true)}
+            style={{
+              flex: '1 1 50%',
+              background: '#1e3a5f',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 16px',
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            Filters
+            {(filters.project_name.length > 0 ||
+              filters.customer_name.length > 0 ||
+              filters.stage.length > 0 ||
+              filters.owner.length > 0 ||
+              filters.project_number.length > 0) && (
+              <span
+                style={{
+                  background: '#c8102e',
+                  color: '#fff',
+                  borderRadius: '50%',
+                  width: 20,
+                  height: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                }}
+              >
+                {filters.project_name.length +
+                  filters.customer_name.length +
+                  filters.stage.length +
+                  filters.owner.length +
+                  filters.project_number.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={openForNew}
+            style={{
+              flex: '1 1 50%',
+              background: colors.navy,
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 16px',
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            + New Project
+          </button>
+        </div>
+      </div>
+
+      {/* Body */}
+      {loading ? (
+        <p style={{ color: colors.textSecondary }}>Loading…</p>
+      ) : filteredAndSortedRows.length === 0 ? (
+        <p style={{ color: colors.textSecondary }}>No projects yet.</p>
+      ) : (
+        <>
           <ProjectsTable
             rows={filteredAndSortedRows}
             filters={filters}
@@ -1148,17 +1089,35 @@ export default function ProjectsPage() {
             aria-modal="true"
             aria-labelledby="filters-modal-title"
           >
-            <h2
-              id="filters-modal-title"
-              style={{
-                fontSize: 18,
-                fontWeight: 600,
-                marginBottom: 16,
-                color: colors.textPrimary,
-              }}
-            >
-              Filter Projects
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h2
+                id="filters-modal-title"
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  margin: 0,
+                  color: colors.textPrimary,
+                }}
+              >
+                Filter Projects
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowFiltersModal(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: 24,
+                  cursor: 'pointer',
+                  color: colors.textSecondary,
+                  padding: 0,
+                  lineHeight: 1,
+                }}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>

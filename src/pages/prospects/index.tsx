@@ -18,6 +18,7 @@ import {
     setPrimaryUserRole,
 } from '@/lib/engagementUserRoles';
 import { supabase } from '@/lib/supabaseClient';
+import * as styles from '@/styles/projectStyles';
 import { colors } from '@/styles/theme';
 import { Folder, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/router';
@@ -117,6 +118,7 @@ export default function ProspectsPage() {
   const [editingProspect, setEditingProspect] = useState<Prospect | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: '',
@@ -792,39 +794,164 @@ export default function ProspectsPage() {
             onOpenLostReasons={() => setShowLostReasonsModal(true)}
           />
         }
-        actionButton={
+        exportButton={
+          filteredAndSortedProspects.length > 0 && (
+            <button
+              type="button"
+              className="projects-export-button"
+              onClick={() => {
+                if (!filteredAndSortedProspects.length) return;
+                const headers = [
+                  'id',
+                  'name',
+                  'customer_name',
+                  'contact_name',
+                  'architect_name',
+                  'owner_name',
+                  'estimating_type',
+                  'probability_level_name',
+                  'probability_percentage',
+                  'start_date',
+                  'bid_date',
+                  'extended',
+                  'trade_breakdown',
+                ];
+                const lines = [
+                  headers.join(','),
+                  ...filteredAndSortedProspects.map((p) => {
+                    const tradeBreakdown = p.trades
+                      ?.map((t) => `${t.code}-${t.name}: $${t.amount}`)
+                      .join('; ') || '';
+                    const values = [
+                      p.id,
+                      p.name,
+                      p.customer_name,
+                      p.contact_name,
+                      p.architect_name,
+                      p.owner_name,
+                      p.estimating_type,
+                      p.probability_level_name,
+                      p.probability_percentage,
+                      p.start_date,
+                      p.bid_date,
+                      p.extended,
+                      tradeBreakdown,
+                    ];
+                    return values
+                      .map((val) => {
+                        if (val == null) return '';
+                        const str = String(val).replace(/"/g, '""');
+                        return /[",\n]/.test(str) ? `"${str}"` : str;
+                      })
+                      .join(',');
+                  }),
+                ];
+                const blob = new Blob([lines.join('\n')], {
+                  type: 'text/csv',
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `prospects-export-${new Date()
+                  .toISOString()
+                  .slice(0, 10)}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }}
+              style={{
+                background: '#ebe5db',
+                color: colors.textPrimary,
+                border: '1px solid #e5dfd5',
+                borderRadius: 8,
+                padding: '8px 14px',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Export CSV
+            </button>
+          )
+        }
+      />
+
+      {/* Mobile Filters Button + New Prospect Button */}
+      <div className="projects-mobile-filters">
+        <div style={{ display: 'flex', gap: 8 }}>
           <button
             type="button"
+            onClick={() => setShowFiltersModal(true)}
             style={{
-              background: colors.navy,
+              flex: '1 1 50%',
+              background: '#1e3a5f',
               color: '#fff',
               border: 'none',
               borderRadius: 8,
-              padding: '12px 24px',
-              fontSize: 14,
+              padding: '12px 16px',
+              fontSize: 16,
               fontWeight: 600,
               cursor: 'pointer',
-              display: 'inline-flex',
+              display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 8,
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = colors.navyHover;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = colors.navy;
-            }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            Filters
+            {(filters.name.length > 0 ||
+              filters.customer.length > 0 ||
+              filters.owner.length > 0) && (
+              <span
+                style={{
+                  background: '#c8102e',
+                  color: '#fff',
+                  borderRadius: '50%',
+                  width: 20,
+                  height: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                }}
+              >
+                {filters.name.length +
+                  filters.customer.length +
+                  filters.owner.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
             onClick={() => {
               setEditingProspect(null);
-              setForm({
+              setFormData({
                 name: '',
-                company_id: '',
-                contact_id: '',
+                customer_name: '',
+                contact_name: '',
+                architect: '',
+                company_owner: '',
                 owner: '',
-                architect_id: '',
+                start_date: '',
+                bid_date: '',
                 estimating_type: 'Budget',
                 probability_level_id: '',
-                bid_date: '',
+                notes: '',
+                next_step: '',
+                follow_up_date: '',
                 last_call: '',
                 active: 'true',
                 lost_reason_id: '',
@@ -833,11 +960,23 @@ export default function ProspectsPage() {
               setTradeLines([]);
               setShowModal(true);
             }}
+            style={{
+              flex: '1 1 50%',
+              background: colors.navy,
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 16px',
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
           >
             + New Prospect
           </button>
-        }
-      />
+        </div>
+      </div>
 
       <div
         style={{
@@ -1379,23 +1518,184 @@ export default function ProspectsPage() {
                     {prospect.extended ? formatCurrency(prospect.extended) : '—'}
                   </span>
                 </div>
-
-                {prospect.extended && prospect.probability_percentage && (
-                  <div className="project-card-row">
-                    <span className="project-card-label">Revenue Est.</span>
-                    <span className="project-card-value project-card-money">
-                      {formatCurrency(
-                        prospect.extended * (prospect.probability_percentage / 100)
-                      )}
-                    </span>
-                  </div>
-                )}
               </div>
             ))}
           </div>
         </>
         )}
       </div>
+
+      {/* Filters Modal */}
+      {showFiltersModal && (
+        <div style={styles.overlay}>
+          <div
+            style={{
+              ...styles.modal,
+              maxWidth: '90%',
+              width: 400,
+              maxHeight: '80vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="filters-modal-title"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h2
+                id="filters-modal-title"
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  margin: 0,
+                  color: colors.textPrimary,
+                }}
+              >
+                Filter Prospects
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowFiltersModal(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: 24,
+                  cursor: 'pointer',
+                  color: colors.textSecondary,
+                  padding: 0,
+                  lineHeight: 1,
+                }}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.textPrimary,
+                    marginBottom: 6,
+                  }}
+                >
+                  Prospect Name
+                </label>
+                <MultiFilterInput
+                  values={filters.name}
+                  onChangeValues={(vals) =>
+                    setFilters((f) => ({ ...f, name: vals }))
+                  }
+                  suggestions={uniqueValues.name}
+                  placeholder="Filter prospects..."
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.textPrimary,
+                    marginBottom: 6,
+                  }}
+                >
+                  Customer
+                </label>
+                <MultiFilterInput
+                  values={filters.customer}
+                  onChangeValues={(vals) =>
+                    setFilters((f) => ({ ...f, customer: vals }))
+                  }
+                  suggestions={uniqueValues.customer}
+                  placeholder="Filter customers..."
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.textPrimary,
+                    marginBottom: 6,
+                  }}
+                >
+                  Sales Lead
+                </label>
+                <MultiFilterInput
+                  values={filters.owner}
+                  onChangeValues={(vals) =>
+                    setFilters((f) => ({ ...f, owner: vals }))
+                  }
+                  suggestions={uniqueValues.owner}
+                  placeholder="Filter sales leads..."
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: 12,
+                marginTop: 20,
+                paddingTop: 16,
+                borderTop: '1px solid #e5dfd5',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setFilters({
+                    name: [],
+                    customer: [],
+                    contact: [],
+                    owner: [],
+                    architect: [],
+                    estimating_type: [],
+                    probability_level: [],
+                  });
+                }}
+                style={{
+                  flex: 1,
+                  background: '#ebe5db',
+                  color: colors.textPrimary,
+                  border: '1px solid #e5dfd5',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Clear All
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowFiltersModal(false)}
+                style={{
+                  flex: 1,
+                  background: '#1e3a5f',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div

@@ -793,8 +793,7 @@ export default function ProspectDetailPage() {
           <div
             className="prospect-detail-layout three-column-layout"
             style={{
-              display: 'grid',
-              gridTemplateColumns: '300px 1fr 350px',
+              display: 'flex',
               gap: 24,
               alignItems: 'start',
             }}
