@@ -6,14 +6,14 @@ import { ContactsModal } from '@/components/modals/ContactsModal';
 import { CommentsSection } from '@/components/project/CommentsSection';
 import { useMenuModals } from '@/hooks/useMenuModals';
 import {
-    getPrimaryPartiesForEngagements,
-    setPrimaryParty,
-    type PartyRole,
+  getPrimaryPartiesForEngagements,
+  setPrimaryParty,
+  type PartyRole,
 } from '@/lib/engagementParties';
 import {
-    getPrimaryUserRolesForEngagements,
-    setPrimaryUserRole,
-    type UserRole,
+  getPrimaryUserRolesForEngagements,
+  setPrimaryUserRole,
+  type UserRole,
 } from '@/lib/engagementUserRoles';
 import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
@@ -109,6 +109,9 @@ export default function ProspectDetailPage() {
   const [tradeOptions, setTradeOptions] = useState<
     { id: string; code: string; name: string }[]
   >([]);
+  const [lostReasons, setLostReasons] = useState<
+    { id: string; reason: string }[]
+  >([]);
 
   const [companiesModal, setCompaniesModal] = useState<{
     open: boolean;
@@ -116,6 +119,8 @@ export default function ProspectDetailPage() {
     label: string;
   }>({ open: false, companyType: null, label: '' });
   const [showContactsModal, setShowContactsModal] = useState(false);
+  const [showLostModal, setShowLostModal] = useState(false);
+  const [selectedLostReasonId, setSelectedLostReasonId] = useState<string>('');
 
   const [toast, setToast] = useState<{
     message: string;
@@ -382,6 +387,13 @@ export default function ProspectDetailPage() {
           name: t.name,
         }))
       );
+
+      // Load lost reasons
+      const { data: reasons } = await supabase
+        .from('lost_reasons')
+        .select('id, reason')
+        .order('reason');
+      setLostReasons(reasons || []);
     } catch (err) {
       console.error('Error loading dropdown options:', err);
     }
@@ -649,22 +661,21 @@ export default function ProspectDetailPage() {
     }
   };
 
-  const handleMarkAsLost = async () => {
-    if (!prospect) return;
+  const handleMarkAsLost = () => {
+    setShowLostModal(true);
+  };
 
-    const reason = window.prompt(
-      `Mark "${prospect.name}" as lost?\n\nOptionally provide a reason:`
-    );
-    if (reason === null) return; // User cancelled
+  const confirmMarkAsLost = async () => {
+    if (!prospect || !selectedLostReasonId) return;
 
     setConverting(true);
     try {
-      // Update engagement to mark as lost
+      // Update engagement to mark as lost using active flag
       const { error: updateError } = await supabase
         .from('engagements')
         .update({
-          status: 'Lost',
-          lost_reason: reason || null,
+          active: false,
+          lost_reason_id: selectedLostReasonId,
           lost_at: new Date().toISOString(),
         })
         .eq('id', prospect.id);
@@ -672,6 +683,7 @@ export default function ProspectDetailPage() {
       if (updateError) throw updateError;
 
       notify('Marked as lost successfully', 'success');
+      setShowLostModal(false);
       // Redirect back to prospects list
       setTimeout(() => {
         router.push('/prospects');
@@ -815,7 +827,13 @@ export default function ProspectDetailPage() {
           ) : !prospect ? (
             <p style={{ color: colors.textSecondary }}>Prospect not found.</p>
           ) : (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
               <h1 style={styles.titleStyle}>{prospect.name}</h1>
               {!editMode && !editTradesMode && (
                 <div style={{ display: 'flex', gap: 12 }}>
@@ -843,7 +861,7 @@ export default function ProspectDetailPage() {
                       e.currentTarget.style.background = '#ef4444';
                     }}
                   >
-                    {converting ? 'Processing…' : '❌ Mark as Lost'}
+                    {converting ? 'Processing…' : '💣 Mark as Lost'}
                   </button>
                   <button
                     onClick={handleConvertToProject}
@@ -886,7 +904,10 @@ export default function ProspectDetailPage() {
             className="prospect-detail-layout three-column-layout"
           >
             {/* Left Sidebar - Prospect Information */}
-            <div style={styles.leftSidebarStyle} className="prospect-info-card left-sidebar">
+            <div
+              style={styles.leftSidebarStyle}
+              className="prospect-info-card left-sidebar"
+            >
               <div style={styles.stickyContainerStyle}>
                 {/* Prospect Information Card */}
                 <div
@@ -1361,7 +1382,10 @@ export default function ProspectDetailPage() {
             </div>
 
             {/* Main Content Area - Bid & Trades */}
-            <div style={styles.mainContentStyle} className="prospect-trades-card main-content">
+            <div
+              style={styles.mainContentStyle}
+              className="prospect-trades-card main-content"
+            >
               <div
                 style={{
                   background: '#faf8f5',
@@ -1800,6 +1824,128 @@ export default function ProspectDetailPage() {
             loadDropdownOptions();
           }}
         />
+      )}
+
+      {/* Lost Reason Modal */}
+      {showLostModal && (
+        <div
+          onClick={() => setShowLostModal(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2000,
+            padding: 20,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: colors.cardBackground,
+              borderRadius: 12,
+              padding: 24,
+              maxWidth: 500,
+              width: '100%',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+            }}
+          >
+            <h2
+              style={{
+                marginTop: 0,
+                marginBottom: 16,
+                color: colors.textPrimary,
+                fontSize: 20,
+                fontWeight: 700,
+              }}
+            >
+              Mark as Lost
+            </h2>
+            <p style={{ marginBottom: 20, color: colors.textSecondary }}>
+              Select a reason for marking "{prospect?.name}" as lost:
+            </p>
+            <div style={{ marginBottom: 24 }}>
+              <label
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: colors.textSecondary,
+                  marginBottom: 8,
+                  display: 'block',
+                }}
+              >
+                Lost Reason *
+              </label>
+              <select
+                value={selectedLostReasonId}
+                onChange={(e) => setSelectedLostReasonId(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: 6,
+                  fontSize: 14,
+                  background: '#fff',
+                }}
+              >
+                <option value="">Select a reason...</option>
+                {lostReasons.map((reason) => (
+                  <option key={reason.id} value={reason.id}>
+                    {reason.reason}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div
+              style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}
+            >
+              <button
+                onClick={() => {
+                  setShowLostModal(false);
+                  setSelectedLostReasonId('');
+                }}
+                style={{
+                  padding: '10px 20px',
+                  background: '#e5e7eb',
+                  color: colors.textPrimary,
+                  border: 'none',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmMarkAsLost}
+                disabled={!selectedLostReasonId || converting}
+                style={{
+                  padding: '10px 20px',
+                  background:
+                    selectedLostReasonId && !converting ? '#ef4444' : '#d1d5db',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor:
+                    selectedLostReasonId && !converting
+                      ? 'pointer'
+                      : 'not-allowed',
+                  opacity: selectedLostReasonId && !converting ? 1 : 0.7,
+                }}
+              >
+                {converting ? 'Marking as Lost...' : 'Mark as Lost'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {renderModals()}
