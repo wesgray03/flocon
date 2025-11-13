@@ -84,6 +84,20 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    // Fetch the engagement type to determine correct URL
+    const { data: engagementData, error: engagementError } = await supabase
+      .from('engagements')
+      .select('type')
+      .eq('id', engagement_id)
+      .single();
+
+    if (engagementError) {
+      console.error('Error fetching engagement type:', engagementError);
+    }
+
+    const engagementType = engagementData?.type || 'project';
+    const basePath = engagementType === 'prospect' ? 'prospects' : 'projects';
+
     // Fetch mentioned users' email addresses
     const { data: users, error: usersError } = await supabase
       .from('users')
@@ -97,9 +111,10 @@ serve(async (req) => {
     // Send email to each mentioned user
     const emailPromises = users.map(async (user) => {
       const appUrl = Deno.env.get('APP_URL') || 'http://localhost:3000';
-      const projectUrl = `${appUrl}/projects/${engagement_id}`;
+      const projectUrl = `${appUrl}/${basePath}/${engagement_id}`;
 
       console.log(`Generating email for ${user.email}`);
+      console.log(`Engagement type: ${engagementType}`);
       console.log(`Project URL: ${projectUrl}`);
 
       const emailHtml = `

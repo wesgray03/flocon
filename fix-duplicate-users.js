@@ -16,7 +16,8 @@ async function runMigration() {
 
   const migration = {
     file: '2025-11-13-fix-duplicate-user-creation.sql',
-    description: 'Fix duplicate user creation by checking email as well as auth_user_id',
+    description:
+      'Fix duplicate user creation by checking email as well as auth_user_id',
   };
 
   console.log(`\n📝 Running: ${migration.description}`);
@@ -31,7 +32,7 @@ async function runMigration() {
 
   const sql = fs.readFileSync(migrationPath, 'utf8');
 
-  const { data, error} = await supabase.rpc('exec_sql', { sql });
+  const { data, error } = await supabase.rpc('exec_sql', { sql });
 
   if (error) {
     console.error(`❌ Migration failed:`, error);
