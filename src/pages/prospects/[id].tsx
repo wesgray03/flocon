@@ -649,6 +649,41 @@ export default function ProspectDetailPage() {
     }
   };
 
+  const handleMarkAsLost = async () => {
+    if (!prospect) return;
+
+    const reason = window.prompt(
+      `Mark "${prospect.name}" as lost?\n\nOptionally provide a reason:`
+    );
+    if (reason === null) return; // User cancelled
+
+    setConverting(true);
+    try {
+      // Update engagement to mark as lost
+      const { error: updateError } = await supabase
+        .from('engagements')
+        .update({
+          status: 'Lost',
+          lost_reason: reason || null,
+          lost_at: new Date().toISOString(),
+        })
+        .eq('id', prospect.id);
+
+      if (updateError) throw updateError;
+
+      notify('Marked as lost successfully', 'success');
+      // Redirect back to prospects list
+      setTimeout(() => {
+        router.push('/prospects');
+      }, 1500);
+    } catch (err) {
+      console.error('Error marking as lost:', err);
+      notify('Failed to mark as lost', 'error');
+    } finally {
+      setConverting(false);
+    }
+  };
+
   const handleConvertToProject = async () => {
     if (!prospect) return;
 
@@ -780,8 +815,64 @@ export default function ProspectDetailPage() {
           ) : !prospect ? (
             <p style={{ color: colors.textSecondary }}>Prospect not found.</p>
           ) : (
-            <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h1 style={styles.titleStyle}>{prospect.name}</h1>
+              {!editMode && !editTradesMode && (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={handleMarkAsLost}
+                    disabled={converting}
+                    style={{
+                      padding: '10px 20px',
+                      background: '#ef4444',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: converting ? 'not-allowed' : 'pointer',
+                      opacity: converting ? 0.7 : 1,
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!converting) {
+                        e.currentTarget.style.background = '#dc2626';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#ef4444';
+                    }}
+                  >
+                    {converting ? 'Processing…' : '❌ Mark as Lost'}
+                  </button>
+                  <button
+                    onClick={handleConvertToProject}
+                    disabled={converting}
+                    style={{
+                      padding: '10px 20px',
+                      background: '#10b981',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: converting ? 'not-allowed' : 'pointer',
+                      opacity: converting ? 0.7 : 1,
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!converting) {
+                        e.currentTarget.style.background = '#059669';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#10b981';
+                    }}
+                  >
+                    {converting ? 'Converting…' : '🚀 Convert to Project'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1266,39 +1357,6 @@ export default function ProspectDetailPage() {
                     )}
                   </div>
                 </div>
-
-                {/* Convert to Project Button */}
-                {!editMode && !editTradesMode && (
-                  <div style={{ marginTop: 16 }}>
-                    <button
-                      onClick={handleConvertToProject}
-                      disabled={converting}
-                      style={{
-                        width: '100%',
-                        padding: '12px 20px',
-                        background: '#10b981',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 8,
-                        fontSize: 15,
-                        fontWeight: 600,
-                        cursor: converting ? 'not-allowed' : 'pointer',
-                        opacity: converting ? 0.7 : 1,
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!converting) {
-                          e.currentTarget.style.background = '#059669';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = '#10b981';
-                      }}
-                    >
-                      {converting ? 'Converting…' : '🚀 Convert to Project'}
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
 
