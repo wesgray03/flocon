@@ -117,55 +117,55 @@ export function DashboardHeader({
           justifyContent: 'center',
         }}
       >
-          <span
+        <span
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color:
+              activeTab === 'prospects' ? colors.navy : colors.textSecondary,
+          }}
+        >
+          Prospects
+        </span>
+        <Link
+          href={activeTab === 'prospects' ? '/projects' : '/prospects'}
+          style={{
+            position: 'relative',
+            width: 56,
+            height: 28,
+            background: colors.navy,
+            borderRadius: 14,
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            display: 'inline-block',
+            textDecoration: 'none',
+          }}
+        >
+          <div
             style={{
-              fontSize: 13,
-              fontWeight: 600,
-              color:
-                activeTab === 'prospects' ? colors.navy : colors.textSecondary,
+              position: 'absolute',
+              top: 2,
+              left: activeTab === 'prospects' ? 2 : 28,
+              width: 24,
+              height: 24,
+              background: '#fff',
+              borderRadius: '50%',
+              transition: 'left 0.3s ease',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
             }}
-          >
-            Prospects
-          </span>
-          <Link
-            href={activeTab === 'prospects' ? '/projects' : '/prospects'}
-            style={{
-              position: 'relative',
-              width: 56,
-              height: 28,
-              background: colors.navy,
-              borderRadius: 14,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              display: 'inline-block',
-              textDecoration: 'none',
-            }}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                top: 2,
-                left: activeTab === 'prospects' ? 2 : 28,
-                width: 24,
-                height: 24,
-                background: '#fff',
-                borderRadius: '50%',
-                transition: 'left 0.3s ease',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-              }}
-            />
-          </Link>
-          <span
-            style={{
-              fontSize: 13,
-              fontWeight: 600,
-              color:
-                activeTab === 'projects' ? colors.navy : colors.textSecondary,
-            }}
-          >
-            Projects
-          </span>
-        </div>
+          />
+        </Link>
+        <span
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color:
+              activeTab === 'projects' ? colors.navy : colors.textSecondary,
+          }}
+        >
+          Projects
+        </span>
+      </div>
 
       {/* Right: Export Button + Menu Button */}
       <div

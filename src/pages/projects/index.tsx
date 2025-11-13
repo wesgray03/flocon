@@ -17,9 +17,9 @@ import { ProjectsTable } from '@/components/projects/ProjectsTable';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import { useProjectsListCore } from '@/domain/projects/useProjectsListCore';
 import {
-    getPrimaryPartiesForEngagements,
-    syncCorePrimaryParties,
-    type PartyRole,
+  getPrimaryPartiesForEngagements,
+  syncCorePrimaryParties,
+  type PartyRole,
 } from '@/lib/engagementParties';
 import { setPrimaryUserRole } from '@/lib/engagementUserRoles';
 import { money } from '@/lib/format';
@@ -1110,7 +1110,14 @@ export default function ProjectsPage() {
             aria-modal="true"
             aria-labelledby="filters-modal-title"
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
               <h2
                 id="filters-modal-title"
                 style={{

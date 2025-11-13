@@ -861,7 +861,9 @@ export default function ProspectDetailPage() {
                       e.currentTarget.style.background = '#f87171';
                     }}
                   >
-                    <span style={{ fontSize: '16px', marginRight: '6px' }}>💣</span>
+                    <span style={{ fontSize: '16px', marginRight: '6px' }}>
+                      💣
+                    </span>
                     {converting ? 'Processing…' : 'Mark as Lost'}
                   </button>
                   <button

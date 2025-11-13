@@ -8,14 +8,14 @@ import { MasterDataModal } from '@/components/modals/MasterDataModal';
 import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import {
-    getPrimaryPartiesForEngagements,
-    setPrimaryParty,
-    syncCorePrimaryParties,
-    type PartyRole,
+  getPrimaryPartiesForEngagements,
+  setPrimaryParty,
+  syncCorePrimaryParties,
+  type PartyRole,
 } from '@/lib/engagementParties';
 import {
-    getPrimaryUserRolesForEngagements,
-    setPrimaryUserRole,
+  getPrimaryUserRolesForEngagements,
+  setPrimaryUserRole,
 } from '@/lib/engagementUserRoles';
 import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
@@ -860,9 +860,10 @@ export default function ProspectsPage() {
                 const lines = [
                   headers.join(','),
                   ...filteredAndSortedProspects.map((p) => {
-                    const tradeBreakdown = p.trades
-                      ?.map((t) => `${t.code}-${t.name}: $${t.amount}`)
-                      .join('; ') || '';
+                    const tradeBreakdown =
+                      p.trades
+                        ?.map((t) => `${t.code}-${t.name}: $${t.amount}`)
+                        .join('; ') || '';
                     const values = [
                       p.id,
                       p.name,
@@ -1061,298 +1062,338 @@ export default function ProspectsPage() {
         {!loading && !error && filteredAndSortedProspects.length > 0 && (
           <>
             {/* Desktop Table View */}
-            <div className="prospects-table-container" style={{ overflowX: 'auto' }}>
+            <div
+              className="prospects-table-container"
+              style={{ overflowX: 'auto' }}
+            >
               <table
                 style={{
                   width: '100%',
-                fontSize: 14,
-                borderCollapse: 'collapse',
-              }}
-            >
-              <thead>
-                <tr
-                  style={{
-                    background: colors.tableHeader,
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 1,
-                  }}
-                >
-                  <th style={thProject} onClick={() => handleSort('name')}>
-                    Prospect{sortIndicator('name')}
-                  </th>
-                  <th
-                    style={thCustomer}
-                    onClick={() => handleSort('customer_name')}
-                  >
-                    Customer{sortIndicator('customer_name')}
-                  </th>
-                  <th style={thContact}>Prospect Contact</th>
-                  <th
-                    style={thManager}
-                    onClick={() => handleSort('owner_name')}
-                  >
-                    Sales Lead{sortIndicator('owner_name')}
-                  </th>
-                  <th style={thArchitect}>Architect</th>
-                  <th
-                    style={thStatus}
-                    onClick={() => handleSort('estimating_type')}
-                  >
-                    Type{sortIndicator('estimating_type')}
-                  </th>
-                  <th
-                    style={thStatus}
-                    onClick={() => handleSort('probability_level_name')}
-                  >
-                    Probability{sortIndicator('probability_level_name')}
-                  </th>
-                  <th style={thBidDate} onClick={() => handleSort('bid_date')}>
-                    Bid Date{sortIndicator('bid_date')}
-                  </th>
-                  <th style={thMoney} onClick={() => handleSort('extended')}>
-                    Bid Amount{sortIndicator('extended')}
-                  </th>
-                  <th style={thMoney} onClick={() => handleSort('bid_amount')}>
-                    Revenue Est.{sortIndicator('bid_amount')}
-                  </th>
-                  <th style={thActions}>Actions</th>
-                </tr>
-                <tr>
-                  <th style={thProject}>
-                    <MultiFilterInput
-                      values={filters.name}
-                      onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, name: vals }))
-                      }
-                      suggestions={uniqueValues.name}
-                      placeholder="Filter project..."
-                    />
-                  </th>
-                  <th style={thCustomer}>
-                    <MultiFilterInput
-                      values={filters.customer}
-                      onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, customer: vals }))
-                      }
-                      suggestions={uniqueValues.customer}
-                      placeholder="Filter customer..."
-                    />
-                  </th>
-                  <th style={thContact}>
-                    <MultiFilterInput
-                      values={filters.contact}
-                      onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, contact: vals }))
-                      }
-                      suggestions={uniqueValues.contact}
-                      placeholder="Filter contact..."
-                    />
-                  </th>
-                  <th style={thManager}>
-                    <MultiFilterInput
-                      values={filters.owner}
-                      onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, owner: vals }))
-                      }
-                      suggestions={uniqueValues.owner}
-                      placeholder="Filter sales lead..."
-                    />
-                  </th>
-                  <th style={thArchitect}>
-                    <MultiFilterInput
-                      values={filters.architect}
-                      onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, architect: vals }))
-                      }
-                      suggestions={uniqueValues.architect}
-                      placeholder="Filter architect..."
-                    />
-                  </th>
-                  <th style={thStatus}>
-                    <MultiFilterInput
-                      values={filters.estimating_type}
-                      onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, estimating_type: vals }))
-                      }
-                      suggestions={uniqueValues.estimating_type}
-                      placeholder="Filter type..."
-                    />
-                  </th>
-                  <th style={thStatus}>
-                    <MultiFilterInput
-                      values={filters.probability_level}
-                      onChangeValues={(vals) =>
-                        setFilters((f) => ({ ...f, probability_level: vals }))
-                      }
-                      suggestions={uniqueValues.probability_level}
-                      placeholder="Filter probability..."
-                    />
-                  </th>
-                  <th style={thBidDate}></th>
-                  <th
-                    style={{ ...thMoney, fontWeight: 700, color: colors.navy }}
-                  >
-                    {formatCurrency(totals.totalExtended)}
-                  </th>
-                  <th
-                    style={{ ...thMoney, fontWeight: 700, color: colors.navy }}
-                  >
-                    {formatCurrency(totals.totalRevenue)}
-                  </th>
-                  <th style={thActions}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFilters({
-                          name: [],
-                          customer: [],
-                          contact: [],
-                          owner: [],
-                          architect: [],
-                          estimating_type: [],
-                          probability_level: [],
-                        })
-                      }
-                      style={{
-                        background: colors.toggleBackground,
-                        color: colors.textPrimary,
-                        border: `1px solid ${colors.border}`,
-                        borderRadius: 4,
-                        padding: '4px 10px',
-                        fontSize: 13,
-                        cursor: 'pointer',
-                        margin: 0,
-                        minWidth: 0,
-                        minHeight: 0,
-                        lineHeight: 1.2,
-                      }}
-                      aria-label="Clear all filters"
-                    >
-                      Clear
-                    </button>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAndSortedProspects.map((prospect) => (
+                  fontSize: 14,
+                  borderCollapse: 'collapse',
+                }}
+              >
+                <thead>
                   <tr
-                    key={prospect.id}
                     style={{
-                      borderBottom: `1px solid ${colors.border}`,
-                      transition: 'background 0.15s',
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = colors.tableHeader;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'transparent';
-                    }}
-                    onClick={() => {
-                      router.push(`/prospects/${prospect.id}`);
+                      background: colors.tableHeader,
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 1,
                     }}
                   >
-                    <td style={td}>
-                      <span
-                        style={{ color: colors.textPrimary, fontWeight: 500 }}
-                      >
-                        {prospect.name}
-                      </span>
-                    </td>
-                    <td style={td}>{prospect.customer_name || '—'}</td>
-                    <td style={td}>{prospect.contact_name || '—'}</td>
-                    <td style={td}>{prospect.owner_name || '—'}</td>
-                    <td style={td}>{prospect.architect_name || '—'}</td>
-                    <td style={td}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '4px 8px',
-                          borderRadius: 4,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          background:
-                            prospect.estimating_type === 'Construction'
-                              ? '#4CAF5020'
-                              : '#2196F320',
-                          color:
-                            prospect.estimating_type === 'Construction'
-                              ? '#4CAF50'
-                              : '#2196F3',
-                        }}
-                      >
-                        {prospect.estimating_type || 'Budget'}
-                      </span>
-                    </td>
-                    <td style={td}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '4px 8px',
-                          borderRadius: 4,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          background: prospect.probability_level_name
-                            ? getProbabilityColor(
-                                prospect.probability_level_name
-                              ) + '20'
-                            : '#64748b20',
-                          color: prospect.probability_level_name
-                            ? getProbabilityColor(
-                                prospect.probability_level_name
-                              )
-                            : '#64748b',
-                        }}
-                      >
-                        {prospect.probability_level_name
-                          ? `${prospect.probability_level_name}${prospect.probability_percentage ? ` (${prospect.probability_percentage}%)` : ''}`
-                          : '—'}
-                      </span>
-                    </td>
-                    <td style={td}>{dateStr(prospect.bid_date)}</td>
-                    <td
-                      style={tdRight}
-                      title={
-                        prospect.trades && prospect.trades.length > 0
-                          ? prospect.trades
-                              .map(
-                                (t) =>
-                                  `${t.name} (${t.code}): ${formatCurrency(t.amount)}`
-                              )
-                              .join('\n')
-                          : undefined
-                      }
+                    <th style={thProject} onClick={() => handleSort('name')}>
+                      Prospect{sortIndicator('name')}
+                    </th>
+                    <th
+                      style={thCustomer}
+                      onClick={() => handleSort('customer_name')}
                     >
-                      {prospect.extended
-                        ? formatCurrency(prospect.extended)
-                        : '—'}
-                    </td>
-                    <td
+                      Customer{sortIndicator('customer_name')}
+                    </th>
+                    <th style={thContact}>Prospect Contact</th>
+                    <th
+                      style={thManager}
+                      onClick={() => handleSort('owner_name')}
+                    >
+                      Sales Lead{sortIndicator('owner_name')}
+                    </th>
+                    <th style={thArchitect}>Architect</th>
+                    <th
+                      style={thStatus}
+                      onClick={() => handleSort('estimating_type')}
+                    >
+                      Type{sortIndicator('estimating_type')}
+                    </th>
+                    <th
+                      style={thStatus}
+                      onClick={() => handleSort('probability_level_name')}
+                    >
+                      Probability{sortIndicator('probability_level_name')}
+                    </th>
+                    <th
+                      style={thBidDate}
+                      onClick={() => handleSort('bid_date')}
+                    >
+                      Bid Date{sortIndicator('bid_date')}
+                    </th>
+                    <th style={thMoney} onClick={() => handleSort('extended')}>
+                      Bid Amount{sortIndicator('extended')}
+                    </th>
+                    <th
+                      style={thMoney}
+                      onClick={() => handleSort('bid_amount')}
+                    >
+                      Revenue Est.{sortIndicator('bid_amount')}
+                    </th>
+                    <th style={thActions}>Actions</th>
+                  </tr>
+                  <tr>
+                    <th style={thProject}>
+                      <MultiFilterInput
+                        values={filters.name}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, name: vals }))
+                        }
+                        suggestions={uniqueValues.name}
+                        placeholder="Filter project..."
+                      />
+                    </th>
+                    <th style={thCustomer}>
+                      <MultiFilterInput
+                        values={filters.customer}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, customer: vals }))
+                        }
+                        suggestions={uniqueValues.customer}
+                        placeholder="Filter customer..."
+                      />
+                    </th>
+                    <th style={thContact}>
+                      <MultiFilterInput
+                        values={filters.contact}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, contact: vals }))
+                        }
+                        suggestions={uniqueValues.contact}
+                        placeholder="Filter contact..."
+                      />
+                    </th>
+                    <th style={thManager}>
+                      <MultiFilterInput
+                        values={filters.owner}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, owner: vals }))
+                        }
+                        suggestions={uniqueValues.owner}
+                        placeholder="Filter sales lead..."
+                      />
+                    </th>
+                    <th style={thArchitect}>
+                      <MultiFilterInput
+                        values={filters.architect}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, architect: vals }))
+                        }
+                        suggestions={uniqueValues.architect}
+                        placeholder="Filter architect..."
+                      />
+                    </th>
+                    <th style={thStatus}>
+                      <MultiFilterInput
+                        values={filters.estimating_type}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, estimating_type: vals }))
+                        }
+                        suggestions={uniqueValues.estimating_type}
+                        placeholder="Filter type..."
+                      />
+                    </th>
+                    <th style={thStatus}>
+                      <MultiFilterInput
+                        values={filters.probability_level}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, probability_level: vals }))
+                        }
+                        suggestions={uniqueValues.probability_level}
+                        placeholder="Filter probability..."
+                      />
+                    </th>
+                    <th style={thBidDate}></th>
+                    <th
                       style={{
-                        ...tdRight,
-                        fontWeight: 600,
-                        color: colors.textPrimary,
+                        ...thMoney,
+                        fontWeight: 700,
+                        color: colors.navy,
                       }}
                     >
-                      {prospect.bid_amount
-                        ? formatCurrency(prospect.bid_amount)
-                        : '—'}
-                    </td>
-                    <td style={tdCenter}>
-                      <div
+                      {formatCurrency(totals.totalExtended)}
+                    </th>
+                    <th
+                      style={{
+                        ...thMoney,
+                        fontWeight: 700,
+                        color: colors.navy,
+                      }}
+                    >
+                      {formatCurrency(totals.totalRevenue)}
+                    </th>
+                    <th style={thActions}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFilters({
+                            name: [],
+                            customer: [],
+                            contact: [],
+                            owner: [],
+                            architect: [],
+                            estimating_type: [],
+                            probability_level: [],
+                          })
+                        }
                         style={{
-                          display: 'flex',
-                          gap: 8,
-                          justifyContent: 'center',
-                          alignItems: 'center',
+                          background: colors.toggleBackground,
+                          color: colors.textPrimary,
+                          border: `1px solid ${colors.border}`,
+                          borderRadius: 4,
+                          padding: '4px 10px',
+                          fontSize: 13,
+                          cursor: 'pointer',
+                          margin: 0,
+                          minWidth: 0,
+                          minHeight: 0,
+                          lineHeight: 1.2,
+                        }}
+                        aria-label="Clear all filters"
+                      >
+                        Clear
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAndSortedProspects.map((prospect) => (
+                    <tr
+                      key={prospect.id}
+                      style={{
+                        borderBottom: `1px solid ${colors.border}`,
+                        transition: 'background 0.15s',
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = colors.tableHeader;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                      }}
+                      onClick={() => {
+                        router.push(`/prospects/${prospect.id}`);
+                      }}
+                    >
+                      <td style={td}>
+                        <span
+                          style={{ color: colors.textPrimary, fontWeight: 500 }}
+                        >
+                          {prospect.name}
+                        </span>
+                      </td>
+                      <td style={td}>{prospect.customer_name || '—'}</td>
+                      <td style={td}>{prospect.contact_name || '—'}</td>
+                      <td style={td}>{prospect.owner_name || '—'}</td>
+                      <td style={td}>{prospect.architect_name || '—'}</td>
+                      <td style={td}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '4px 8px',
+                            borderRadius: 4,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            background:
+                              prospect.estimating_type === 'Construction'
+                                ? '#4CAF5020'
+                                : '#2196F320',
+                            color:
+                              prospect.estimating_type === 'Construction'
+                                ? '#4CAF50'
+                                : '#2196F3',
+                          }}
+                        >
+                          {prospect.estimating_type || 'Budget'}
+                        </span>
+                      </td>
+                      <td style={td}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '4px 8px',
+                            borderRadius: 4,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            background: prospect.probability_level_name
+                              ? getProbabilityColor(
+                                  prospect.probability_level_name
+                                ) + '20'
+                              : '#64748b20',
+                            color: prospect.probability_level_name
+                              ? getProbabilityColor(
+                                  prospect.probability_level_name
+                                )
+                              : '#64748b',
+                          }}
+                        >
+                          {prospect.probability_level_name
+                            ? `${prospect.probability_level_name}${prospect.probability_percentage ? ` (${prospect.probability_percentage}%)` : ''}`
+                            : '—'}
+                        </span>
+                      </td>
+                      <td style={td}>{dateStr(prospect.bid_date)}</td>
+                      <td
+                        style={tdRight}
+                        title={
+                          prospect.trades && prospect.trades.length > 0
+                            ? prospect.trades
+                                .map(
+                                  (t) =>
+                                    `${t.name} (${t.code}): ${formatCurrency(t.amount)}`
+                                )
+                                .join('\n')
+                            : undefined
+                        }
+                      >
+                        {prospect.extended
+                          ? formatCurrency(prospect.extended)
+                          : '—'}
+                      </td>
+                      <td
+                        style={{
+                          ...tdRight,
+                          fontWeight: 600,
+                          color: colors.textPrimary,
                         }}
                       >
-                        {prospect.sharepoint_folder && (
+                        {prospect.bid_amount
+                          ? formatCurrency(prospect.bid_amount)
+                          : '—'}
+                      </td>
+                      <td style={tdCenter}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: 8,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          {prospect.sharepoint_folder && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openSharePointFolder(
+                                  prospect.sharepoint_folder
+                                );
+                              }}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: 4,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: colors.navy,
+                                transition: 'color 0.2s',
+                              }}
+                              title="Open SharePoint Folder"
+                            >
+                              <Folder size={16} />
+                            </button>
+                          )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              openSharePointFolder(prospect.sharepoint_folder);
+                              openForEdit(prospect);
                             }}
                             style={{
                               background: 'transparent',
@@ -1365,201 +1406,182 @@ export default function ProspectsPage() {
                               color: colors.navy,
                               transition: 'color 0.2s',
                             }}
-                            title="Open SharePoint Folder"
+                            title="Edit Prospect"
                           >
-                            <Folder size={16} />
+                            <Pencil size={16} />
                           </button>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openForEdit(prospect);
-                          }}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: 4,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: colors.navy,
-                            transition: 'color 0.2s',
-                          }}
-                          title="Edit Prospect"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteConfirmId(prospect.id);
-                          }}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: 4,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: colors.logoRed,
-                            transition: 'color 0.2s',
-                          }}
-                          title="Delete Prospect"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirmId(prospect.id);
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              padding: 4,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: colors.logoRed,
+                              transition: 'color 0.2s',
+                            }}
+                            title="Delete Prospect"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          {/* Mobile Cards View */}
-          <div className="prospects-mobile-cards" style={{ display: 'none' }}>
-            {filteredAndSortedProspects.map((prospect) => (
-              <div
-                key={prospect.id}
-                className="prospect-card"
-                onClick={() => router.push(`/prospects/${prospect.id}`)}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="project-card-header">
-                  <div>
-                    <h3 className="project-card-title">{prospect.name}</h3>
-                    {prospect.customer_name && (
-                      <div className="project-card-qbid">
-                        {prospect.customer_name}
-                      </div>
-                    )}
-                  </div>
-                  <div className="project-card-actions">
-                    {prospect.sharepoint_folder && (
-                      <a
-                        href={prospect.sharepoint_folder}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
+            {/* Mobile Cards View */}
+            <div className="prospects-mobile-cards" style={{ display: 'none' }}>
+              {filteredAndSortedProspects.map((prospect) => (
+                <div
+                  key={prospect.id}
+                  className="prospect-card"
+                  onClick={() => router.push(`/prospects/${prospect.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="project-card-header">
+                    <div>
+                      <h3 className="project-card-title">{prospect.name}</h3>
+                      {prospect.customer_name && (
+                        <div className="project-card-qbid">
+                          {prospect.customer_name}
+                        </div>
+                      )}
+                    </div>
+                    <div className="project-card-actions">
+                      {prospect.sharepoint_folder && (
+                        <a
+                          href={prospect.sharepoint_folder}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            color: colors.navy,
+                            padding: 8,
+                            display: 'flex',
+                          }}
+                        >
+                          <Folder size={20} />
+                        </a>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openForEdit(prospect);
+                        }}
                         style={{
+                          background: 'transparent',
+                          border: 'none',
                           color: colors.navy,
                           padding: 8,
+                          cursor: 'pointer',
                           display: 'flex',
                         }}
                       >
-                        <Folder size={20} />
-                      </a>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openForEdit(prospect);
-                      }}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: colors.navy,
-                        padding: 8,
-                        cursor: 'pointer',
-                        display: 'flex',
-                      }}
-                    >
-                      <Pencil size={20} />
-                    </button>
+                        <Pencil size={20} />
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {prospect.contact_name && (
+                  {prospect.contact_name && (
+                    <div className="project-card-row">
+                      <span className="project-card-label">Contact</span>
+                      <span className="project-card-value">
+                        {prospect.contact_name}
+                      </span>
+                    </div>
+                  )}
+
+                  {prospect.owner_name && (
+                    <div className="project-card-row">
+                      <span className="project-card-label">Sales Lead</span>
+                      <span className="project-card-value">
+                        {prospect.owner_name}
+                      </span>
+                    </div>
+                  )}
+
+                  {prospect.architect_name && (
+                    <div className="project-card-row">
+                      <span className="project-card-label">Architect</span>
+                      <span className="project-card-value">
+                        {prospect.architect_name}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="project-card-row">
-                    <span className="project-card-label">Contact</span>
-                    <span className="project-card-value">
-                      {prospect.contact_name}
-                    </span>
-                  </div>
-                )}
-
-                {prospect.owner_name && (
-                  <div className="project-card-row">
-                    <span className="project-card-label">Sales Lead</span>
-                    <span className="project-card-value">
-                      {prospect.owner_name}
-                    </span>
-                  </div>
-                )}
-
-                {prospect.architect_name && (
-                  <div className="project-card-row">
-                    <span className="project-card-label">Architect</span>
-                    <span className="project-card-value">
-                      {prospect.architect_name}
-                    </span>
-                  </div>
-                )}
-
-                <div className="project-card-row">
-                  <span className="project-card-label">Type</span>
-                  <span
-                    className="project-card-value"
-                    style={{
-                      fontWeight: 600,
-                      color:
-                        prospect.estimating_type === 'Construction'
-                          ? '#4CAF50'
-                          : '#2196F3',
-                    }}
-                  >
-                    {prospect.estimating_type || 'Budget'}
-                  </span>
-                </div>
-
-                {prospect.probability_level_name && (
-                  <div className="project-card-row">
-                    <span className="project-card-label">Probability</span>
+                    <span className="project-card-label">Type</span>
                     <span
                       className="project-card-value"
                       style={{
                         fontWeight: 600,
-                        color: getProbabilityColor(
-                          prospect.probability_level_name
-                        ),
+                        color:
+                          prospect.estimating_type === 'Construction'
+                            ? '#4CAF50'
+                            : '#2196F3',
                       }}
                     >
-                      {prospect.probability_level_name}
-                      {prospect.probability_percentage
-                        ? ` (${prospect.probability_percentage}%)`
-                        : ''}
+                      {prospect.estimating_type || 'Budget'}
                     </span>
                   </div>
-                )}
 
-                {prospect.bid_date && (
-                  <div className="project-card-row">
-                    <span className="project-card-label">Bid Date</span>
-                    <span className="project-card-value">
-                      {dateStr(prospect.bid_date)}
+                  {prospect.probability_level_name && (
+                    <div className="project-card-row">
+                      <span className="project-card-label">Probability</span>
+                      <span
+                        className="project-card-value"
+                        style={{
+                          fontWeight: 600,
+                          color: getProbabilityColor(
+                            prospect.probability_level_name
+                          ),
+                        }}
+                      >
+                        {prospect.probability_level_name}
+                        {prospect.probability_percentage
+                          ? ` (${prospect.probability_percentage}%)`
+                          : ''}
+                      </span>
+                    </div>
+                  )}
+
+                  {prospect.bid_date && (
+                    <div className="project-card-row">
+                      <span className="project-card-label">Bid Date</span>
+                      <span className="project-card-value">
+                        {dateStr(prospect.bid_date)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div
+                    className="project-card-row"
+                    style={{
+                      borderTop: '1px solid #e5dfd5',
+                      paddingTop: 12,
+                      marginTop: 8,
+                    }}
+                  >
+                    <span className="project-card-label">Bid Amount</span>
+                    <span className="project-card-value project-card-money">
+                      {prospect.extended
+                        ? formatCurrency(prospect.extended)
+                        : '—'}
                     </span>
                   </div>
-                )}
-
-                <div
-                  className="project-card-row"
-                  style={{
-                    borderTop: '1px solid #e5dfd5',
-                    paddingTop: 12,
-                    marginTop: 8,
-                  }}
-                >
-                  <span className="project-card-label">Bid Amount</span>
-                  <span className="project-card-value project-card-money">
-                    {prospect.extended ? formatCurrency(prospect.extended) : '—'}
-                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -1579,7 +1601,14 @@ export default function ProspectsPage() {
             aria-modal="true"
             aria-labelledby="filters-modal-title"
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
               <h2
                 id="filters-modal-title"
                 style={{
