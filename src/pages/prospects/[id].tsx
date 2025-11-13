@@ -881,6 +881,7 @@ export default function ProspectDetailPage() {
                 minWidth: 377,
                 justifyContent: 'flex-end',
               }}
+              className="prospect-action-buttons"
             >
               {!editMode && !editTradesMode && (
                 <>

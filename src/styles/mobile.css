@@ -101,6 +101,11 @@
     display: block !important;
   }
 
+  /* Hide action buttons on mobile */
+  .prospect-action-buttons {
+    display: none !important;
+  }
+
   .mobile-module-selector {
     display: block !important;
   }
