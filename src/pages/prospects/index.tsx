@@ -8,14 +8,14 @@ import { MasterDataModal } from '@/components/modals/MasterDataModal';
 import { UsersModal } from '@/components/modals/UsersModal';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import {
-  getPrimaryPartiesForEngagements,
-  setPrimaryParty,
-  syncCorePrimaryParties,
-  type PartyRole,
+    getPrimaryPartiesForEngagements,
+    setPrimaryParty,
+    syncCorePrimaryParties,
+    type PartyRole,
 } from '@/lib/engagementParties';
 import {
-  getPrimaryUserRolesForEngagements,
-  setPrimaryUserRole,
+    getPrimaryUserRolesForEngagements,
+    setPrimaryUserRole,
 } from '@/lib/engagementUserRoles';
 import { supabase } from '@/lib/supabaseClient';
 import { colors } from '@/styles/theme';
@@ -92,7 +92,6 @@ export default function ProspectsPage() {
     label: string;
   }>(null);
   const openMaster = (table: 'stages' | 'engagement_tasks', label: string) => {
-    console.log('[openMaster] Called with:', { table, label });
     setShowMaster({ table, label });
   };
   const closeMaster = () => setShowMaster(null);
@@ -1568,15 +1567,12 @@ export default function ProspectsPage() {
         />
       )}
       {showMaster && (
-        <>
-          {console.log('[Render] MasterDataModal with:', showMaster)}
-          <MasterDataModal
-            open={true}
-            onClose={closeMaster}
-            table={showMaster.table}
-            label={showMaster.label}
-          />
-        </>
+        <MasterDataModal
+          open={true}
+          onClose={closeMaster}
+          table={showMaster.table}
+          label={showMaster.label}
+        />
       )}
       {showLostReasonsModal && (
         <LostReasonsModal
