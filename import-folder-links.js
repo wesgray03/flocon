@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
  * Import SharePoint folder links from CSV
- * 
+ *
  * Updates engagements.sharepoint_folder by matching project_number
- * 
+ *
  * Usage:
  *   node import-folder-links.js [--staging|--production]
- * 
+ *
  * Default: staging
  */
 
@@ -24,12 +24,16 @@ const isStaging = args.includes('--staging') || !isProduction;
 // Load appropriate environment
 let SUPABASE_URL, SUPABASE_KEY, envLabel;
 if (isProduction) {
-  const prodEnv = require('dotenv').parse(fs.readFileSync('.env.production.local'));
+  const prodEnv = require('dotenv').parse(
+    fs.readFileSync('.env.production.local')
+  );
   SUPABASE_URL = prodEnv.NEXT_PUBLIC_SUPABASE_URL;
   SUPABASE_KEY = prodEnv.SUPABASE_SERVICE_ROLE_KEY;
   envLabel = 'PRODUCTION';
 } else {
-  const stagingEnv = require('dotenv').parse(fs.readFileSync('.env.staging.local'));
+  const stagingEnv = require('dotenv').parse(
+    fs.readFileSync('.env.staging.local')
+  );
   SUPABASE_URL = stagingEnv.NEXT_PUBLIC_SUPABASE_URL;
   SUPABASE_KEY = stagingEnv.SUPABASE_SERVICE_ROLE_KEY;
   envLabel = 'STAGING';
@@ -83,7 +87,9 @@ async function main() {
         .limit(1);
 
       if (findError) {
-        console.error(`❌ ${projectNumber}: Query error - ${findError.message}`);
+        console.error(
+          `❌ ${projectNumber}: Query error - ${findError.message}`
+        );
         errors++;
         continue;
       }
@@ -103,7 +109,9 @@ async function main() {
         .eq('id', engagement.id);
 
       if (updateError) {
-        console.error(`❌ ${projectNumber}: Update error - ${updateError.message}`);
+        console.error(
+          `❌ ${projectNumber}: Update error - ${updateError.message}`
+        );
         errors++;
         continue;
       }
@@ -126,7 +134,9 @@ async function main() {
   console.log('');
 
   if (updated > 0) {
-    console.log(`✨ Successfully imported ${updated} SharePoint folder links to ${envLabel}`);
+    console.log(
+      `✨ Successfully imported ${updated} SharePoint folder links to ${envLabel}`
+    );
   }
 }
 
