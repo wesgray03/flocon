@@ -775,6 +775,27 @@ export default function ProjectsPage() {
             onOpenLostReasons={() => setShowLostReasonsModal(true)}
           />
         }
+        actionButton={
+          <button
+            type="button"
+            className="desktop-new-button"
+            onClick={openForNew}
+            style={{
+              background: colors.navy,
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              display: 'none',
+            }}
+          >
+            + New Project
+          </button>
+        }
         exportButton={
           filteredAndSortedRows.length > 0 && (
             <button

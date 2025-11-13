@@ -177,6 +177,7 @@ export function DashboardHeader({
           justifyContent: 'flex-end',
         }}
       >
+        {actionButton}
         {exportButton}
         <div style={{ position: 'relative' }}>
           <button

@@ -796,6 +796,45 @@ export default function ProspectsPage() {
             onOpenLostReasons={() => setShowLostReasonsModal(true)}
           />
         }
+        actionButton={
+          <button
+            type="button"
+            className="desktop-new-button"
+            onClick={() => {
+              setEditingProspect(null);
+              setForm({
+                name: '',
+                company_id: '',
+                contact_id: '',
+                owner: '',
+                architect_id: '',
+                estimating_type: 'Budget',
+                probability_level_id: '',
+                bid_date: '',
+                last_call: '',
+                active: 'true',
+                lost_reason_id: '',
+                sharepoint_folder: '',
+              });
+              setTradeLines([]);
+              setShowModal(true);
+            }}
+            style={{
+              background: colors.navy,
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              display: 'none',
+            }}
+          >
+            + New Prospect
+          </button>
+        }
         exportButton={
           filteredAndSortedProspects.length > 0 && (
             <button
