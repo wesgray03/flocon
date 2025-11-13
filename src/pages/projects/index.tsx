@@ -17,9 +17,9 @@ import { ProjectsTable } from '@/components/projects/ProjectsTable';
 import { MultiFilterInput } from '@/components/ui/multi-filter-input';
 import { useProjectsListCore } from '@/domain/projects/useProjectsListCore';
 import {
-  getPrimaryPartiesForEngagements,
-  syncCorePrimaryParties,
-  type PartyRole,
+    getPrimaryPartiesForEngagements,
+    syncCorePrimaryParties,
+    type PartyRole,
 } from '@/lib/engagementParties';
 import { setPrimaryUserRole } from '@/lib/engagementUserRoles';
 import { money } from '@/lib/format';
@@ -1596,15 +1596,12 @@ export default function ProjectsPage() {
 
       {/* Master Data modal (Customers/Managers/Owners/Stages) */}
       {showMaster && (
-        <>
-          {console.log('[Render] MasterDataModal with:', showMaster)}
-          <MasterDataModal
-            open={true}
-            onClose={closeMaster}
-            table={showMaster.table}
-            label={showMaster.label}
-          />
-        </>
+        <MasterDataModal
+          open={true}
+          onClose={closeMaster}
+          table={showMaster.table}
+          label={showMaster.label}
+        />
       )}
 
       {/* Companies Modal */}
@@ -1621,13 +1618,10 @@ export default function ProjectsPage() {
       )}
 
       {/* Users Modal */}
-      {console.log('[Render] showUsersModal:', showUsersModal)}
       <UsersModal open={showUsersModal} onClose={closeUsers} />
       {/* Contacts Modal */}
-      {console.log('[Render] showContactsModal:', showContactsModal)}
       <ContactsModal open={showContactsModal} onClose={closeContacts} />
       {/* Lost Reasons Modal */}
-      {console.log('[Render] showLostReasonsModal:', showLostReasonsModal)}
       <LostReasonsModal
         open={showLostReasonsModal}
         onClose={closeLostReasons}

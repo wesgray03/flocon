@@ -194,6 +194,8 @@ export default function ProposalPage() {
           </button>
         </div>
       </div>
+
+      {renderModals()}
     </div>
   );
 }
@@ -218,11 +220,6 @@ function PartyBadge({ label, value }: { label: string; value: string | null }) {
       <div style={{ fontSize: 14, fontWeight: 600, color: colors.textPrimary }}>
         {value || '—'}
       </div>
-    </div>
-  );
-}
-
-      {renderModals()}
     </div>
   );
 }

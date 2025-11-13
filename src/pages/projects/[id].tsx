@@ -182,59 +182,60 @@ export default function ProjectDetail() {
 
   // SOV add-line form state managed in SOVSection
 
+  // Load dropdown options (customers/managers/architects/superintendents/owners)
+  const loadDropdownOptions = async () => {
+    const [
+      { data: customers },
+      { data: managers },
+      { data: architects },
+      { data: ownerCompanies },
+      { data: superintendents },
+      { data: owners },
+    ] = await Promise.all([
+      supabase
+        .from('companies')
+        .select('name')
+        .eq('is_customer', true)
+        .order('name'),
+      supabase
+        .from('contacts')
+        .select('name')
+        .eq('contact_type', 'Project Manager')
+        .order('name'),
+      supabase
+        .from('companies')
+        .select('name')
+        .eq('company_type', 'Architect')
+        .order('name'),
+      supabase
+        .from('companies')
+        .select('name')
+        .eq('company_type', 'Owner')
+        .order('name'),
+      supabase
+        .from('contacts')
+        .select('name')
+        .eq('contact_type', 'Superintendent')
+        .order('name'),
+      supabase.from('users').select('name').order('name'),
+    ]);
+    setCustomerOptions((customers?.map((c) => c.name) ?? []).filter(Boolean));
+    setManagerOptions((managers?.map((m) => m.name) ?? []).filter(Boolean));
+    setArchitectOptions(
+      (architects?.map((a) => a.name) ?? []).filter(Boolean)
+    );
+    setOwnerCompanyOptions(
+      (ownerCompanies?.map((o) => o.name) ?? []).filter(Boolean)
+    );
+    setSuperintendentOptions(
+      (superintendents?.map((s) => s.name) ?? []).filter(Boolean)
+    );
+    setUserOptions((owners?.map((o) => o.name) ?? []).filter(Boolean));
+  };
+
   useEffect(() => {
     if (!id) return;
-    // Load dropdown options (customers/managers/architects/superintendents/owners)
-    const loadOptions = async () => {
-      const [
-        { data: customers },
-        { data: managers },
-        { data: architects },
-        { data: ownerCompanies },
-        { data: superintendents },
-        { data: owners },
-      ] = await Promise.all([
-        supabase
-          .from('companies')
-          .select('name')
-          .eq('is_customer', true)
-          .order('name'),
-        supabase
-          .from('contacts')
-          .select('name')
-          .eq('contact_type', 'Project Manager')
-          .order('name'),
-        supabase
-          .from('companies')
-          .select('name')
-          .eq('company_type', 'Architect')
-          .order('name'),
-        supabase
-          .from('companies')
-          .select('name')
-          .eq('company_type', 'Owner')
-          .order('name'),
-        supabase
-          .from('contacts')
-          .select('name')
-          .eq('contact_type', 'Superintendent')
-          .order('name'),
-        supabase.from('users').select('name').order('name'),
-      ]);
-      setCustomerOptions((customers?.map((c) => c.name) ?? []).filter(Boolean));
-      setManagerOptions((managers?.map((m) => m.name) ?? []).filter(Boolean));
-      setArchitectOptions(
-        (architects?.map((a) => a.name) ?? []).filter(Boolean)
-      );
-      setOwnerCompanyOptions(
-        (ownerCompanies?.map((o) => o.name) ?? []).filter(Boolean)
-      );
-      setSuperintendentOptions(
-        (superintendents?.map((s) => s.name) ?? []).filter(Boolean)
-      );
-      setUserOptions((owners?.map((o) => o.name) ?? []).filter(Boolean));
-    };
-    loadOptions();
+    loadDropdownOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -1322,6 +1323,7 @@ export default function ProjectDetail() {
           open={companiesModal.open}
           onClose={() => {
             setCompaniesModal({ open: false, companyType: null, label: '' });
+            loadDropdownOptions();
           }}
           companyType={companiesModal.companyType}
           label={companiesModal.label}
@@ -1331,9 +1333,14 @@ export default function ProjectDetail() {
       {showContactsModal && (
         <ContactsModal
           open={showContactsModal}
-          onClose={() => setShowContactsModal(false)}
+          onClose={() => {
+            setShowContactsModal(false);
+            loadDropdownOptions();
+          }}
         />
       )}
+
+      {renderModals()}
     </div>
   );
 }
@@ -1360,8 +1367,3 @@ const DetailItem = ({
     <p style={styles.detailValueStyle}>{value || '—'}</p>
   </div>
 );
-
-      {renderModals()}
-    </div>
-  );
-}

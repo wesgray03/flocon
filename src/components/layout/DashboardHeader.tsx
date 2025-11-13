@@ -72,6 +72,7 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   return (
     <div
+      className="projects-header"
       style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -85,6 +86,7 @@ export function DashboardHeader({
     >
       {/* Left: FloCon Logo */}
       <div
+        className="projects-header-left"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -103,6 +105,7 @@ export function DashboardHeader({
 
       {/* Center: Prospects | Projects Toggle */}
       <div
+        className="projects-header-center"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -161,6 +164,7 @@ export function DashboardHeader({
 
       {/* Right: Actions and User Info */}
       <div
+        className="projects-header-right"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -174,6 +178,7 @@ export function DashboardHeader({
         <div style={{ position: 'relative' }}>
           <button
             type="button"
+            className="projects-menu-button"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-haspopup="menu"
             aria-expanded={menuOpen}
