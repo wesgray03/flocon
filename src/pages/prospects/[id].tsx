@@ -876,10 +876,10 @@ export default function ProspectDetailPage() {
             <div
               style={{
                 display: 'flex',
-                gap: 12,
-                flex: '0 0 auto',
-                minWidth: 377,
-                justifyContent: 'flex-end',
+                gap: 16,
+                flex: '1',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
               className="prospect-action-buttons"
             >
@@ -889,8 +889,8 @@ export default function ProspectDetailPage() {
                     onClick={handleMarkAsLost}
                     disabled={converting}
                     style={{
-                      padding: '10px 20px',
-                      background: '#f87171',
+                      padding: '10px 24px',
+                      background: colors.navy,
                       color: '#fff',
                       border: 'none',
                       borderRadius: 8,
@@ -899,29 +899,25 @@ export default function ProspectDetailPage() {
                       cursor: converting ? 'not-allowed' : 'pointer',
                       opacity: converting ? 0.7 : 1,
                       transition: 'all 0.2s',
-                      minWidth: 165,
-                      width: 165,
+                      width: 180,
                     }}
                     onMouseEnter={(e) => {
                       if (!converting) {
-                        e.currentTarget.style.background = '#ef4444';
+                        e.currentTarget.style.background = '#0d1b2a';
                       }
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#f87171';
+                      e.currentTarget.style.background = colors.navy;
                     }}
                   >
-                    <span style={{ fontSize: '16px', marginRight: '6px' }}>
-                      💣
-                    </span>
                     {converting ? 'Processing…' : 'Mark as Lost'}
                   </button>
                   <button
                     onClick={handleConvertToProject}
                     disabled={converting}
                     style={{
-                      padding: '10px 20px',
-                      background: '#10b981',
+                      padding: '10px 24px',
+                      background: colors.navy,
                       color: '#fff',
                       border: 'none',
                       borderRadius: 8,
@@ -930,19 +926,18 @@ export default function ProspectDetailPage() {
                       cursor: converting ? 'not-allowed' : 'pointer',
                       opacity: converting ? 0.7 : 1,
                       transition: 'all 0.2s',
-                      minWidth: 200,
-                      width: 200,
+                      width: 180,
                     }}
                     onMouseEnter={(e) => {
                       if (!converting) {
-                        e.currentTarget.style.background = '#059669';
+                        e.currentTarget.style.background = '#0d1b2a';
                       }
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#10b981';
+                      e.currentTarget.style.background = colors.navy;
                     }}
                   >
-                    {converting ? 'Converting…' : '🚀 Convert to Project'}
+                    {converting ? 'Converting…' : 'Convert to Project'}
                   </button>
                 </>
               )}
