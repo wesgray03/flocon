@@ -428,7 +428,6 @@ export default function ProjectsPage() {
       | 'subcontractors',
     label: string
   ) => {
-    console.log('[openMaster] Called with:', { table, label });
     setShowMaster({ table, label });
   };
   const closeMaster = () => setShowMaster(null);
