@@ -19,7 +19,7 @@ import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
-import { Folder, Pencil, Plus, Save, X } from 'lucide-react';
+import { Folder, Pencil, Plus, Save, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
@@ -898,7 +898,11 @@ export default function ProspectDetailPage() {
                       cursor: converting ? 'not-allowed' : 'pointer',
                       opacity: converting ? 0.7 : 1,
                       transition: 'all 0.2s',
-                      width: 180,
+                      width: 200,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
                     }}
                     onMouseEnter={(e) => {
                       if (!converting) {
@@ -909,6 +913,7 @@ export default function ProspectDetailPage() {
                       e.currentTarget.style.background = colors.navy;
                     }}
                   >
+                    {!converting && <Trash2 size={16} />}
                     {converting ? 'Processing…' : 'Mark as Lost'}
                   </button>
                   <button
@@ -925,7 +930,7 @@ export default function ProspectDetailPage() {
                       cursor: converting ? 'not-allowed' : 'pointer',
                       opacity: converting ? 0.7 : 1,
                       transition: 'all 0.2s',
-                      width: 180,
+                      width: 200,
                     }}
                     onMouseEnter={(e) => {
                       if (!converting) {
