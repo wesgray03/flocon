@@ -74,7 +74,7 @@ export default function BillingModule({
     unit: 'EA',
     quantity: '',
     unit_cost: '',
-    category: 'Material',
+    category: 'MatLab',
     retainage_percent: '5.00',
   });
 
@@ -375,7 +375,7 @@ export default function BillingModule({
       unit: 'EA',
       quantity: '',
       unit_cost: '',
-      category: 'Material',
+      category: 'MatLab',
       retainage_percent: '5.00',
     });
     setShowSOVModal(true);
@@ -390,7 +390,7 @@ export default function BillingModule({
       unit: line.unit || 'EA',
       quantity: line.quantity?.toString() || '',
       unit_cost: line.unit_cost?.toString() || '',
-      category: line.category || 'Material',
+      category: line.category || 'MatLab',
       retainage_percent: line.retainage_percent?.toString() || '5.00',
     });
     setShowSOVModal(true);
@@ -1214,6 +1214,7 @@ export default function BillingModule({
                       }
                       style={inputStyle}
                     >
+                      <option value="MatLab">MatLab</option>
                       <option value="Material">Material</option>
                       <option value="Labor">Labor</option>
                       <option value="Equipment">Equipment</option>
