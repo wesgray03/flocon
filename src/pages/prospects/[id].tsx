@@ -842,7 +842,7 @@ export default function ProspectDetailPage() {
                     disabled={converting}
                     style={{
                       padding: '10px 20px',
-                      background: '#ef4444',
+                      background: '#f87171',
                       color: '#fff',
                       border: 'none',
                       borderRadius: 8,
@@ -854,11 +854,11 @@ export default function ProspectDetailPage() {
                     }}
                     onMouseEnter={(e) => {
                       if (!converting) {
-                        e.currentTarget.style.background = '#dc2626';
+                        e.currentTarget.style.background = '#ef4444';
                       }
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#ef4444';
+                      e.currentTarget.style.background = '#f87171';
                     }}
                   >
                     <span style={{ fontSize: '16px', marginRight: '6px' }}>💣</span>
