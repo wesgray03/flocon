@@ -44,8 +44,6 @@ interface TaskData {
 interface ProjectPayload {
   name: string;
   project_number: string | null;
-  // Deprecated: user_id now managed via engagement_user_roles (project_owner role)
-  user_id?: string | null;
   sharepoint_folder: string | null;
   contract_amount: number | null;
   start_date: string | null;
@@ -614,8 +612,6 @@ export default function ProjectsPage() {
         start_date: form.start_date || null,
         end_date: form.end_date || null,
       };
-      // Ensure deprecated user_id remains null (enforced by NULL-only constraint)
-      payload.user_id = null;
 
       let error = null;
       let engagementId: string | null = null;
