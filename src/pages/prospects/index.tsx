@@ -45,7 +45,8 @@ type SortKey =
   | 'extended'
   | 'estimating_type'
   | 'bid_amount'
-  | 'bid_date';
+  | 'bid_date'
+  | 'last_call';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -319,6 +320,7 @@ export default function ProspectsPage() {
     } | null;
     user_id: string | null;
     bid_date: string | null;
+    last_call: string | null;
     estimating_type: 'Budget' | 'Construction' | null;
     est_start_date: string | null;
     sharepoint_folder: string | null;
@@ -416,7 +418,7 @@ export default function ProspectsPage() {
             bid_date: item.bid_date,
             estimating_type: item.estimating_type || 'Budget',
             stage: 'Construction',
-            last_call: null,
+            last_call: item.last_call,
             status: 'Active',
             probability_level_id: item.probability_level_id,
             probability_level_name: item.probability_level?.name || null,
@@ -1126,6 +1128,12 @@ export default function ProspectsPage() {
                     >
                       Bid Date{sortIndicator('bid_date')}
                     </th>
+                    <th
+                      style={thBidDate}
+                      onClick={() => handleSort('last_call')}
+                    >
+                      Last Follow Up{sortIndicator('last_call')}
+                    </th>
                     <th style={thMoney} onClick={() => handleSort('extended')}>
                       Bid Amount{sortIndicator('extended')}
                     </th>
@@ -1209,6 +1217,7 @@ export default function ProspectsPage() {
                       />
                     </th>
                     <th style={thBidDate}></th>
+                    <th style={thBidDate}></th>
                     <th
                       style={{
                         ...thMoney,
@@ -1282,7 +1291,16 @@ export default function ProspectsPage() {
                     >
                       <td style={td}>
                         <span
-                          style={{ color: colors.textPrimary, fontWeight: 500 }}
+                          style={{
+                            color: colors.textPrimary,
+                            fontWeight: 500,
+                            display: 'inline-block',
+                            maxWidth: 240,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            verticalAlign: 'bottom',
+                          }}
+                          title={prospect.name}
                         >
                           {prospect.name}
                         </span>
@@ -1338,6 +1356,7 @@ export default function ProspectsPage() {
                         </span>
                       </td>
                       <td style={td}>{dateStr(prospect.bid_date)}</td>
+                      <td style={td}>{dateStr(prospect.last_call)}</td>
                       <td
                         style={tdRight}
                         title={
