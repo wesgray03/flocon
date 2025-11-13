@@ -105,7 +105,7 @@ export default function ProspectsPage() {
 
   // Sort and Filter state
   const [sortKey, setSortKey] = useState<SortKey>('none');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [filters, setFilters] = useState<Filters>({
     name: [],
     customer: [],
@@ -344,7 +344,7 @@ export default function ProspectsPage() {
           )
         `
         )
-        .order('name', { ascending: true });
+        .order('bid_date', { ascending: false });
 
       if (engagementsError) throw engagementsError;
 
@@ -905,14 +905,21 @@ export default function ProspectsPage() {
             }}
             disabled={filteredAndSortedProspects.length === 0}
             style={{
-              background: filteredAndSortedProspects.length > 0 ? '#ebe5db' : '#f5f5f5',
-              color: filteredAndSortedProspects.length > 0 ? colors.textPrimary : '#999',
+              background:
+                filteredAndSortedProspects.length > 0 ? '#ebe5db' : '#f5f5f5',
+              color:
+                filteredAndSortedProspects.length > 0
+                  ? colors.textPrimary
+                  : '#999',
               border: '1px solid #e5dfd5',
               borderRadius: 8,
               padding: '8px 14px',
               fontSize: 13,
               fontWeight: 600,
-              cursor: filteredAndSortedProspects.length > 0 ? 'pointer' : 'not-allowed',
+              cursor:
+                filteredAndSortedProspects.length > 0
+                  ? 'pointer'
+                  : 'not-allowed',
               opacity: filteredAndSortedProspects.length > 0 ? 1 : 0.5,
             }}
           >

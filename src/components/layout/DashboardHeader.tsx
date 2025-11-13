@@ -185,7 +185,14 @@ export function DashboardHeader({
           minWidth: 0,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: '0 0 auto' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            flex: '0 0 auto',
+          }}
+        >
           {actionButton}
           {exportButton}
         </div>

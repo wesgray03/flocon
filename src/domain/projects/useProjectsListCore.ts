@@ -127,7 +127,10 @@ export function useProjectsListCore() {
   const loadProjects = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.from('projects_v').select('*');
+      const { data, error } = await supabase
+        .from('projects_v')
+        .select('*')
+        .order('project_number', { ascending: false });
       if (error) {
         console.error('Project dashboard load error:', error.message ?? error);
         setRows([]);

@@ -848,14 +848,17 @@ export default function ProjectsPage() {
             }}
             disabled={filteredAndSortedRows.length === 0}
             style={{
-              background: filteredAndSortedRows.length > 0 ? '#ebe5db' : '#f5f5f5',
-              color: filteredAndSortedRows.length > 0 ? colors.textPrimary : '#999',
+              background:
+                filteredAndSortedRows.length > 0 ? '#ebe5db' : '#f5f5f5',
+              color:
+                filteredAndSortedRows.length > 0 ? colors.textPrimary : '#999',
               border: '1px solid #e5dfd5',
               borderRadius: 8,
               padding: '8px 14px',
               fontSize: 13,
               fontWeight: 600,
-              cursor: filteredAndSortedRows.length > 0 ? 'pointer' : 'not-allowed',
+              cursor:
+                filteredAndSortedRows.length > 0 ? 'pointer' : 'not-allowed',
               opacity: filteredAndSortedRows.length > 0 ? 1 : 0.5,
             }}
           >
