@@ -57,7 +57,7 @@ export default function ChangeOrdersSection({
       .select('*')
       .eq('engagement_id', projectId)
       .eq('deleted', false)
-      .order('date_requested', { ascending: false });
+      .order('auto_number', { ascending: true });
 
     if (error) {
       console.error('Error loading change orders:', error);
