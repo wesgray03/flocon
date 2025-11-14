@@ -8,7 +8,7 @@ const supabase = createClient(
 
 async function deleteAndReimport() {
   console.log('Deleting existing change orders...');
-  
+
   const { error: deleteError } = await supabase
     .from('engagement_change_orders')
     .delete()

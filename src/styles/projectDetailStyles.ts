@@ -172,7 +172,7 @@ export const stickyContainerStyle: React.CSSProperties = {
 
 export const mainContentStyle: React.CSSProperties = {
   flex: '0 0 auto', // size to content, don't flex
-  minWidth: 0,
+  minWidth: 600, // minimum width to keep content readable
 };
 
 export const rightSidebarStyle: React.CSSProperties = {
