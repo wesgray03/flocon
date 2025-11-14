@@ -1,5 +1,6 @@
 import type { Project } from '@/domain/projects/types';
 import { money } from '@/lib/format';
+import { useProjectFinancials } from '@/domain/projects/useProjectFinancials';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
 
@@ -15,6 +16,7 @@ export function FinancialOverview({
 }) {
   // Desktop variant shows two side-by-side columns; mobile stacks sections.
   const isDesktop = variant === 'desktop';
+  const { financials } = useProjectFinancials(project?.id);
 
   return (
     <div style={styles.cardStyle}>
@@ -37,7 +39,11 @@ export function FinancialOverview({
                   value={money(project.contract_amount || 0)}
                   bold
                 />
-                <Row label="Change Orders" value={money(0)} bold />
+                <Row
+                  label="Change Orders"
+                  value={money(financials.coSalesTotal)}
+                  bold
+                />
                 <Row label="Billings-to-date" value={money(0)} bold />
                 <Row label="Retainage-to-date" value={money(0)} bold />
                 <Row label="Remaining Billings" value={money(0)} bold />
@@ -81,7 +87,11 @@ export function FinancialOverview({
             {isDesktop ? (
               <>
                 <Row label="Contract Budget" value={money(0)} bold />
-                <Row label="Change Order Cost Budget" value={money(0)} bold />
+                <Row
+                  label="Change Order Cost Budget"
+                  value={money(financials.coBudgetTotal)}
+                  bold
+                />
                 <Row label="Total Contract Cost Budget" value={money(0)} bold />
                 <Row label="Cost-to-date" value={money(0)} bold />
                 <Row label="Remaining Cost" value={money(0)} bold />
@@ -102,7 +112,6 @@ export function FinancialOverview({
               <SectionHeading title="Cash Flow" marginTop />
               <Table>
                 <Row label="Cash In" value={money(0)} bold />
-                <Row label="Cash Out" value={money(0)} bold />
                 <Row label="Net Cash Flow" value={money(0)} bold />
                 <Row label="Cash Position (+/-)" value={'0%'} bold />
               </Table>

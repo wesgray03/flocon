@@ -6,8 +6,21 @@
   "background_color": "#faf8f5",
   "theme_color": "#0d1b2a",
   "icons": [
-    { "src": "/flocon-logo-small.png?v=2", "sizes": "192x192", "type": "image/png" },
-    { "src": "/flocon-logo-small.png?v=2", "sizes": "512x512", "type": "image/png" },
-    { "src": "/flocon-logo-small.png?v=2", "sizes": "180x180", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/flocon-logo-small.png?v=2",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/flocon-logo-small.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/flocon-logo-small.png?v=2",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }

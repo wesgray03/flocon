@@ -8,8 +8,16 @@ import {
 import { dateStr, money, toDateString, todayString } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import { colors } from '@/styles/theme';
-import { ArrowUp, ArrowDown, ExternalLink, Pencil, Plus, Trash2, X } from 'lucide-react';
-import { useEffect, useState, type FormEvent } from 'react';
+import {
+  ArrowDown,
+  ArrowUp,
+  ExternalLink,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { useState, type FormEvent } from 'react';
 
 type SOVLineProgress = {
   id?: string;
@@ -466,14 +474,20 @@ export default function BillingModule({
   const moveSOVLineUp = (index: number) => {
     if (index === 0) return; // Already at top
     const newLines = [...sovLines];
-    [newLines[index - 1], newLines[index]] = [newLines[index], newLines[index - 1]];
+    [newLines[index - 1], newLines[index]] = [
+      newLines[index],
+      newLines[index - 1],
+    ];
     setSovLines(newLines);
   };
 
   const moveSOVLineDown = (index: number) => {
     if (index === sovLines.length - 1) return; // Already at bottom
     const newLines = [...sovLines];
-    [newLines[index], newLines[index + 1]] = [newLines[index + 1], newLines[index]];
+    [newLines[index], newLines[index + 1]] = [
+      newLines[index + 1],
+      newLines[index],
+    ];
     setSovLines(newLines);
   };
 
@@ -685,7 +699,10 @@ export default function BillingModule({
                             style={{
                               ...iconButtonStyle,
                               opacity: idx === sovLines.length - 1 ? 0.3 : 1,
-                              cursor: idx === sovLines.length - 1 ? 'not-allowed' : 'pointer',
+                              cursor:
+                                idx === sovLines.length - 1
+                                  ? 'not-allowed'
+                                  : 'pointer',
                             }}
                             title="Move Down"
                           >
@@ -1020,7 +1037,9 @@ export default function BillingModule({
                         <thead>
                           <tr>
                             <th style={{ ...thStyle, fontSize: 12 }}>Item</th>
-                            <th style={{ ...thStyle, fontSize: 12 }}>Description</th>
+                            <th style={{ ...thStyle, fontSize: 12 }}>
+                              Description
+                            </th>
                             <th style={{ ...thRightStyle, fontSize: 12 }}>
                               Scheduled Value
                             </th>
@@ -1050,7 +1069,9 @@ export default function BillingModule({
                               progress.previous_completed +
                               progress.current_completed +
                               progress.stored_materials;
-                            const remaining = progress.scheduled_value - progress.previous_completed;
+                            const remaining =
+                              progress.scheduled_value -
+                              progress.previous_completed;
                             return (
                               <tr key={idx} style={trStyle}>
                                 <td style={{ ...tdStyle, fontSize: 12 }}>
@@ -1065,7 +1086,13 @@ export default function BillingModule({
                                 <td style={{ ...tdRightStyle, fontSize: 12 }}>
                                   {money(progress.previous_completed)}
                                 </td>
-                                <td style={{ ...tdRightStyle, fontSize: 12, fontWeight: 600 }}>
+                                <td
+                                  style={{
+                                    ...tdRightStyle,
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                  }}
+                                >
                                   {money(remaining)}
                                 </td>
                                 <td style={{ ...tdRightStyle, fontSize: 12 }}>
@@ -1192,7 +1219,11 @@ export default function BillingModule({
                     step="0.01"
                     value={sovForm.unit_cost}
                     onChange={(e) =>
-                      setSovForm({ ...sovForm, unit_cost: e.target.value, quantity: '1' })
+                      setSovForm({
+                        ...sovForm,
+                        unit_cost: e.target.value,
+                        quantity: '1',
+                      })
                     }
                     style={inputStyle}
                   />
