@@ -100,7 +100,7 @@ export function DashboardHeader({
         }}
       >
         <Image
-          src="/flocon-logo-v2.png"
+          src="/flocon-logo-big.png"
           alt="FloCon"
           width={150}
           height={45}
