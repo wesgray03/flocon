@@ -8,6 +8,7 @@ import { FormEvent, useEffect, useState } from 'react';
 type ChangeOrder = {
   id: string;
   engagement_id: string;
+  auto_number: number | null;
   current_status: 'Open' | 'Authorized' | 'Issued' | 'Closed';
   description: string;
   notes: string | null;
@@ -528,7 +529,7 @@ export default function ChangeOrdersSection({
           No change orders yet. Click &quot;+ New Change Order&quot; to add one.
         </p>
       ) : (
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', width: '100%' }}>
           <table
             style={{
               width: '100%',
@@ -538,6 +539,7 @@ export default function ChangeOrdersSection({
           >
             <thead>
               <tr style={{ background: '#f0ebe3' }}>
+                <th style={th}>CO #</th>
                 <th style={th}>Status</th>
                 <th style={th}>Description</th>
                 <th style={thRight}>Sales Amount</th>
@@ -552,6 +554,7 @@ export default function ChangeOrdersSection({
             <tbody>
               {changeOrders.map((co) => (
                 <tr key={co.id}>
+                  <td style={td}>{co.auto_number ?? '—'}</td>
                   <td style={td}>
                     <span
                       style={{
@@ -588,7 +591,20 @@ export default function ChangeOrdersSection({
                       {co.current_status}
                     </span>
                   </td>
-                  <td style={td}>{co.description}</td>
+                  <td
+                    style={{
+                      ...td,
+                      maxWidth: 360,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                    title={co.description}
+                  >
+                    {co.description.length > 50
+                      ? co.description.slice(0, 50) + '…'
+                      : co.description}
+                  </td>
                   <td style={tdRight}>{money(co.amount)}</td>
                   <td style={tdRight}>{money(co.budget_amount)}</td>
                   <td style={td}>{co.customer_co_number ?? '—'}</td>

@@ -143,19 +143,20 @@ export const headerStyle: React.CSSProperties = {
 };
 
 export const contentWrapperStyle: React.CSSProperties = {
-  maxWidth: 1600,
   margin: '0 auto',
   padding: 24,
 };
 
 export const threeColumnLayoutStyle: React.CSSProperties = {
   display: 'flex',
-  gap: 24,
+  gap: 16,
   alignItems: 'flex-start',
+  justifyContent: 'center',
 };
 
 export const leftSidebarStyle: React.CSSProperties = {
-  flex: '0 0 20%',
+  width: 300,
+  flexShrink: 0, // fixed size, shifts left when middle expands
   display: 'flex',
   flexDirection: 'column',
   gap: 20,
@@ -170,11 +171,13 @@ export const stickyContainerStyle: React.CSSProperties = {
 };
 
 export const mainContentStyle: React.CSSProperties = {
-  flex: '0 0 55%',
+  flex: '0 0 auto', // size to content, don't flex
+  minWidth: 0,
 };
 
 export const rightSidebarStyle: React.CSSProperties = {
-  flex: '0 0 25%',
+  width: 385,
+  flexShrink: 0, // fixed size, shifts right when middle expands
   display: 'flex',
   flexDirection: 'column',
   gap: 20,

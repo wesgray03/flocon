@@ -1,6 +1,6 @@
 import type { Project } from '@/domain/projects/types';
-import { money } from '@/lib/format';
 import { useProjectFinancials } from '@/domain/projects/useProjectFinancials';
+import { money } from '@/lib/format';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
 
