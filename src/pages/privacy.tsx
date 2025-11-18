@@ -79,7 +79,9 @@ export default function PrivacyPolicy() {
       <ul>
         <li>Access your personal data</li>
         <li>Request corrections to inaccurate data</li>
-        <li>Request data deletion (subject to business record retention policies)</li>
+        <li>
+          Request data deletion (subject to business record retention policies)
+        </li>
       </ul>
 
       <h2>8. Third-Party Services</h2>
