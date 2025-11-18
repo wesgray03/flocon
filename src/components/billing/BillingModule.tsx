@@ -52,7 +52,6 @@ export default function BillingModule({
     sovTotal,
     totalBilled,
     loading,
-    loadPayApps,
   } = useBillingCore(projectId);
 
   const [sovLineProgress, setSovLineProgress] = useState<SOVLineProgress[]>([]);
