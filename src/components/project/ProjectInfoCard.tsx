@@ -22,6 +22,7 @@ export type EditForm = {
   end_date: string;
   stage_id: string;
   contract_amount: string;
+  contract_budget: string;
 };
 
 export function ProjectInfoCard(props: {
@@ -194,6 +195,16 @@ export function ProjectInfoCard(props: {
                   type="number"
                   value={editForm.contract_amount}
                   onChange={(e) => onChange('contract_amount', e.target.value)}
+                  style={styles.inputStyle}
+                  placeholder="0.00"
+                />
+              </div>
+              <div style={styles.formFieldStyle}>
+                <label style={styles.labelStyle}>Contract Budget</label>
+                <input
+                  type="number"
+                  value={editForm.contract_budget}
+                  onChange={(e) => onChange('contract_budget', e.target.value)}
                   style={styles.inputStyle}
                   placeholder="0.00"
                 />
@@ -373,6 +384,32 @@ export function ProjectInfoCard(props: {
               }}
             >
               {money(project.contract_amount || 0)}
+            </p>
+          </div>
+        )}
+
+        {!editMode && (
+          <div>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 12,
+                fontWeight: 600,
+                color: colors.gray,
+                marginBottom: 4,
+              }}
+            >
+              Contract Budget
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 14,
+                fontWeight: 500,
+                color: colors.textPrimary,
+              }}
+            >
+              {money(project.contract_budget || 0)}
             </p>
           </div>
         )}

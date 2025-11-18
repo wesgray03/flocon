@@ -57,7 +57,7 @@ export default function ChangeOrdersSection({
       .select('*')
       .eq('engagement_id', projectId)
       .eq('deleted', false)
-      .order('auto_number', { ascending: true });
+      .order('auto_number', { ascending: true, nullsFirst: false });
 
     if (error) {
       console.error('Error loading change orders:', error);
@@ -184,9 +184,20 @@ export default function ChangeOrdersSection({
           .eq('id', editingCO.id);
         error = err;
       } else {
+        // Get the max auto_number for this engagement
+        const { data: maxData } = await supabase
+          .from('engagement_change_orders')
+          .select('auto_number')
+          .eq('engagement_id', projectId)
+          .order('auto_number', { ascending: false, nullsFirst: false })
+          .limit(1)
+          .maybeSingle();
+
+        const nextAutoNumber = (maxData?.auto_number ?? 0) + 1;
+
         const { error: err } = await supabase
           .from('engagement_change_orders')
-          .insert([payload]);
+          .insert([{ ...payload, auto_number: nextAutoNumber }]);
         error = err;
       }
 

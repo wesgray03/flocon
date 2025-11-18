@@ -3,6 +3,9 @@ export type Project = {
   name: string;
   type?: 'project' | 'prospect'; // Engagement type
   project_number?: string | null; // QuickBooks ID (renamed from qbid)
+  qbo_customer_id?: string | null; // QuickBooks Customer ID
+  qbo_job_id?: string | null; // QuickBooks Job ID
+  qbo_last_synced_at?: string | null; // Last sync timestamp
   customer_name?: string | null; // From project_dashboard view (computed from engagement_parties)
   manager?: string | null; // From project_dashboard view (computed from engagement_parties)
   company_owner?: string | null; // From engagement_parties with role='owner' (building owner company)
@@ -14,6 +17,7 @@ export type Project = {
   start_date?: string | null;
   end_date?: string | null;
   contract_amount?: number | null;
+  contract_budget?: number | null;
   stage?: string | null; // Stage name
   stage_id?: string | null;
   stage_order?: number | null;

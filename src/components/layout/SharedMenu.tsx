@@ -38,7 +38,12 @@ interface SharedMenuProps {
   onClose: () => void;
   onOpenMasterData?: (table: string, label: string) => void;
   onOpenCompanies?: (
-    companyType: 'Contractor' | 'Architect' | 'Owner' | 'Subcontractor',
+    companyType:
+      | 'Contractor'
+      | 'Architect'
+      | 'Owner'
+      | 'Subcontractor'
+      | 'Vendor',
     label: string
   ) => void;
   onOpenContacts?: () => void;
@@ -145,6 +150,24 @@ export function SharedMenu({
         }}
       >
         Subcontractors
+      </button>
+      <button
+        type="button"
+        style={menuItemButton}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = '#f0ebe3';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+        }}
+        onClick={() => {
+          onClose();
+          if (onOpenCompanies) {
+            onOpenCompanies('Vendor', 'Vendors');
+          }
+        }}
+      >
+        Vendors
       </button>
 
       <div
@@ -257,6 +280,54 @@ export function SharedMenu({
         }}
       >
         Lost Reasons
+      </button>
+
+      <div
+        style={{
+          height: 1,
+          background: '#e5dfd5',
+          margin: '4px 0',
+        }}
+      />
+
+      {/* QuickBooks Section */}
+      <div style={menuHeaderStyle}>QuickBooks</div>
+      <button
+        type="button"
+        style={menuItemButton}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = '#f0ebe3';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+        }}
+        onClick={async () => {
+          onClose();
+          if (confirm('Sync all projects to QuickBooks?')) {
+            try {
+              const response = await fetch('/api/qbo/sync-all-projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ onlyUnsynced: false }),
+              });
+              const data = await response.json();
+              if (data.success) {
+                alert(
+                  `Success! Synced ${data.syncedCount} of ${data.totalCount} projects.`
+                );
+                window.location.reload();
+              } else {
+                alert(
+                  `Completed with errors. Synced: ${data.syncedCount}, Errors: ${data.errorCount}`
+                );
+              }
+            } catch (error: any) {
+              alert(`Error: ${error.message}`);
+            }
+          }
+        }}
+      >
+        Sync All Projects
       </button>
 
       <div

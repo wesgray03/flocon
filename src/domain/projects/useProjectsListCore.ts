@@ -14,7 +14,9 @@ export type ProjectListRow = {
   id: string;
   project_number: string | null;
   project_name: string;
+  name?: string;
   customer_name: string | null;
+  customer_id?: string | null;
   project_manager: string | null;
   owner: string | null;
   superintendent: string | null;
@@ -25,6 +27,7 @@ export type ProjectListRow = {
   stage_order?: number | null;
   sharepoint_folder?: string | null;
   contract_amt: number;
+  contract_budget?: number;
   co_amt: number;
   total_amt: number;
   billed_amt: number;

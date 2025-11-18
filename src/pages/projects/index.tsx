@@ -46,6 +46,7 @@ interface ProjectPayload {
   project_number: string | null;
   sharepoint_folder: string | null;
   contract_amount: number | null;
+  contract_budget: number | null;
   start_date: string | null;
   end_date: string | null;
   stage_id?: string | null;
@@ -471,6 +472,7 @@ export default function ProjectsPage() {
     architect_id: '',
     sharepoint_folder: '',
     contract_amount: '',
+    contract_budget: '',
     start_date: '',
     end_date: '',
   });
@@ -551,6 +553,7 @@ export default function ProjectsPage() {
       architect_id: '',
       sharepoint_folder: '',
       contract_amount: '',
+      contract_budget: '',
       start_date: '',
       end_date: '',
     });
@@ -587,6 +590,7 @@ export default function ProjectsPage() {
       architect_id,
       sharepoint_folder: project.sharepoint_folder || '',
       contract_amount: project.contract_amt?.toString() || '',
+      contract_budget: project.contract_budget?.toString() || '',
       start_date: project.start_date || '',
       end_date: project.end_date || '',
     });
@@ -608,6 +612,9 @@ export default function ProjectsPage() {
           : null,
         contract_amount: form.contract_amount
           ? Number(form.contract_amount)
+          : null,
+        contract_budget: form.contract_budget
+          ? Number(form.contract_budget)
           : null,
         start_date: form.start_date || null,
         end_date: form.end_date || null,
@@ -654,6 +661,27 @@ export default function ProjectsPage() {
               'Non-blocking: failed to set project owner user role',
               e
             );
+          }
+        }
+
+        // Auto-sync to QuickBooks
+        // For new projects or when key fields changed (name, project_number, customer)
+        if (
+          !editingProject ||
+          form.name !== editingProject.name ||
+          form.project_number !== editingProject.project_number ||
+          form.customer_id !== editingProject.customer_id
+        ) {
+          try {
+            await fetch('/api/qbo/sync-project', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ projectId: engagementId }),
+            });
+            console.log('✓ Project synced to QuickBooks');
+          } catch (qboError) {
+            console.warn('Non-blocking: QB sync failed', qboError);
+            // Don't block project save if QB sync fails
           }
         }
       }
@@ -1523,6 +1551,27 @@ export default function ProjectsPage() {
                     type="number"
                     name="contract_amount"
                     value={form.contract_amount}
+                    onChange={handleChange}
+                    style={styles.input}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: 6,
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: colors.textPrimary,
+                    }}
+                  >
+                    Contract Budget
+                  </label>
+                  <input
+                    type="number"
+                    name="contract_budget"
+                    value={form.contract_budget}
                     onChange={handleChange}
                     style={styles.input}
                   />

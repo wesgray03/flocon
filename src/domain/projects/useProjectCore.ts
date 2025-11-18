@@ -55,15 +55,19 @@ export function useProjectCore(id?: string | string[]) {
       if (!cancelled) setStages((stagesList ?? []) as Stage[]);
 
       const { data: proj } = await supabase
-        .from('projects_v')
+        .from('engagements')
         .select('*')
         .eq('id', projectId)
         .single();
 
       let contractAmount: number | null = null;
+      let contractBudget: number | null = null;
+      let qboJobId: string | null = null;
       let engagementType: 'project' | 'prospect' = 'project';
       if (proj) {
         contractAmount = proj.contract_amount ?? null;
+        contractBudget = proj.contract_budget ?? null;
+        qboJobId = proj.qbo_job_id ?? null;
         engagementType = proj.type ?? 'project';
       }
 
@@ -82,6 +86,8 @@ export function useProjectCore(id?: string | string[]) {
             start_date: proj.start_date,
             end_date: proj.end_date,
             contract_amount: contractAmount,
+            contract_budget: contractBudget,
+            qbo_job_id: qboJobId,
             stage: null,
             stage_id: proj.stage_id,
             stage_order: null,

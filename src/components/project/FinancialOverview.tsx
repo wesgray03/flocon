@@ -5,8 +5,7 @@ import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
 
 // Centralized Financial Overview component consolidating duplicated desktop/mobile markup.
-// Currently uses placeholder zeros for metrics not yet implemented.
-// Extend by passing computed financial aggregates (billings, retainage, costs, etc.) via props later.
+// Pulls live data from FloCon (pay apps, change orders, trades) and QuickBooks (payments).
 export function FinancialOverview({
   project,
   variant = 'desktop',
@@ -16,11 +15,24 @@ export function FinancialOverview({
 }) {
   // Desktop variant shows two side-by-side columns; mobile stacks sections.
   const isDesktop = variant === 'desktop';
-  const { financials } = useProjectFinancials(project?.id);
+  const { financials, loading } = useProjectFinancials(
+    project?.id,
+    project?.contract_amount || 0,
+    project?.contract_budget || 0,
+    project?.qbo_job_id
+  );
+
+  // Helper to format percentages
+  const pct = (value: number) => `${Math.round(value)}%`;
 
   return (
     <div style={styles.cardStyle}>
       <h2 style={styles.sectionHeaderStyle}>Financial Overview</h2>
+      {loading && (
+        <div style={{ color: colors.textSecondary }}>
+          Loading financial data...
+        </div>
+      )}
       <div
         style={{
           display: 'grid',
@@ -36,7 +48,7 @@ export function FinancialOverview({
               <>
                 <Row
                   label="Contract Amount"
-                  value={money(project.contract_amount || 0)}
+                  value={money(financials.contractAmount)}
                   bold
                 />
                 <Row
@@ -44,21 +56,49 @@ export function FinancialOverview({
                   value={money(financials.coSalesTotal)}
                   bold
                 />
-                <Row label="Billings-to-date" value={money(0)} bold />
-                <Row label="Retainage-to-date" value={money(0)} bold />
-                <Row label="Remaining Billings" value={money(0)} bold />
-                <Row label="% Complete Revenue" value={'0%'} bold />
+                <Row
+                  label="Billings-to-date"
+                  value={money(financials.billingsToDate)}
+                  bold
+                />
+                <Row
+                  label="Retainage-to-date"
+                  value={money(financials.retainageToDate)}
+                  bold
+                />
+                <Row
+                  label="Remaining Billings"
+                  value={money(financials.remainingBillings)}
+                  bold
+                />
+                <Row
+                  label="% Complete Revenue"
+                  value={pct(financials.percentCompleteRevenue)}
+                  bold
+                />
               </>
             ) : (
               <>
                 <Row
                   label="Contract Amount"
-                  value={money(project.contract_amount || 0)}
+                  value={money(financials.contractAmount)}
                   bold
                 />
-                <Row label="Billed to Date" value={money(0)} bold />
-                <Row label="Remaining to Bill" value={money(0)} bold />
-                <Row label="% Complete Billed" value={'0%'} bold />
+                <Row
+                  label="Billed to Date"
+                  value={money(financials.billingsToDate)}
+                  bold
+                />
+                <Row
+                  label="Remaining to Bill"
+                  value={money(financials.remainingBillings)}
+                  bold
+                />
+                <Row
+                  label="% Complete Billed"
+                  value={pct(financials.percentCompleteRevenue)}
+                  bold
+                />
               </>
             )}
           </Table>
@@ -67,14 +107,34 @@ export function FinancialOverview({
             <>
               <SectionHeading title="Profit" marginTop />
               <Table>
-                <Row label="Contract Profit %" value={'0%'} bold />
-                <Row label="Change Order Profit %" value={'0%'} bold />
+                <Row
+                  label="Contract Profit %"
+                  value={pct(financials.contractProfitPercent)}
+                  bold
+                />
+                <Row
+                  label="Change Order Profit %"
+                  value={pct(financials.changeOrderProfitPercent)}
+                  bold
+                />
                 {/* Consolidated: "Total GM %" and "Unadjusted GM%" */}
-                <Row label="Total Profit %" value={'0%'} bold />
+                <Row
+                  label="Total Profit %"
+                  value={pct(financials.totalProfitPercent)}
+                  bold
+                />
                 {/* Consolidated: "Expected GM %" and "Projected GP %" */}
-                <Row label="Projected Profit %" value={'0%'} bold />
+                <Row
+                  label="Projected Profit %"
+                  value={pct(financials.projectedProfitPercent)}
+                  bold
+                />
                 {/* From former Gross Profit section */}
-                <Row label="Projected Profit ($)" value={money(0)} bold />
+                <Row
+                  label="Projected Profit ($)"
+                  value={money(financials.projectedProfitDollar)}
+                  bold
+                />
               </Table>
             </>
           )}
@@ -86,23 +146,59 @@ export function FinancialOverview({
           <Table>
             {isDesktop ? (
               <>
-                <Row label="Contract Budget" value={money(0)} bold />
+                <Row
+                  label="Contract Budget"
+                  value={money(financials.contractBudget)}
+                  bold
+                />
                 <Row
                   label="Change Order Cost Budget"
                   value={money(financials.coBudgetTotal)}
                   bold
                 />
-                <Row label="Total Contract Cost Budget" value={money(0)} bold />
-                <Row label="Cost-to-date" value={money(0)} bold />
-                <Row label="Remaining Cost" value={money(0)} bold />
-                <Row label="% Complete Cost" value={'0%'} bold />
+                <Row
+                  label="Total Contract Cost Budget"
+                  value={money(financials.totalContractBudget)}
+                  bold
+                />
+                <Row
+                  label="Cost-to-date"
+                  value={money(financials.costToDate)}
+                  bold
+                />
+                <Row
+                  label="Remaining Cost"
+                  value={money(financials.remainingCost)}
+                  bold
+                />
+                <Row
+                  label="% Complete Cost"
+                  value={pct(financials.percentCompleteCost)}
+                  bold
+                />
               </>
             ) : (
               <>
-                <Row label="Total Budget Cost" value={money(0)} bold />
-                <Row label="Spent to Date" value={money(0)} bold />
-                <Row label="Remaining Cost" value={money(0)} bold />
-                <Row label="% Complete Cost" value={'0%'} bold />
+                <Row
+                  label="Total Budget Cost"
+                  value={money(financials.totalContractBudget)}
+                  bold
+                />
+                <Row
+                  label="Spent to Date"
+                  value={money(financials.costToDate)}
+                  bold
+                />
+                <Row
+                  label="Remaining Cost"
+                  value={money(financials.remainingCost)}
+                  bold
+                />
+                <Row
+                  label="% Complete Cost"
+                  value={pct(financials.percentCompleteCost)}
+                  bold
+                />
               </>
             )}
           </Table>
@@ -111,25 +207,49 @@ export function FinancialOverview({
             <>
               <SectionHeading title="Cash Flow" marginTop />
               <Table>
-                <Row label="Cash In" value={money(0)} bold />
-                <Row label="Net Cash Flow" value={money(0)} bold />
-                <Row label="Cash Position (+/-)" value={'0%'} bold />
+                <Row label="Cash In" value={money(financials.cashIn)} bold />
+                <Row
+                  label="Net Cash Flow"
+                  value={money(financials.netCashFlow)}
+                  bold
+                />
+                <Row
+                  label="Cash Position (+/-)"
+                  value={pct(financials.cashPositionPercent)}
+                  bold
+                />
               </Table>
             </>
           ) : (
             <>
               <SectionHeading title="Cash Flow" marginTop />
               <Table>
-                <Row label="Cash In" value={money(0)} bold />
-                <Row label="Cash Out" value={money(0)} bold />
-                <Row label="Net Cash Flow" value={money(0)} bold />
+                <Row label="Cash In" value={money(financials.cashIn)} bold />
+                <Row label="Cash Out" value={money(financials.cashOut)} bold />
+                <Row
+                  label="Net Cash Flow"
+                  value={money(financials.netCashFlow)}
+                  bold
+                />
               </Table>
               <SectionHeading title="Profit" marginTop />
               <Table>
                 {/* Mobile view shows a concise subset */}
-                <Row label="Total Profit %" value={'0%'} bold />
-                <Row label="Projected Profit %" value={'0%'} bold />
-                <Row label="Projected Profit ($)" value={money(0)} bold />
+                <Row
+                  label="Total Profit %"
+                  value={pct(financials.totalProfitPercent)}
+                  bold
+                />
+                <Row
+                  label="Projected Profit %"
+                  value={pct(financials.projectedProfitPercent)}
+                  bold
+                />
+                <Row
+                  label="Projected Profit ($)"
+                  value={money(financials.projectedProfitDollar)}
+                  bold
+                />
               </Table>
             </>
           )}

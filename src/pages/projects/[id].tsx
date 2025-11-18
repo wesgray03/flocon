@@ -28,6 +28,7 @@ import {
   ProjectInfoCard,
   type EditForm,
 } from '@/components/project/ProjectInfoCard';
+import QBOSyncButton from '@/components/QBOSyncButton';
 import { Folder } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -104,6 +105,7 @@ export default function ProjectDetail() {
     end_date: '',
     stage_id: '',
     contract_amount: '',
+    contract_budget: '',
   });
   const [saving, setSaving] = useState(false);
   const [advancing, setAdvancing] = useState(false);
@@ -238,6 +240,7 @@ export default function ProjectDetail() {
         end_date: project.end_date || '',
         stage_id: project.stage_id || '',
         contract_amount: project.contract_amount?.toString() || '',
+        contract_budget: project.contract_budget?.toString() || '',
       });
     }
     setEditMode(true);
@@ -265,6 +268,9 @@ export default function ProjectDetail() {
         end_date: editForm.end_date || null,
         contract_amount: editForm.contract_amount.trim()
           ? parseFloat(editForm.contract_amount)
+          : null,
+        contract_budget: editForm.contract_budget.trim()
+          ? parseFloat(editForm.contract_budget)
           : null,
       };
 
@@ -936,6 +942,20 @@ export default function ProjectDetail() {
                   userOptions={userOptions}
                 />{' '}
                 {/* End Project Information Card */}
+                {/* QuickBooks Sync Button */}
+                {project.type === 'project' && (
+                  <div style={{ marginTop: 16 }}>
+                    <QBOSyncButton
+                      engagementId={project.id}
+                      projectNumber={project.project_number}
+                      qboJobId={project.qbo_job_id}
+                      onSyncComplete={() => {
+                        // Reload project data after sync
+                        router.replace(router.asPath);
+                      }}
+                    />
+                  </div>
+                )}
                 {/* Separate Project Status Card moved to right sidebar above comments */}
               </div>
             </div>

@@ -43,6 +43,12 @@ export type PayApp = {
   previous_payments: number;
   current_payment_due: number;
   balance_to_finish: number;
+  // QuickBooks sync fields
+  qbo_invoice_id: string | null;
+  qbo_sync_status: string | null;
+  qbo_synced_at: string | null;
+  qbo_payment_total: number | null;
+  qbo_sync_error: string | null;
   created_at: string;
 };
 
@@ -51,6 +57,16 @@ export function useBillingCore(projectId?: string) {
   const [payApps, setPayApps] = useState<PayApp[]>([]);
   const [sovLines, setSovLines] = useState<SOVLine[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const loadPayApps = async () => {
+    if (!projectId) return;
+    const { data: apps } = await supabase
+      .from('engagement_pay_apps')
+      .select('*')
+      .eq('engagement_id', projectId)
+      .order('date_submitted', { ascending: false });
+    setPayApps((apps ?? []) as PayApp[]);
+  };
 
   useEffect(() => {
     if (!projectId) return;
@@ -68,12 +84,7 @@ export function useBillingCore(projectId?: string) {
       if (!cancelled) setProject((proj ?? null) as BillingProject | null);
 
       // Pay apps
-      const { data: apps } = await supabase
-        .from('engagement_pay_apps')
-        .select('*')
-        .eq('engagement_id', projectId)
-        .order('date_submitted', { ascending: false });
-      if (!cancelled) setPayApps((apps ?? []) as PayApp[]);
+      await loadPayApps();
 
       // SOV lines
       const { data: sov } = await supabase
@@ -112,5 +123,6 @@ export function useBillingCore(projectId?: string) {
     sovTotal,
     totalBilled,
     loading,
+    loadPayApps,
   };
 }

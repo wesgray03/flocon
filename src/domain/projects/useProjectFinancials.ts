@@ -2,19 +2,70 @@ import { supabase } from '@/lib/supabaseClient';
 import { useEffect, useState } from 'react';
 
 export type ProjectFinancials = {
+  // Revenue (FloCon data)
+  contractAmount: number;
   coSalesTotal: number;
+  billingsToDate: number;
+  retainageToDate: number;
+  remainingBillings: number;
+  percentCompleteRevenue: number;
+
+  // Cost (FloCon + QBO data)
+  contractBudget: number;
   coBudgetTotal: number;
+  totalContractBudget: number;
+  costToDate: number; // QBO - future
+  remainingCost: number;
+  percentCompleteCost: number;
+
+  // Profit (calculations)
+  contractProfitPercent: number;
+  changeOrderProfitPercent: number;
+  totalProfitPercent: number;
+  projectedProfitPercent: number;
+  projectedProfitDollar: number;
+
+  // Cash Flow (QBO cash basis)
+  cashIn: number; // QBO payments received
+  cashOut: number; // QBO bills paid - future
+  netCashFlow: number;
+  cashPositionPercent: number;
 };
 
 /**
- * Lightweight hook to fetch per-project financial aggregates used by
- * the Financial Overview: change order sales total and CO budget total.
+ * Comprehensive hook to fetch per-project financial aggregates used by
+ * the Financial Overview. Combines data from FloCon (pay apps, change orders)
+ * and QuickBooks (payments, bills).
  */
-export function useProjectFinancials(projectId?: string | null) {
+export function useProjectFinancials(
+  projectId?: string | null,
+  contractAmount: number = 0,
+  contractBudget: number = 0,
+  qboJobId?: string | null
+) {
   const [loading, setLoading] = useState(false);
   const [financials, setFinancials] = useState<ProjectFinancials>({
+    contractAmount: 0,
     coSalesTotal: 0,
+    billingsToDate: 0,
+    retainageToDate: 0,
+    remainingBillings: 0,
+    percentCompleteRevenue: 0,
+    contractBudget: 0,
     coBudgetTotal: 0,
+    totalContractBudget: 0,
+    costToDate: 0,
+    remainingCost: 0,
+    percentCompleteCost: 0,
+    contractProfitPercent: 0,
+    changeOrderProfitPercent: 0,
+    totalProfitPercent: 0,
+    projectedProfitPercent: 0,
+    projectedProfitDollar: 0,
+    cashIn: 0,
+    cashOut: 0,
+    netCashFlow: 0,
+    cashPositionPercent: 0,
   });
 
   useEffect(() => {
@@ -24,31 +75,169 @@ export function useProjectFinancials(projectId?: string | null) {
     const load = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        // Fetch change orders
+        const { data: changeOrders, error: coError } = await supabase
           .from('engagement_change_orders')
           .select('amount, budget_amount')
           .eq('engagement_id', projectId)
           .eq('deleted', false);
-        if (error) {
-          console.error('Failed to load change order totals:', error);
-          if (!cancelled) {
-            setFinancials({ coSalesTotal: 0, coBudgetTotal: 0 });
-          }
-          return;
+
+        if (coError) {
+          console.error('Failed to load change orders:', coError);
         }
-        const rows = data ?? [];
-        const coSalesTotal = rows.reduce(
+
+        // Fetch pay apps for billings and retainage
+        const { data: payApps, error: paError } = await supabase
+          .from('engagement_pay_apps')
+          .select(
+            'current_payment_due, total_retainage, qbo_payment_total, status'
+          )
+          .eq('engagement_id', projectId);
+
+        if (paError) {
+          console.error('Failed to load pay apps:', paError);
+        }
+
+        if (cancelled) return;
+
+        // Calculate change order totals
+        const coRows = changeOrders ?? [];
+        const coSalesTotal = coRows.reduce(
           (sum, r) => sum + (Number(r.amount) || 0),
           0
         );
-        const coBudgetTotal = rows.reduce(
+        const coBudgetTotal = coRows.reduce(
           (sum, r) => sum + (Number(r.budget_amount) || 0),
           0
         );
-        if (!cancelled) setFinancials({ coSalesTotal, coBudgetTotal });
+
+        // Calculate billings and retainage from pay apps
+        const payAppRows = payApps ?? [];
+        const billingsToDate = payAppRows.reduce(
+          (sum, r) => sum + (Number(r.current_payment_due) || 0),
+          0
+        );
+        const retainageToDate = payAppRows.reduce(
+          (sum, r) => sum + (Number(r.total_retainage) || 0),
+          0
+        );
+
+        // Calculate cash in from QBO payments
+        const cashIn = payAppRows.reduce(
+          (sum, r) => sum + (Number(r.qbo_payment_total) || 0),
+          0
+        );
+
+        // Fetch QBO costs if we have a job ID
+        let qboCosts = { costToDate: 0, cashOut: 0 };
+        if (qboJobId) {
+          try {
+            const costResponse = await fetch(
+              `/api/qbo/project-costs?qboJobId=${qboJobId}`
+            );
+            if (costResponse.ok) {
+              const costData = await costResponse.json();
+              qboCosts.costToDate = costData.netCostToDate || 0;
+              qboCosts.cashOut =
+                costData.billsTotal +
+                costData.purchasesTotal -
+                costData.creditsTotal; // For now, same as cost-to-date
+            }
+          } catch (err) {
+            console.error('Failed to fetch QBO costs:', err);
+          }
+        }
+
+        // Revenue calculations
+        const totalRevenue = contractAmount + coSalesTotal;
+        const remainingBillings = totalRevenue - billingsToDate;
+        const percentCompleteRevenue =
+          totalRevenue > 0 ? (billingsToDate / totalRevenue) * 100 : 0;
+
+        // Cost calculations (contract_budget passed as parameter from engagement)
+        const totalContractBudget = contractBudget + coBudgetTotal;
+        const costToDate = qboCosts.costToDate;
+        const remainingCost = totalContractBudget - costToDate;
+        const percentCompleteCost =
+          totalContractBudget > 0
+            ? (costToDate / totalContractBudget) * 100
+            : 0;
+
+        // Profit calculations
+        const contractProfit = contractAmount - contractBudget;
+        const contractProfitPercent =
+          contractAmount > 0 ? (contractProfit / contractAmount) * 100 : 0;
+
+        const coProfit = coSalesTotal - coBudgetTotal;
+        const changeOrderProfitPercent =
+          coSalesTotal > 0 ? (coProfit / coSalesTotal) * 100 : 0;
+
+        const totalProfit = contractProfit + coProfit;
+        const totalProfitPercent =
+          totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+
+        const projectedProfitDollar = totalRevenue - costToDate;
+        const projectedProfitPercent =
+          totalRevenue > 0 ? (projectedProfitDollar / totalRevenue) * 100 : 0;
+
+        // Cash flow calculations
+        const cashOut = qboCosts.cashOut;
+        const netCashFlow = cashIn - cashOut;
+        const cashPositionPercent =
+          totalRevenue > 0 ? (netCashFlow / totalRevenue) * 100 : 0;
+
+        if (!cancelled) {
+          setFinancials({
+            contractAmount,
+            coSalesTotal,
+            billingsToDate,
+            retainageToDate,
+            remainingBillings,
+            percentCompleteRevenue,
+            contractBudget,
+            coBudgetTotal,
+            totalContractBudget,
+            costToDate,
+            remainingCost,
+            percentCompleteCost,
+            contractProfitPercent,
+            changeOrderProfitPercent,
+            totalProfitPercent,
+            projectedProfitPercent,
+            projectedProfitDollar,
+            cashIn,
+            cashOut,
+            netCashFlow,
+            cashPositionPercent,
+          });
+        }
       } catch (e) {
         console.error('Unexpected error loading project financials:', e);
-        if (!cancelled) setFinancials({ coSalesTotal: 0, coBudgetTotal: 0 });
+        if (!cancelled) {
+          setFinancials({
+            contractAmount: 0,
+            coSalesTotal: 0,
+            billingsToDate: 0,
+            retainageToDate: 0,
+            remainingBillings: 0,
+            percentCompleteRevenue: 0,
+            contractBudget: 0,
+            coBudgetTotal: 0,
+            totalContractBudget: 0,
+            costToDate: 0,
+            remainingCost: 0,
+            percentCompleteCost: 0,
+            contractProfitPercent: 0,
+            changeOrderProfitPercent: 0,
+            totalProfitPercent: 0,
+            projectedProfitPercent: 0,
+            projectedProfitDollar: 0,
+            cashIn: 0,
+            cashOut: 0,
+            netCashFlow: 0,
+            cashPositionPercent: 0,
+          });
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -58,7 +247,7 @@ export function useProjectFinancials(projectId?: string | null) {
     return () => {
       cancelled = true;
     };
-  }, [projectId]);
+  }, [projectId, contractAmount, contractBudget, qboJobId]);
 
   return { loading, financials };
 }
