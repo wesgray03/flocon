@@ -1,6 +1,5 @@
 // components/billing/BillingModule.tsx
 // Consolidated billing module used by both /billings/[projectId] page and project detail Billing tab
-import QBOBillingSyncButton from '@/components/QBOBillingSyncButton';
 import {
   useBillingCore,
   type PayApp,
@@ -53,6 +52,7 @@ export default function BillingModule({
     sovTotal,
     totalBilled,
     loading,
+    loadPayApps,
   } = useBillingCore(projectId);
 
   const [sovLineProgress, setSovLineProgress] = useState<SOVLineProgress[]>([]);
@@ -764,10 +764,6 @@ export default function BillingModule({
               </p>
             </div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              <QBOBillingSyncButton
-                projectId={projectId}
-                onSyncComplete={loadPayApps}
-              />
               <button
                 type="button"
                 onClick={openPayAppForNew}
