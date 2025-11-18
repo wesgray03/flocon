@@ -437,7 +437,13 @@ export default function ProjectsPage() {
   // Modal states
   const [companiesModal, setCompaniesModal] = useState<{
     open: boolean;
-    companyType: 'Contractor' | 'Architect' | 'Owner' | 'Subcontractor' | null;
+    companyType:
+      | 'Contractor'
+      | 'Architect'
+      | 'Owner'
+      | 'Subcontractor'
+      | 'Vendor'
+      | null;
     label: string;
   }>({ open: false, companyType: null, label: '' });
 
