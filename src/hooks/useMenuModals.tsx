@@ -40,7 +40,12 @@ export function useMenuModals(onDataChange?: () => void) {
     onOpenMasterData: (table: string, label: string) =>
       openMaster(table as 'stages' | 'engagement_tasks', label),
     onOpenCompanies: (
-      companyType: 'Contractor' | 'Architect' | 'Owner' | 'Subcontractor' | 'Vendor',
+      companyType:
+        | 'Contractor'
+        | 'Architect'
+        | 'Owner'
+        | 'Subcontractor'
+        | 'Vendor',
       label: string
     ) => {
       setCompaniesModal({ open: true, companyType, label });
