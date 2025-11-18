@@ -1,5 +1,6 @@
 // components/billing/BillingModule.tsx
 // Consolidated billing module used by both /billings/[projectId] page and project detail Billing tab
+import QBOBillingSyncButton from '@/components/QBOBillingSyncButton';
 import {
   useBillingCore,
   type PayApp,
@@ -52,6 +53,7 @@ export default function BillingModule({
     sovTotal,
     totalBilled,
     loading,
+    loadPayApps,
   } = useBillingCore(projectId);
 
   const [sovLineProgress, setSovLineProgress] = useState<SOVLineProgress[]>([]);
@@ -762,26 +764,32 @@ export default function BillingModule({
                 Total Billed: {money(totalBilled)}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={openPayAppForNew}
-              style={{
-                background: colors.navy,
-                color: '#fff',
-                padding: '10px 16px',
-                borderRadius: 8,
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 14,
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <Plus size={16} />
-              New Pay App
-            </button>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <QBOBillingSyncButton
+                projectId={projectId}
+                onSyncComplete={loadPayApps}
+              />
+              <button
+                type="button"
+                onClick={openPayAppForNew}
+                style={{
+                  background: colors.navy,
+                  color: '#fff',
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Plus size={16} />
+                New Pay App
+              </button>
+            </div>
           </div>
 
           {payApps.length === 0 ? (
@@ -996,23 +1004,6 @@ export default function BillingModule({
                   </div>
                 </div>
 
-                <div>
-                  <label style={labelStyle}>Status</label>
-                  <select
-                    name="status"
-                    value={payAppForm.status}
-                    onChange={(e) =>
-                      setPayAppForm({ ...payAppForm, status: e.target.value })
-                    }
-                    style={inputStyle}
-                  >
-                    <option value="Submitted">Submitted</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Paid">Paid</option>
-                    <option value="Rejected">Rejected</option>
-                  </select>
-                </div>
-
                 {/* Continuation Sheet Section */}
                 {sovLineProgress.length > 0 && (
                   <div
@@ -1215,7 +1206,6 @@ export default function BillingModule({
                   <label style={labelStyle}>Scheduled Value</label>
                   <input
                     type="number"
-                    min="0"
                     step="0.01"
                     value={sovForm.unit_cost}
                     onChange={(e) =>
