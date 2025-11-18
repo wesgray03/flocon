@@ -1083,7 +1083,6 @@ export default function BillingModule({
                                 <td style={{ ...tdRightStyle, fontSize: 12 }}>
                                   <input
                                     type="number"
-                                    min="0"
                                     step="0.01"
                                     value={progress.current_completed}
                                     onChange={(e) => {
@@ -1104,7 +1103,6 @@ export default function BillingModule({
                                 <td style={{ ...tdRightStyle, fontSize: 12 }}>
                                   <input
                                     type="number"
-                                    min="0"
                                     step="0.01"
                                     value={progress.stored_materials}
                                     onChange={(e) => {
