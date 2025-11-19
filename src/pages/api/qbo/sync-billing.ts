@@ -83,8 +83,8 @@ export default async function handler(
     for (const payApp of payApps) {
       try {
         console.log(`Syncing pay app ${payApp.id}...`);
-        // First, sync the invoice
-        const syncResult = await syncPayAppToQBO(payApp.id);
+        // First, sync the invoice (pass the service role supabase client)
+        const syncResult = await syncPayAppToQBO(payApp.id, supabase);
         console.log(
           `Sync result for ${payApp.id}:`,
           JSON.stringify(syncResult)

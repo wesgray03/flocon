@@ -3,6 +3,7 @@
  * Handles pushing FloCon pay apps (invoices) to QuickBooks
  */
 
+import { SupabaseClient } from '@supabase/supabase-js';
 import { makeQBORequest } from './qboClient';
 import { supabase } from './supabaseClient';
 
@@ -80,13 +81,17 @@ async function getOrCreateServiceItem(): Promise<string> {
  * Sync a pay app (invoice) to QuickBooks
  */
 export async function syncPayAppToQBO(
-  payAppId: string
+  payAppId: string,
+  supabaseClient?: SupabaseClient
 ): Promise<{ success: boolean; invoiceId?: string; error?: string }> {
+  // Use provided client or fall back to default
+  const client = supabaseClient || supabase;
+  
   try {
     console.log(`Starting sync for pay app: ${payAppId}`);
 
     // 1. Get pay app details
-    const { data: payApp, error: payAppError } = await supabase
+    const { data: payApp, error: payAppError } = await client
       .from('engagement_pay_apps')
       .select('*')
       .eq('id', payAppId)
@@ -100,7 +105,7 @@ export async function syncPayAppToQBO(
     }
 
     // 2. Get engagement to find QB job ID
-    const { data: engagement, error: engagementError } = await supabase
+    const { data: engagement, error: engagementError } = await client
       .from('engagements')
       .select('id, name, project_number, qbo_job_id')
       .eq('id', payApp.engagement_id)
@@ -244,7 +249,7 @@ export async function syncPayAppToQBO(
     }
 
     // 7. Update pay app with QB invoice ID
-    const { error: updateError } = await supabase
+    const { error: updateError } = await client
       .from('engagement_pay_apps')
       .update({
         qbo_invoice_id: qboInvoice.Id,
@@ -280,7 +285,7 @@ export async function syncPayAppToQBO(
     }
 
     // Store error in database
-    await supabase
+    await client
       .from('engagement_pay_apps')
       .update({
         qbo_sync_status: 'error',
