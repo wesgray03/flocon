@@ -341,11 +341,6 @@ export async function syncEngagementToQBO(
         error: `QuickBooks project not found for ${engagement.project_number}. Create it in QuickBooks first or use "Create New Project" action.`,
       };
     }
-        customer.Id,
-        engagement.name,
-        engagement.project_number
-      );
-    }
 
     // Step 3: Update engagement with QB IDs
     const { error: updateError } = await supabase
