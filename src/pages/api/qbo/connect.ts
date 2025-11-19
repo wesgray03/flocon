@@ -9,7 +9,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
+    console.log('QBO Environment:', process.env.QBO_ENVIRONMENT);
+    console.log('QBO Redirect URI:', process.env.QBO_REDIRECT_URI);
+    console.log('QBO Client ID:', process.env.QBO_CLIENT_ID);
+    
     const authUri = getAuthUri();
+    console.log('Generated Auth URI:', authUri);
+    
     res.status(200).json({ authUri });
   } catch (error) {
     console.error('Error generating auth URI:', error);
