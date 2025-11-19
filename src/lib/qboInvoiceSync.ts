@@ -127,9 +127,10 @@ export async function syncPayAppToQBO(
     const paymentAmount = payApp.current_payment_due || 0;
 
     // Build DocNumber in format: ProjectNumber-PayAppNumber (e.g., "1289-1")
-    const docNumber = engagement.project_number && payApp.pay_app_number
-      ? `${engagement.project_number}-${payApp.pay_app_number}`
-      : payApp.pay_app_number || undefined;
+    const docNumber =
+      engagement.project_number && payApp.pay_app_number
+        ? `${engagement.project_number}-${payApp.pay_app_number}`
+        : payApp.pay_app_number || undefined;
 
     const lines: QBOInvoice['Line'] = [
       {
