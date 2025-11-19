@@ -81,12 +81,15 @@ async function checkInvoicesFor1290() {
     console.log(`Found ${invoices.length} total invoice(s) in QuickBooks\n`);
 
     // Filter for project 1290
-    const project1290Invoices = invoices.filter(inv => 
-      inv.DocNumber?.startsWith('1290-') || 
-      inv.CustomerRef?.value === engagement.qbo_job_id
+    const project1290Invoices = invoices.filter(
+      (inv) =>
+        inv.DocNumber?.startsWith('1290-') ||
+        inv.CustomerRef?.value === engagement.qbo_job_id
     );
 
-    console.log(`Invoices for project 1290 (DocNumber starts with '1290-' or CustomerRef = ${engagement.qbo_job_id}):\n`);
+    console.log(
+      `Invoices for project 1290 (DocNumber starts with '1290-' or CustomerRef = ${engagement.qbo_job_id}):\n`
+    );
 
     if (project1290Invoices.length > 0) {
       project1290Invoices.forEach((inv, idx) => {
@@ -103,7 +106,7 @@ async function checkInvoicesFor1290() {
     } else {
       console.log('No invoices found for project 1290');
       console.log('\nShowing first 10 invoice DocNumbers for reference:');
-      invoices.slice(0, 10).forEach(inv => {
+      invoices.slice(0, 10).forEach((inv) => {
         console.log(`  ${inv.DocNumber} (Customer: ${inv.CustomerRef?.value})`);
       });
     }

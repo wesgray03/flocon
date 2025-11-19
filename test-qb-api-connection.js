@@ -20,7 +20,10 @@ async function getAccessToken() {
     throw new Error('No QB tokens found');
   }
 
-  console.log('Token expires at:', new Date(tokenData.expires_at).toLocaleString());
+  console.log(
+    'Token expires at:',
+    new Date(tokenData.expires_at).toLocaleString()
+  );
   return tokenData.access_token;
 }
 
@@ -29,17 +32,17 @@ async function testQBAPI() {
 
   try {
     const accessToken = await getAccessToken();
-    
+
     // Try to get company info - simplest API call
     const url = `https://quickbooks.api.intuit.com/v3/company/${REALM_ID}/companyinfo/${REALM_ID}`;
-    
+
     console.log('Fetching company info...');
 
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Accept': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
       },
     });
 
@@ -54,7 +57,6 @@ async function testQBAPI() {
     const result = await response.json();
     console.log('\n✅ QB API is working!');
     console.log('Company:', result.CompanyInfo?.CompanyName);
-    
   } catch (error) {
     console.error('Error:', error.message);
   }

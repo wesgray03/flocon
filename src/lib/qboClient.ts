@@ -24,14 +24,15 @@ export interface QBOToken {
  * Initialize QuickBooks OAuth client
  */
 export function getQBOClient(): OAuthClient {
-  const environment = (process.env.QBO_ENVIRONMENT || 'sandbox') as
-    | 'sandbox'
-    | 'production';
+  const environment = (process.env.NEXT_PUBLIC_QBO_ENVIRONMENT || 
+    process.env.QBO_ENVIRONMENT || 
+    'sandbox') as 'sandbox' | 'production';
+  
   return new OAuthClient({
-    clientId: process.env.QBO_CLIENT_ID!,
+    clientId: process.env.NEXT_PUBLIC_QBO_CLIENT_ID || process.env.QBO_CLIENT_ID!,
     clientSecret: process.env.QBO_CLIENT_SECRET!,
     environment,
-    redirectUri: process.env.QBO_REDIRECT_URI!,
+    redirectUri: process.env.NEXT_PUBLIC_QBO_REDIRECT_URI || process.env.QBO_REDIRECT_URI!,
   });
 }
 
@@ -237,9 +238,10 @@ export async function makeQBORequest(
   const { client, realmId } = await getAuthenticatedClient();
   const token = client.getToken();
 
-  const environment = (process.env.QBO_ENVIRONMENT || 'sandbox') as
-    | 'sandbox'
-    | 'production';
+  const environment = (process.env.NEXT_PUBLIC_QBO_ENVIRONMENT || 
+    process.env.QBO_ENVIRONMENT || 
+    'sandbox') as 'sandbox' | 'production';
+    
   const baseUrl =
     environment === 'production'
       ? 'https://quickbooks.api.intuit.com'
