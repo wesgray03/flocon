@@ -809,7 +809,7 @@ export default function BillingModule({
                     
                     if (result.success) {
                       alert(
-                        linkMessage + `Synced ${result.successCount} pay app(s) to QuickBooks`
+                        linkMessage + `Synced ${result.syncedCount || 0} pay app(s) to QuickBooks`
                       );
                       // Reload pay apps to get updated QB sync status
                       const { data: apps } = await supabase
