@@ -23,11 +23,26 @@ export default async function handler(
       return res.status(400).json({ error: 'Project ID is required' });
     }
 
+    // Check if required environment variables are set
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      console.error('NEXT_PUBLIC_SUPABASE_URL is not set');
+      return res.status(500).json({ error: 'Supabase URL not configured' });
+    }
+    
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('SUPABASE_SERVICE_ROLE_KEY is not set');
+      return res.status(500).json({ error: 'Supabase service role key not configured' });
+    }
+
+    console.log('Environment check passed');
+
     // Initialize Supabase client with service role key to bypass RLS
+    console.log('Creating Supabase client...');
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
+    console.log('Supabase client created');
 
     // Get all pay apps for this project
     console.log('Querying pay apps with engagement_id:', projectId);

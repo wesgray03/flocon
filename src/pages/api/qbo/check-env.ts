@@ -14,7 +14,10 @@ export default async function handler(
     NEXT_PUBLIC_QBO_CLIENT_ID: !!process.env.NEXT_PUBLIC_QBO_CLIENT_ID,
     QBO_CLIENT_ID: !!process.env.QBO_CLIENT_ID,
     QBO_CLIENT_SECRET: !!process.env.QBO_CLIENT_SECRET,
-    NEXT_PUBLIC_QBO_ENVIRONMENT: process.env.NEXT_PUBLIC_QBO_ENVIRONMENT || process.env.QBO_ENVIRONMENT || 'not set',
+    NEXT_PUBLIC_QBO_ENVIRONMENT:
+      process.env.NEXT_PUBLIC_QBO_ENVIRONMENT ||
+      process.env.QBO_ENVIRONMENT ||
+      'not set',
     QBO_ENVIRONMENT: process.env.QBO_ENVIRONMENT || 'not set',
     NEXT_PUBLIC_QBO_REDIRECT_URI: !!process.env.NEXT_PUBLIC_QBO_REDIRECT_URI,
     QBO_REDIRECT_URI: !!process.env.QBO_REDIRECT_URI,
