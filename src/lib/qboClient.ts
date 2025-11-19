@@ -40,9 +40,11 @@ export function getQBOClient(): OAuthClient {
  */
 export function getAuthUri(): string {
   const oauthClient = getQBOClient();
+  // Generate random state for CSRF protection
+  const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   return oauthClient.authorizeUri({
     scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.Payroll],
-    state: 'testState', // You can use this to prevent CSRF attacks
+    state,
   });
 }
 
