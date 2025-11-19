@@ -238,7 +238,30 @@ export function ProjectsTable({
                   'transparent';
               }}
             >
-              <td style={td}>{r.project_number ?? '—'}</td>
+              <td style={td}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>{r.project_number ?? '—'}</span>
+                  {r.qbo_job_id && (
+                    <span
+                      title="Synced to QuickBooks"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        background: '#10b981',
+                        color: 'white',
+                        fontSize: 10,
+                        fontWeight: 600,
+                      }}
+                    >
+                      QB
+                    </span>
+                  )}
+                </div>
+              </td>
               <td style={td}>
                 <span style={{ color: colors.textPrimary, fontWeight: 500 }}>
                   {r.project_name}

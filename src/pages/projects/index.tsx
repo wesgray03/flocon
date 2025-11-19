@@ -683,7 +683,7 @@ export default function ProjectsPage() {
             await fetch('/api/qbo/sync-project', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
+              body: JSON.stringify({
                 engagementId: engagementId,
                 createIfNotFound: isNewProject,
               }),

@@ -34,6 +34,7 @@ export type ProjectListRow = {
   balance: number;
   start_date: string | null;
   end_date: string | null;
+  qbo_job_id: string | null;
 };
 
 export type SortKey = keyof ProjectListRow | 'none';
@@ -62,6 +63,7 @@ interface ProjectDashboardRow {
   contract_amount?: number | null;
   start_date?: string | null;
   end_date?: string | null;
+  qbo_job_id?: string | null;
   // Note: customer_name, owner, superintendent, foreman, architect loaded separately
   // via engagement_parties and engagement_user_roles tables
 }
@@ -131,8 +133,11 @@ export function useProjectsListCore() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('projects_v')
-        .select('*')
+        .from('engagements')
+        .select(
+          'id, name, project_number, stage_id, sharepoint_folder, contract_amount, start_date, end_date, qbo_job_id'
+        )
+        .eq('type', 'project')
         .order('project_number', { ascending: false });
       if (error) {
         console.error('Project dashboard load error:', error.message ?? error);
@@ -267,6 +272,7 @@ export function useProjectsListCore() {
           balance,
           start_date: r.start_date ?? null,
           end_date: r.end_date ?? null,
+          qbo_job_id: r.qbo_job_id ?? null,
         };
       });
       setRows(mapped);

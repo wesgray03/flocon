@@ -780,7 +780,7 @@ export default function ProspectDetailPage() {
         await fetch('/api/qbo/sync-project', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             engagementId: prospect.id,
             createIfNotFound: true, // Create new QB project when converting
           }),

@@ -16,7 +16,7 @@ const duplicates = [
 async function mergeDuplicates() {
   for (const dup of duplicates) {
     console.log(`\nMerging: "${dup.delete}" -> "${dup.keep}"`);
-    
+
     // Get both companies
     const { data: keepCompany } = await supabase
       .from('companies')
@@ -35,8 +35,12 @@ async function mergeDuplicates() {
       continue;
     }
 
-    console.log(`  Keep: ${keepCompany.name} (QB: ${keepCompany.qbo_id || 'none'})`);
-    console.log(`  Delete: ${deleteCompany.name} (QB: ${deleteCompany.qbo_id || 'none'})`);
+    console.log(
+      `  Keep: ${keepCompany.name} (QB: ${keepCompany.qbo_id || 'none'})`
+    );
+    console.log(
+      `  Delete: ${deleteCompany.name} (QB: ${deleteCompany.qbo_id || 'none'})`
+    );
 
     // Reassign contacts
     const { data: contacts } = await supabase
@@ -67,7 +71,7 @@ async function mergeDuplicates() {
     if (parties && parties.length > 0) {
       let reassigned = 0;
       let skipped = 0;
-      
+
       for (const party of parties) {
         // Check if engagement already has this company in this role
         const { data: existing } = await supabase
@@ -80,10 +84,7 @@ async function mergeDuplicates() {
 
         if (existing) {
           // Already has keep company in this role, just delete the duplicate party
-          await supabase
-            .from('engagement_parties')
-            .delete()
-            .eq('id', party.id);
+          await supabase.from('engagement_parties').delete().eq('id', party.id);
           skipped++;
         } else {
           // Update to keep company
@@ -99,7 +100,9 @@ async function mergeDuplicates() {
           }
         }
       }
-      console.log(`  ✅ Reassigned ${reassigned} engagement(s), removed ${skipped} duplicate(s)`);
+      console.log(
+        `  ✅ Reassigned ${reassigned} engagement(s), removed ${skipped} duplicate(s)`
+      );
     }
 
     // Delete the duplicate company

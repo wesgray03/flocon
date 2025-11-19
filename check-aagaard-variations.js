@@ -15,7 +15,7 @@ async function findSimilar() {
     .order('name');
 
   console.log('Aagaard companies:');
-  data.forEach(c => console.log(`  ${c.name} - QB: ${c.qbo_id || 'none'}`));
+  data.forEach((c) => console.log(`  ${c.name} - QB: ${c.qbo_id || 'none'}`));
 }
 
 findSimilar().catch(console.error);
