@@ -1,0 +1,23 @@
+============================================
+RUN QBO VENDOR IMPORT LIST MIGRATION
+============================================
+
+STEPS TO COPY TABLE TO PRODUCTION:
+
+1. Go to: https://supabase.com/dashboard/project/YOUR_PROJECT_ID/sql/new
+
+2. Copy the entire contents of this file:
+   2025-11-18-create-qbo-vendor-import-list.sql
+
+3. Paste into the SQL Editor and click "Run"
+
+4. Verify by running this query:
+   SELECT COUNT(*) FROM qbo_vendor_import_list;
+   
+   Expected result: 65 vendors
+
+============================================
+
+ALTERNATIVE: If you want to automate this, you'll need to:
+- Use Supabase CLI: supabase db push
+- Or use pg client to connect directly to the database

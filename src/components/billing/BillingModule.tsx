@@ -73,6 +73,7 @@ export default function BillingModule({
     date_submitted: '',
     date_paid: '',
     status: 'Submitted',
+    billRetainage: false,
   });
 
   const [sovForm, setSovForm] = useState({
@@ -105,6 +106,7 @@ export default function BillingModule({
       date_submitted: todayString(),
       date_paid: '',
       status: 'Submitted',
+      billRetainage: false,
     });
 
     // Auto-load continuation sheet data from previous pay app
@@ -181,6 +183,7 @@ export default function BillingModule({
       date_submitted: app.date_submitted || '',
       date_paid: app.date_paid || '',
       status: app.status || 'Submitted',
+      billRetainage: false,
     });
 
     // Load existing continuation sheet data
@@ -236,7 +239,21 @@ export default function BillingModule({
         )
         .reduce((sum, app) => sum + app.current_payment_due, 0);
 
-      const currentPaymentDue = totalEarnedLessRetainage - previousPayments;
+      // Calculate retainage held from all previous pay apps
+      const retainageHeld = payApps
+        .filter(
+          (app) =>
+            payAppForm.pay_app_number &&
+            app.pay_app_number !== null &&
+            Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
+        )
+        .reduce((sum, app) => sum + (app.total_retainage || 0), 0);
+
+      // If billing retainage, the current payment is the retainage balance
+      // Otherwise, calculate normal current payment due
+      const currentPaymentDue = payAppForm.billRetainage
+        ? retainageHeld
+        : totalEarnedLessRetainage - previousPayments;
       const balanceToFinish = totalScheduledValue - totalCompletedAndStored;
 
       const payload = {
@@ -765,6 +782,50 @@ export default function BillingModule({
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
               <button
                 type="button"
+                onClick={async () => {
+                  if (!confirm('Sync all pay applications to QuickBooks?')) return;
+                  try {
+                    const response = await fetch('/api/qbo/sync-billing', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ engagementId: projectId }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      alert(`Successfully synced ${result.successCount} pay app(s) to QuickBooks`);
+                      // Reload pay apps to get updated QB sync status
+                      const { data: apps } = await supabase
+                        .from('engagement_pay_apps')
+                        .select('*')
+                        .eq('engagement_id', projectId)
+                        .order('date_submitted', { ascending: false });
+                      setPayApps((apps ?? []) as PayApp[]);
+                    } else {
+                      alert('Sync failed: ' + (result.error || 'Unknown error'));
+                    }
+                  } catch (err) {
+                    console.error('Sync error:', err);
+                    alert('Error syncing pay apps. See console for details.');
+                  }
+                }}
+                style={{
+                  background: '#10b981',
+                  color: '#fff',
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                Sync to QuickBooks
+              </button>
+              <button
+                type="button"
                 onClick={openPayAppForNew}
                 style={{
                   background: colors.navy,
@@ -996,6 +1057,34 @@ export default function BillingModule({
                       style={inputStyle}
                     />
                   </div>
+                </div>
+
+                {/* Bill Retainage Checkbox */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="checkbox"
+                    id="billRetainage"
+                    checked={payAppForm.billRetainage}
+                    onChange={(e) =>
+                      setPayAppForm({
+                        ...payAppForm,
+                        billRetainage: e.target.checked,
+                      })
+                    }
+                    style={{ width: 18, height: 18, cursor: 'pointer' }}
+                  />
+                  <label
+                    htmlFor="billRetainage"
+                    style={{
+                      ...labelStyle,
+                      margin: 0,
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      color: colors.navy,
+                    }}
+                  >
+                    Bill Retainage (Release retained amounts from previous pay apps)
+                  </label>
                 </div>
 
                 {/* Continuation Sheet Section */}
