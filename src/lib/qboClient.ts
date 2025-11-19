@@ -39,18 +39,15 @@ export function getQBOClient(): OAuthClient {
  * Get authorization URI for OAuth flow
  */
 export function getAuthUri(): string {
-  const clientId = process.env.QBO_CLIENT_ID!;
-  const redirectUri = process.env.QBO_REDIRECT_URI!;
-  const environment = process.env.QBO_ENVIRONMENT || 'sandbox';
+  const oauthClient = getQBOClient();
   
-  // Generate random state for CSRF protection
-  const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  // Use only Accounting scope (not Payroll)
+  const authUri = oauthClient.authorizeUri({
+    scope: [OAuthClient.scopes.Accounting],
+    state: 'testState' + Math.random().toString(36).substring(2, 15),
+  });
   
-  // Build the authorization URL manually to ensure correct base path
-  const baseUrl = 'https://appcenter.intuit.com/connect/oauth2';
-  const scope = 'com.intuit.quickbooks.accounting';
-  
-  const authUri = `${baseUrl}?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${encodeURIComponent(state)}`;
+  console.log('SDK Generated Auth URI:', authUri);
   
   return authUri;
 }
