@@ -43,7 +43,7 @@ export function getAuthUri(): string {
   // Generate random state for CSRF protection
   const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   return oauthClient.authorizeUri({
-    scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.Payroll],
+    scope: [OAuthClient.scopes.Accounting],
     state,
   });
 }
