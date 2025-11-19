@@ -524,12 +524,18 @@ export default function BillingModule({
   const retainageOnWork = sovLineProgress.reduce(
     (sum, l) =>
       sum +
-      (l.previous_completed + l.current_completed) *
-        (l.retainage_percent / 100),
+      Math.round(
+        (l.previous_completed + l.current_completed) *
+          (l.retainage_percent / 100) *
+          100
+      ) /
+        100,
     0
   );
   const retainageOnMaterials = sovLineProgress.reduce(
-    (sum, l) => sum + l.stored_materials * (l.retainage_percent / 100),
+    (sum, l) =>
+      sum +
+      Math.round(l.stored_materials * (l.retainage_percent / 100) * 100) / 100,
     0
   );
   const totalRetainageG702 = Math.round((retainageOnWork + retainageOnMaterials) * 100) / 100;
