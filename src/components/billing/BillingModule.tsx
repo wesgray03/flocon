@@ -532,14 +532,17 @@ export default function BillingModule({
     (sum, l) => sum + l.stored_materials * (l.retainage_percent / 100),
     0
   );
-  const totalRetainageG702 = retainageOnWork + retainageOnMaterials;
-  const totalEarnedLessRetainageG702 =
-    totalCompletedAndStoredToDate - totalRetainageG702;
+  const totalRetainageG702 = Math.round((retainageOnWork + retainageOnMaterials) * 100) / 100;
+  const totalEarnedLessRetainageG702 = Math.round(
+    (totalCompletedAndStoredToDate - totalRetainageG702) * 100
+  ) / 100;
   const previousCertificates = viewingPayApp?.previous_payments || 0;
-  const currentPaymentDueG702 =
-    totalEarnedLessRetainageG702 - previousCertificates;
-  const balanceToFinishIncludingRetainage =
-    contractSumToDate - totalEarnedLessRetainageG702;
+  const currentPaymentDueG702 = Math.round(
+    (totalEarnedLessRetainageG702 - previousCertificates) * 100
+  ) / 100;
+  const balanceToFinishIncludingRetainage = Math.round(
+    (contractSumToDate - totalEarnedLessRetainageG702) * 100
+  ) / 100;
 
   const workRetainagePercentDisplay = (() => {
     const set = new Set(
