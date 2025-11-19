@@ -783,17 +783,24 @@ export default function BillingModule({
               <button
                 type="button"
                 onClick={async () => {
-                  if (!confirm('Sync all pay applications to QuickBooks?\n\nThis will:\n1. Link any existing QB invoices to pay apps\n2. Create new invoices for unsynced pay apps'))
+                  if (
+                    !confirm(
+                      'Sync all pay applications to QuickBooks?\n\nThis will:\n1. Link any existing QB invoices to pay apps\n2. Create new invoices for unsynced pay apps'
+                    )
+                  )
                     return;
                   try {
                     // Step 1: Link existing invoices first
-                    const linkResponse = await fetch('/api/qbo/link-existing-invoices', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ engagementId: projectId }),
-                    });
+                    const linkResponse = await fetch(
+                      '/api/qbo/link-existing-invoices',
+                      {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ engagementId: projectId }),
+                      }
+                    );
                     const linkResult = await linkResponse.json();
-                    
+
                     let linkMessage = '';
                     if (linkResult.success && linkResult.matched > 0) {
                       linkMessage = `Linked ${linkResult.matched} existing invoice(s). `;
@@ -806,10 +813,11 @@ export default function BillingModule({
                       body: JSON.stringify({ projectId }),
                     });
                     const result = await response.json();
-                    
+
                     if (result.success) {
                       alert(
-                        linkMessage + `Synced ${result.syncedCount || 0} pay app(s) to QuickBooks`
+                        linkMessage +
+                          `Synced ${result.syncedCount || 0} pay app(s) to QuickBooks`
                       );
                       // Reload pay apps to get updated QB sync status
                       const { data: apps } = await supabase
@@ -820,7 +828,9 @@ export default function BillingModule({
                       setPayApps((apps ?? []) as PayApp[]);
                     } else {
                       alert(
-                        linkMessage + 'Sync failed: ' + (result.error || 'Unknown error')
+                        linkMessage +
+                          'Sync failed: ' +
+                          (result.error || 'Unknown error')
                       );
                     }
                   } catch (err) {

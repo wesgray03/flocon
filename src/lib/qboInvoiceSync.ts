@@ -228,19 +228,28 @@ export async function syncPayAppToQBO(
     };
   } catch (error: any) {
     console.error('Error syncing pay app:', error);
+    
+    // Get more detailed error message
+    let errorMessage = error.message || 'Unknown error';
+    if (error.response?.data) {
+      errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+    }
+    if (error.intuit_tid) {
+      errorMessage += ` [Intuit TID: ${error.intuit_tid}]`;
+    }
 
     // Store error in database
     await supabase
       .from('engagement_pay_apps')
       .update({
         qbo_sync_status: 'error',
-        qbo_sync_error: error.message || 'Unknown error',
+        qbo_sync_error: errorMessage,
       })
       .eq('id', payAppId);
 
     return {
       success: false,
-      error: error.message || 'Unknown error occurred',
+      error: errorMessage,
     };
   }
 }
