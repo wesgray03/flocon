@@ -785,25 +785,31 @@ export default function BillingModule({
                 onClick={async () => {
                   if (
                     !confirm(
-                      'Sync all pay applications to QuickBooks?\n\nThis will:\n1. Link any existing QB invoices to pay apps\n2. Create new invoices for unsynced pay apps'
+                      'Sync all pay applications to QuickBooks?\n\nThis will create invoices for all pay apps in QuickBooks.'
                     )
                   )
                     return;
                   try {
-                    // Step 1: Link existing invoices first
-                    const linkResponse = await fetch(
-                      '/api/qbo/link-existing-invoices',
-                      {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ engagementId: projectId }),
-                      }
-                    );
-                    const linkResult = await linkResponse.json();
-
+                    // Step 1: Try to link existing invoices first (skip if endpoint not available)
                     let linkMessage = '';
-                    if (linkResult.success && linkResult.matched > 0) {
-                      linkMessage = `Linked ${linkResult.matched} existing invoice(s). `;
+                    try {
+                      const linkResponse = await fetch(
+                        '/api/qbo/link-existing-invoices',
+                        {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ engagementId: projectId }),
+                        }
+                      );
+                      
+                      if (linkResponse.ok) {
+                        const linkResult = await linkResponse.json();
+                        if (linkResult.success && linkResult.matched > 0) {
+                          linkMessage = `Linked ${linkResult.matched} existing invoice(s). `;
+                        }
+                      }
+                    } catch (linkError) {
+                      console.log('Link step skipped (endpoint not available)');
                     }
 
                     // Step 2: Sync remaining pay apps
