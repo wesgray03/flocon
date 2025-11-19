@@ -132,13 +132,28 @@ export function useProjectsListCore() {
   const loadProjects = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // Get Archive stage ID first
+      const { data: archiveStage } = await supabase
+        .from('stages')
+        .select('id')
+        .eq('name', 'Archive')
+        .single();
+
+      let query = supabase
         .from('engagements')
         .select(
           'id, name, project_number, stage_id, sharepoint_folder, contract_amount, start_date, end_date, qbo_job_id'
         )
-        .eq('type', 'project')
-        .order('project_number', { ascending: false });
+        .eq('type', 'project');
+
+      // Exclude Archive stage if it exists
+      if (archiveStage?.id) {
+        query = query.neq('stage_id', archiveStage.id);
+      }
+
+      const { data, error } = await query.order('project_number', {
+        ascending: false,
+      });
       if (error) {
         console.error('Project dashboard load error:', error.message ?? error);
         setRows([]);
