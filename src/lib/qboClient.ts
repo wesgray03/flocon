@@ -231,7 +231,11 @@ export async function makeQBORequest(
   const { client, realmId } = await getAuthenticatedClient();
   const token = client.getToken();
 
-  const url = `https://sandbox-quickbooks.api.intuit.com/v3/company/${realmId}/${endpoint}`;
+  const environment = (process.env.QBO_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production';
+  const baseUrl = environment === 'production'
+    ? 'https://quickbooks.api.intuit.com'
+    : 'https://sandbox-quickbooks.api.intuit.com';
+  const url = `${baseUrl}/v3/company/${realmId}/${endpoint}`;
 
   const response = await fetch(url, {
     method,
