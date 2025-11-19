@@ -33,7 +33,7 @@ async function reassignContacts() {
     console.log('No contacts found for LLC\n');
   } else {
     console.log(`Found ${contacts.length} contact(s):\n`);
-    
+
     // Reassign each contact to Construction company
     for (const contact of contacts) {
       const { error } = await supabase
@@ -42,7 +42,10 @@ async function reassignContacts() {
         .eq('id', contact.id);
 
       if (error) {
-        console.error(`Error updating contact ${contact.first_name} ${contact.last_name}:`, error);
+        console.error(
+          `Error updating contact ${contact.first_name} ${contact.last_name}:`,
+          error
+        );
       } else {
         console.log(`✅ ${contact.first_name} ${contact.last_name}`);
       }

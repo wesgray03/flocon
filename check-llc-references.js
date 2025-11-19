@@ -35,7 +35,7 @@ async function checkReferences() {
 
   if (contacts && contacts.length > 0) {
     console.log('\nContacts:');
-    contacts.forEach(c => console.log(`  - ${c.first_name} ${c.last_name}`));
+    contacts.forEach((c) => console.log(`  - ${c.first_name} ${c.last_name}`));
   }
 
   // Check invoices

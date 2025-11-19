@@ -34,14 +34,14 @@ async function findProjects() {
   console.log(`Found ${parties.length} project(s) for this company:\n`);
 
   // Get project details
-  const engagementIds = parties.map(p => p.engagement_id);
+  const engagementIds = parties.map((p) => p.engagement_id);
   const { data: projects } = await supabase
     .from('engagements')
     .select('id, project_number, name, qbo_customer_id, qbo_job_id')
     .in('id', engagementIds)
     .order('project_number');
 
-  projects.forEach(p => {
+  projects.forEach((p) => {
     console.log(`  ${p.project_number} - ${p.name}`);
     console.log(`    QB Customer: ${p.qbo_customer_id || 'not synced'}`);
     console.log(`    QB Job: ${p.qbo_job_id || 'not synced'}`);

@@ -228,9 +228,11 @@ async function getCustomerInfo(engagementId: string): Promise<{
 
 /**
  * Sync a single engagement to QuickBooks
+ * @param createIfNotFound - If true, creates new QB project if not found. If false, only links to existing.
  */
 export async function syncEngagementToQBO(
-  engagementId: string
+  engagementId: string,
+  createIfNotFound: boolean = false
 ): Promise<SyncResult> {
   try {
     // Get engagement details
@@ -315,7 +317,7 @@ export async function syncEngagementToQBO(
       }
     }
 
-    // Step 2: Find or create job under customer
+    // Step 2: Find existing job under customer
     let job = await findJobByProjectNumber(
       engagement.project_number,
       customer.Id
@@ -323,11 +325,22 @@ export async function syncEngagementToQBO(
 
     if (job) {
       console.log(`Found existing job: ${job.DisplayName} (${job.Id})`);
-    } else {
+    } else if (createIfNotFound) {
       console.log(
         `Creating job: ${engagement.project_number} - ${engagement.name}`
       );
       job = await createJob(
+        customer.Id,
+        engagement.name,
+        engagement.project_number
+      );
+    } else {
+      // Project not found and we're not creating new ones
+      return {
+        success: false,
+        error: `QuickBooks project not found for ${engagement.project_number}. Create it in QuickBooks first or use "Create New Project" action.`,
+      };
+    }
         customer.Id,
         engagement.name,
         engagement.project_number

@@ -22,14 +22,15 @@ async function searchQBProjects() {
 
   const realmId = tokenData.realm_id;
   const environment = process.env.QBO_ENVIRONMENT || 'production';
-  const baseUrl = environment === 'production'
-    ? 'https://quickbooks.api.intuit.com'
-    : 'https://sandbox-quickbooks.api.intuit.com';
+  const baseUrl =
+    environment === 'production'
+      ? 'https://quickbooks.api.intuit.com'
+      : 'https://sandbox-quickbooks.api.intuit.com';
 
   console.log('Searching for all projects with "1271" in QuickBooks...\n');
 
   const query = `SELECT * FROM Customer WHERE Job = true AND DisplayName LIKE '%1271%' AND Active IN (true, false)`;
-  
+
   const response = await fetch(
     `${baseUrl}/v3/company/${realmId}/query?query=${encodeURIComponent(query)}`,
     {

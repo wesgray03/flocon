@@ -775,6 +775,22 @@ export default function ProspectDetailPage() {
       // Note: prospect_owner role is kept as-is for historical purposes
       // project_owner is a different role and will be assigned manually later
 
+      // Sync to QuickBooks and create new project there
+      try {
+        await fetch('/api/qbo/sync-project', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            engagementId: prospect.id,
+            createIfNotFound: true, // Create new QB project when converting
+          }),
+        });
+        console.log('✓ Project synced to QuickBooks');
+      } catch (qboError) {
+        console.warn('Non-blocking: QB sync failed', qboError);
+        // Don't block conversion if QB sync fails
+      }
+
       notify(
         `Converted to project successfully (Project #${nextProjectNumber})`,
         'success'

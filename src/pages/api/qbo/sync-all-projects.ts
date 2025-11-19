@@ -86,7 +86,7 @@ export default async function handler(
         console.log(
           `Syncing project ${project.project_number}: ${project.name}`
         );
-        const result = await syncEngagementToQBO(project.id);
+        const result = await syncEngagementToQBO(project.id, false); // Don't create new, only link existing
         results.push({
           projectId: project.id,
           projectNumber: project.project_number,

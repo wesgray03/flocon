@@ -671,9 +671,10 @@ export default function ProjectsPage() {
         }
 
         // Auto-sync to QuickBooks
-        // For new projects or when key fields changed (name, project_number, customer)
+        // For new projects, create in QB. For edits, only link to existing.
+        const isNewProject = !editingProject;
         if (
-          !editingProject ||
+          isNewProject ||
           form.name !== editingProject.name ||
           form.project_number !== editingProject.project_number ||
           form.customer_id !== editingProject.customer_id
@@ -682,7 +683,10 @@ export default function ProjectsPage() {
             await fetch('/api/qbo/sync-project', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: engagementId }),
+              body: JSON.stringify({ 
+                engagementId: engagementId,
+                createIfNotFound: isNewProject,
+              }),
             });
             console.log('✓ Project synced to QuickBooks');
           } catch (qboError) {

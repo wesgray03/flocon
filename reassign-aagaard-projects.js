@@ -40,7 +40,9 @@ async function reassignProjects() {
     console.log(`✅ Created company with ID: ${newCompany.id}\n`);
     constructionCompany = newCompany;
   } else {
-    console.log(`Found existing Aagaard-Juergensen Construction (ID: ${constructionCompany.id})`);
+    console.log(
+      `Found existing Aagaard-Juergensen Construction (ID: ${constructionCompany.id})`
+    );
     console.log(`QB ID: ${constructionCompany.qbo_id}\n`);
   }
 
@@ -74,7 +76,9 @@ async function reassignProjects() {
     }
   }
 
-  console.log(`\n✅ All projects reassigned to Aagaard-Juergensen Construction`);
+  console.log(
+    `\n✅ All projects reassigned to Aagaard-Juergensen Construction`
+  );
   console.log(`\nYou can now delete Aagaard-Juergensen, LLC from FloCon`);
 }
 
