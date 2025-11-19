@@ -56,7 +56,9 @@ export default async function handler(
       });
     }
 
-    console.log(`Found ${payApps.length} pay apps to sync for project ${projectId}`);
+    console.log(
+      `Found ${payApps.length} pay apps to sync for project ${projectId}`
+    );
 
     // Sync each pay app and pull payment status
     const results = [];
@@ -68,7 +70,10 @@ export default async function handler(
         console.log(`Syncing pay app ${payApp.id}...`);
         // First, sync the invoice
         const syncResult = await syncPayAppToQBO(payApp.id);
-        console.log(`Sync result for ${payApp.id}:`, JSON.stringify(syncResult));
+        console.log(
+          `Sync result for ${payApp.id}:`,
+          JSON.stringify(syncResult)
+        );
         results.push(syncResult);
 
         if (syncResult.success) {
@@ -87,7 +92,10 @@ export default async function handler(
           }
         } else {
           errorCount++;
-          console.error(`Failed to sync pay app ${payApp.id}:`, syncResult.error);
+          console.error(
+            `Failed to sync pay app ${payApp.id}:`,
+            syncResult.error
+          );
         }
       } catch (error: any) {
         console.error(`Error syncing pay app ${payApp.id}:`, error);
@@ -105,6 +113,11 @@ export default async function handler(
     });
   } catch (error: any) {
     console.error('Sync billing error:', error);
-    return res.status(500).json({ error: error.message || 'Unknown error' });
+    console.error('Error type:', typeof error);
+    console.error('Error keys:', Object.keys(error || {}));
+    console.error('Error stack:', error?.stack);
+    const errorMessage =
+      error?.message || error?.toString() || 'Unknown error occurred';
+    return res.status(500).json({ error: errorMessage });
   }
 }

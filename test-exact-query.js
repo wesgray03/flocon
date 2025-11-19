@@ -9,25 +9,25 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function testExactQuery() {
   const projectId = 'd4525cc3-e756-4966-9c42-1b7e0ece9c66'; // Project 1290
-  
+
   console.log('=== Testing exact query from sync-billing API ===');
   console.log('Project ID:', projectId);
   console.log('Project ID type:', typeof projectId);
   console.log('');
-  
+
   console.log('Executing query...');
   const { data: payApps, error: payAppsError } = await supabase
     .from('engagement_pay_apps')
     .select('id')
     .eq('engagement_id', projectId)
     .order('pay_app_number');
-  
+
   console.log('Query completed');
   console.log('Error:', payAppsError);
   console.log('Pay apps:', payApps);
   console.log('Count:', payApps?.length || 0);
   console.log('');
-  
+
   if (payApps && payApps.length > 0) {
     console.log('✅ Query found pay apps!');
     payApps.forEach((pa, idx) => {

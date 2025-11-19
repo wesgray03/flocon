@@ -11,12 +11,14 @@ async function checkRecentErrors() {
 
   const { data: payApps } = await supabase
     .from('engagement_pay_apps')
-    .select('id, pay_app_number, engagement_id, qbo_sync_status, qbo_sync_error, qbo_synced_at, updated_at')
+    .select(
+      'id, pay_app_number, engagement_id, qbo_sync_status, qbo_sync_error, qbo_synced_at, updated_at'
+    )
     .eq('engagement_id', 'd4525cc3-e756-4966-9c42-1b7e0ece9c66') // Project 1290
     .order('pay_app_number', { ascending: true });
 
   console.log('Project 1290 pay apps:\n');
-  payApps.forEach(pa => {
+  payApps.forEach((pa) => {
     console.log(`Pay App #${pa.pay_app_number}`);
     console.log(`  Status: ${pa.qbo_sync_status || 'null'}`);
     console.log(`  Error: ${pa.qbo_sync_error || 'null'}`);
