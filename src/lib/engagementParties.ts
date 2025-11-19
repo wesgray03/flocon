@@ -124,27 +124,26 @@ export async function setPrimaryParty(options: {
 }): Promise<void> {
   const { engagementId, role, partyType, partyId, notes = null } = options;
 
-  // Clear existing primary for this role
-  const { error: clearErr } = await supabase
+  // Delete existing parties for this role (to prevent duplicates when changing customer)
+  const { error: deleteErr } = await supabase
     .from('engagement_parties')
-    .update({ is_primary: false })
+    .delete()
     .eq('engagement_id', engagementId)
-    .eq('role', role)
-    .eq('is_primary', true);
-  if (clearErr) {
-    console.error('[setPrimaryParty] Clear error:', {
-      code: clearErr.code,
-      message: clearErr.message,
-      details: clearErr.details,
-      hint: clearErr.hint,
+    .eq('role', role);
+  if (deleteErr) {
+    console.error('[setPrimaryParty] Delete error:', {
+      code: deleteErr.code,
+      message: deleteErr.message,
+      details: deleteErr.details,
+      hint: deleteErr.hint,
       engagementId,
       role,
     });
-    throw clearErr;
+    throw deleteErr;
   }
 
   if (!partyId) {
-    // If null, we've cleared the primary and are done
+    // If null, we've cleared the role and are done
     return;
   }
 

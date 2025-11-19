@@ -40,10 +40,13 @@ async function makeQBORequest(
   const { client, realmId } = await getAuthenticatedClient();
   const token = client.getToken();
 
-  const environment = (process.env.QBO_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production';
-  const baseUrl = environment === 'production'
-    ? 'https://quickbooks.api.intuit.com'
-    : 'https://sandbox-quickbooks.api.intuit.com';
+  const environment = (process.env.QBO_ENVIRONMENT || 'sandbox') as
+    | 'sandbox'
+    | 'production';
+  const baseUrl =
+    environment === 'production'
+      ? 'https://quickbooks.api.intuit.com'
+      : 'https://sandbox-quickbooks.api.intuit.com';
   const url = `${baseUrl}/v3/company/${realmId}/${endpoint}`;
 
   const response = await fetch(url, {

@@ -40,15 +40,15 @@ export function getQBOClient(): OAuthClient {
  */
 export function getAuthUri(): string {
   const oauthClient = getQBOClient();
-  
+
   // Use only Accounting scope (not Payroll)
   const authUri = oauthClient.authorizeUri({
     scope: [OAuthClient.scopes.Accounting],
     state: 'testState' + Math.random().toString(36).substring(2, 15),
   });
-  
+
   console.log('SDK Generated Auth URI:', authUri);
-  
+
   return authUri;
 }
 
@@ -237,10 +237,13 @@ export async function makeQBORequest(
   const { client, realmId } = await getAuthenticatedClient();
   const token = client.getToken();
 
-  const environment = (process.env.QBO_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production';
-  const baseUrl = environment === 'production'
-    ? 'https://quickbooks.api.intuit.com'
-    : 'https://sandbox-quickbooks.api.intuit.com';
+  const environment = (process.env.QBO_ENVIRONMENT || 'sandbox') as
+    | 'sandbox'
+    | 'production';
+  const baseUrl =
+    environment === 'production'
+      ? 'https://quickbooks.api.intuit.com'
+      : 'https://sandbox-quickbooks.api.intuit.com';
   const url = `${baseUrl}/v3/company/${realmId}/${endpoint}`;
 
   const response = await fetch(url, {

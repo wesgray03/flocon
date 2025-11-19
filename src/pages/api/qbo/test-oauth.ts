@@ -1,6 +1,6 @@
 // Test endpoint to verify OAuth client configuration
-import type { NextApiRequest, NextApiResponse } from 'next';
 import OAuthClient from 'intuit-oauth';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -19,7 +19,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const oauthClient = new OAuthClient({
       clientId: process.env.QBO_CLIENT_ID!,
       clientSecret: process.env.QBO_CLIENT_SECRET!,
-      environment: (process.env.QBO_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production',
+      environment: (process.env.QBO_ENVIRONMENT || 'sandbox') as
+        | 'sandbox'
+        | 'production',
       redirectUri: process.env.QBO_REDIRECT_URI!,
     });
 
