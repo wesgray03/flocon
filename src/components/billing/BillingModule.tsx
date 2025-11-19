@@ -790,29 +790,7 @@ export default function BillingModule({
                   )
                     return;
                   try {
-                    // Step 1: Try to link existing invoices first (skip if endpoint not available)
-                    let linkMessage = '';
-                    try {
-                      const linkResponse = await fetch(
-                        '/api/qbo/link-existing-invoices',
-                        {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ engagementId: projectId }),
-                        }
-                      );
-                      
-                      if (linkResponse.ok) {
-                        const linkResult = await linkResponse.json();
-                        if (linkResult.success && linkResult.matched > 0) {
-                          linkMessage = `Linked ${linkResult.matched} existing invoice(s). `;
-                        }
-                      }
-                    } catch (linkError) {
-                      console.log('Link step skipped (endpoint not available)');
-                    }
-
-                    // Step 2: Sync remaining pay apps
+                    // Sync pay apps to QuickBooks
                     const response = await fetch('/api/qbo/sync-billing', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -822,8 +800,7 @@ export default function BillingModule({
 
                     if (result.success) {
                       alert(
-                        linkMessage +
-                          `Synced ${result.syncedCount || 0} pay app(s) to QuickBooks`
+                        `Synced ${result.syncedCount || 0} pay app(s) to QuickBooks`
                       );
                       // Reload pay apps to get updated QB sync status
                       const { data: apps } = await supabase
@@ -833,11 +810,7 @@ export default function BillingModule({
                         .order('date_submitted', { ascending: false });
                       setPayApps((apps ?? []) as PayApp[]);
                     } else {
-                      alert(
-                        linkMessage +
-                          'Sync failed: ' +
-                          (result.error || 'Unknown error')
-                      );
+                      alert('Sync failed: ' + (result.error || 'Unknown error'));
                     }
                   } catch (err) {
                     console.error('Sync error:', err);

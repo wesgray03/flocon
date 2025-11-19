@@ -228,7 +228,7 @@ export async function syncPayAppToQBO(
     };
   } catch (error: any) {
     console.error('Error syncing pay app:', error);
-    
+
     // Get more detailed error message
     let errorMessage = error.message || 'Unknown error';
     if (error.response?.data) {
