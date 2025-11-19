@@ -239,25 +239,18 @@ export function ProjectsTable({
               }}
             >
               <td style={td}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span>{r.project_number ?? '—'}</span>
                   {r.qbo_job_id && (
                     <span
                       title="Synced to QuickBooks"
                       style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 16,
-                        height: 16,
-                        borderRadius: '50%',
-                        background: '#10b981',
-                        color: 'white',
-                        fontSize: 10,
-                        fontWeight: 600,
+                        color: '#10b981',
+                        fontSize: 16,
+                        lineHeight: 1,
                       }}
                     >
-                      QB
+                      ✓
                     </span>
                   )}
                 </div>
@@ -360,7 +353,7 @@ const th: React.CSSProperties = {
   fontWeight: 600,
   color: colors.textPrimary,
   textAlign: 'left',
-  padding: 8,
+  padding: 6,
   borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
   cursor: 'pointer',
@@ -392,7 +385,7 @@ const thDate: React.CSSProperties = { ...th, width: 100, minWidth: 90 };
 const thActions: React.CSSProperties = { ...thCenter, width: 80, minWidth: 80 };
 
 const td: React.CSSProperties = {
-  padding: 8,
+  padding: 6,
   borderBottom: '1px solid #e5dfd5',
   whiteSpace: 'nowrap',
 };
