@@ -27,16 +27,19 @@ async function recalculateAllPayApps() {
   for (const payApp of payApps) {
     // Round to 2 decimal places
     const roundedAmount = Math.round(payApp.amount * 100) / 100;
-    const roundedCurrentPayment = Math.round(payApp.current_payment_due * 100) / 100;
+    const roundedCurrentPayment =
+      Math.round(payApp.current_payment_due * 100) / 100;
 
-    const needsUpdate = 
-      payApp.amount !== roundedAmount || 
+    const needsUpdate =
+      payApp.amount !== roundedAmount ||
       payApp.current_payment_due !== roundedCurrentPayment;
 
     if (needsUpdate) {
       console.log(`Pay App ID: ${payApp.id}`);
       console.log(`  Amount: ${payApp.amount} → ${roundedAmount}`);
-      console.log(`  Current Payment Due: ${payApp.current_payment_due} → ${roundedCurrentPayment}`);
+      console.log(
+        `  Current Payment Due: ${payApp.current_payment_due} → ${roundedCurrentPayment}`
+      );
 
       const { error: updateError } = await supabase
         .from('engagement_pay_apps')

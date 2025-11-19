@@ -10,7 +10,7 @@ async function fixPayApp2() {
   console.log('Fixing Pay App #2 amount...\n');
 
   const payAppId = '3274e280-5316-4143-9e1f-89faa509aa36';
-  
+
   const { error } = await supabase
     .from('engagement_pay_apps')
     .update({

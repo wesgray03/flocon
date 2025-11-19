@@ -341,7 +341,7 @@ export async function pullPaymentFromQBO(
 ): Promise<{ success: boolean; paymentTotal?: number; error?: string }> {
   // Use provided client or fall back to default
   const client = supabaseClient || supabase;
-  
+
   try {
     // 1. Get pay app with QB invoice ID
     const { data: payApp, error: payAppError } = await client

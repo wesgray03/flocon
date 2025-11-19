@@ -219,42 +219,56 @@ export default function BillingModule({
           line.stored_materials;
         return sum + currentTotal;
       }, 0);
-      const totalRetainage = sovLineProgress.reduce((sum, line) => {
-        const currentTotal =
-          line.previous_completed +
-          line.current_completed +
-          line.stored_materials;
-        const retainage = currentTotal * (line.retainage_percent / 100);
-        return sum + retainage;
-      }, 0);
-      const totalEarnedLessRetainage = totalCompletedAndStored - totalRetainage;
+      const totalRetainage = Math.round(
+        sovLineProgress.reduce((sum, line) => {
+          const currentTotal =
+            line.previous_completed +
+            line.current_completed +
+            line.stored_materials;
+          const retainage = Math.round(
+            currentTotal * (line.retainage_percent / 100) * 100
+          ) / 100;
+          return sum + retainage;
+        }, 0) * 100
+      ) / 100;
+      const totalEarnedLessRetainage = Math.round(
+        (totalCompletedAndStored - totalRetainage) * 100
+      ) / 100;
 
       // Get previous payments from prior pay apps
-      const previousPayments = payApps
-        .filter(
-          (app) =>
-            payAppForm.pay_app_number &&
-            app.pay_app_number !== null &&
-            Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
-        )
-        .reduce((sum, app) => sum + app.current_payment_due, 0);
+      const previousPayments = Math.round(
+        payApps
+          .filter(
+            (app) =>
+              payAppForm.pay_app_number &&
+              app.pay_app_number !== null &&
+              Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
+          )
+          .reduce((sum, app) => sum + app.current_payment_due, 0) * 100
+      ) / 100;
 
       // Calculate retainage held from all previous pay apps
-      const retainageHeld = payApps
-        .filter(
-          (app) =>
-            payAppForm.pay_app_number &&
-            app.pay_app_number !== null &&
-            Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
-        )
-        .reduce((sum, app) => sum + (app.total_retainage || 0), 0);
+      const retainageHeld = Math.round(
+        payApps
+          .filter(
+            (app) =>
+              payAppForm.pay_app_number &&
+              app.pay_app_number !== null &&
+              Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
+          )
+          .reduce((sum, app) => sum + (app.total_retainage || 0), 0) * 100
+      ) / 100;
 
       // If billing retainage, the current payment is the retainage balance
       // Otherwise, calculate normal current payment due
-      const currentPaymentDue = payAppForm.billRetainage
-        ? retainageHeld
-        : totalEarnedLessRetainage - previousPayments;
-      const balanceToFinish = totalScheduledValue - totalCompletedAndStored;
+      const currentPaymentDue =
+        Math.round(
+          (payAppForm.billRetainage
+            ? retainageHeld
+            : totalEarnedLessRetainage - previousPayments) * 100
+        ) / 100;
+      const balanceToFinish =
+        Math.round((totalScheduledValue - totalCompletedAndStored) * 100) / 100;
 
       const payload = {
         engagement_id: projectId,
@@ -538,17 +552,17 @@ export default function BillingModule({
       Math.round(l.stored_materials * (l.retainage_percent / 100) * 100) / 100,
     0
   );
-  const totalRetainageG702 = Math.round((retainageOnWork + retainageOnMaterials) * 100) / 100;
-  const totalEarnedLessRetainageG702 = Math.round(
-    (totalCompletedAndStoredToDate - totalRetainageG702) * 100
-  ) / 100;
+  const totalRetainageG702 =
+    Math.round((retainageOnWork + retainageOnMaterials) * 100) / 100;
+  const totalEarnedLessRetainageG702 =
+    Math.round((totalCompletedAndStoredToDate - totalRetainageG702) * 100) /
+    100;
   const previousCertificates = viewingPayApp?.previous_payments || 0;
-  const currentPaymentDueG702 = Math.round(
-    (totalEarnedLessRetainageG702 - previousCertificates) * 100
-  ) / 100;
-  const balanceToFinishIncludingRetainage = Math.round(
-    (contractSumToDate - totalEarnedLessRetainageG702) * 100
-  ) / 100;
+  const currentPaymentDueG702 =
+    Math.round((totalEarnedLessRetainageG702 - previousCertificates) * 100) /
+    100;
+  const balanceToFinishIncludingRetainage =
+    Math.round((contractSumToDate - totalEarnedLessRetainageG702) * 100) / 100;
 
   const workRetainagePercentDisplay = (() => {
     const set = new Set(
