@@ -196,10 +196,43 @@ export async function syncPayAppToQBO(
         qboInvoice = response.Invoice;
       }
     } else {
-      // Create new invoice
-      console.log('Creating new invoice');
-      const response = await makeQBORequest('POST', 'invoice', invoiceData);
-      qboInvoice = response.Invoice;
+      // No qbo_invoice_id stored, but invoice might already exist in QB
+      // Check by DocNumber first to avoid duplicates
+      console.log(`Checking if invoice already exists with DocNumber: ${docNumber}`);
+      
+      try {
+        if (docNumber) {
+          const query = `SELECT * FROM Invoice WHERE DocNumber = '${docNumber}'`;
+          const existingData = await makeQBORequest(
+            'GET',
+            `query?query=${encodeURIComponent(query)}`
+          );
+
+          const existingInvoice = existingData.QueryResponse?.Invoice?.[0];
+          
+          if (existingInvoice) {
+            console.log(`Found existing invoice with ID: ${existingInvoice.Id}`);
+            // Link to existing invoice
+            qboInvoice = existingInvoice;
+          } else {
+            // Create new invoice
+            console.log('No existing invoice found, creating new one');
+            const response = await makeQBORequest('POST', 'invoice', invoiceData);
+            qboInvoice = response.Invoice;
+          }
+        } else {
+          // No DocNumber, just create
+          console.log('Creating new invoice (no DocNumber)');
+          const response = await makeQBORequest('POST', 'invoice', invoiceData);
+          qboInvoice = response.Invoice;
+        }
+      } catch (queryError) {
+        console.error('Error checking for existing invoice:', queryError);
+        // If query fails, try to create anyway
+        console.log('Query failed, attempting to create new invoice');
+        const response = await makeQBORequest('POST', 'invoice', invoiceData);
+        qboInvoice = response.Invoice;
+      }
     }
 
     // 7. Update pay app with QB invoice ID
