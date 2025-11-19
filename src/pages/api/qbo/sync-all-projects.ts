@@ -11,10 +11,21 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Ensure Next.js treats this as API route
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
   // Log the request for debugging
   console.log('sync-all-projects called with method:', req.method);
   
