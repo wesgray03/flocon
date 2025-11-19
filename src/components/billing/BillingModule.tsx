@@ -803,7 +803,7 @@ export default function BillingModule({
                     const response = await fetch('/api/qbo/sync-billing', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ engagementId: projectId }),
+                      body: JSON.stringify({ projectId }),
                     });
                     const result = await response.json();
                     
