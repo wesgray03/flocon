@@ -826,6 +826,64 @@ export default function BillingModule({
               </button>
               <button
                 type="button"
+                onClick={async () => {
+                  if (!confirm('Search for and link existing QuickBooks invoices to pay apps?')) return;
+                  try {
+                    const response = await fetch('/api/qbo/link-existing-invoices', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ engagementId: projectId }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      if (result.matched > 0) {
+                        let message = `Successfully linked ${result.matched} of ${result.total} pay app(s) to existing QB invoices.\n\n`;
+                        if (result.matches && result.matches.length > 0) {
+                          message += 'Matches:\n';
+                          result.matches.forEach((m: any) => {
+                            message += `• Pay App #${m.payAppNumber} → Invoice #${m.invoiceDocNumber} (${m.matchType})\n`;
+                          });
+                        }
+                        if (result.unmatched && result.unmatched.length > 0) {
+                          message += `\n${result.unmatched.length} pay apps could not be matched automatically.`;
+                        }
+                        alert(message);
+                      } else {
+                        alert(result.message || 'No matches found');
+                      }
+                      // Reload pay apps to get updated QB sync status
+                      const { data: apps } = await supabase
+                        .from('engagement_pay_apps')
+                        .select('*')
+                        .eq('engagement_id', projectId)
+                        .order('date_submitted', { ascending: false });
+                      setPayApps((apps ?? []) as PayApp[]);
+                    } else {
+                      alert('Link failed: ' + (result.error || 'Unknown error'));
+                    }
+                  } catch (err) {
+                    console.error('Link error:', err);
+                    alert('Error linking invoices. See console for details.');
+                  }
+                }}
+                style={{
+                  background: '#0078d4',
+                  color: '#fff',
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                Link Existing Invoices
+              </button>
+              <button
+                type="button"
                 onClick={openPayAppForNew}
                 style={{
                   background: colors.navy,
