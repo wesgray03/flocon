@@ -26,7 +26,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     // Test if we can generate auth URI
     const state = 'test_' + Math.random().toString(36).substring(2, 15);
     const authUri = oauthClient.authorizeUri({
-      scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.Payroll],
+      scope: [OAuthClient.scopes.Accounting],
       state,
     });
 
