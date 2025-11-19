@@ -5,12 +5,6 @@ import { syncEngagementToQBO } from '@/lib/qboSync';
 import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-// Use service role key for server-side operations
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 // Ensure Next.js treats this as API route
 export const config = {
   api: {
@@ -22,21 +16,37 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // Log the request for debugging
-  console.log('sync-all-projects called with method:', req.method);
-  
-  if (req.method !== 'POST') {
-    console.error('Invalid method:', req.method);
-    return res.status(405).json({ 
-      error: 'Method not allowed',
-      received: req.method,
-      expected: 'POST'
-    });
-  }
+  try {
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Methods', 'POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    // Log the request for debugging
+    console.log('sync-all-projects called with method:', req.method);
+    
+    if (req.method !== 'POST') {
+      console.error('Invalid method:', req.method);
+      return res.status(405).json({ 
+        error: 'Method not allowed',
+        received: req.method,
+        expected: 'POST'
+      });
+    }
+
+    // Check environment variables
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing environment variables');
+      return res.status(500).json({ 
+        error: 'Server configuration error',
+        details: 'Missing required environment variables'
+      });
+    }
+
+    // Initialize Supabase client with service role key
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
   try {
     // Get all projects that haven't been synced yet (or optionally all)
@@ -115,6 +125,9 @@ export default async function handler(
     });
   } catch (error: any) {
     console.error('Bulk sync error:', error);
-    return res.status(500).json({ error: error.message || 'Unknown error' });
+    return res.status(500).json({ 
+      error: error.message || 'Unknown error',
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }
