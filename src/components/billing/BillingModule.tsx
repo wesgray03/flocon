@@ -810,7 +810,9 @@ export default function BillingModule({
                         .order('date_submitted', { ascending: false });
                       setPayApps((apps ?? []) as PayApp[]);
                     } else {
-                      alert('Sync failed: ' + (result.error || 'Unknown error'));
+                      alert(
+                        'Sync failed: ' + (result.error || 'Unknown error')
+                      );
                     }
                   } catch (err) {
                     console.error('Sync error:', err);
