@@ -71,7 +71,7 @@ async function findCustomerByName(
   customerName: string
 ): Promise<QBOCustomer | null> {
   try {
-    const query = `SELECT * FROM Customer WHERE DisplayName = '${customerName.replace(/'/g, "\\'")}'`;
+    const query = `SELECT * FROM Customer WHERE DisplayName = '${customerName.replace(/'/g, "\\'")}' AND Active IN (true, false)`;
     const data = await makeQBORequest(
       'GET',
       `query?query=${encodeURIComponent(query)}`
@@ -131,8 +131,8 @@ async function findJobByProjectNumber(
   customerId?: string
 ): Promise<QBOJob | null> {
   try {
-    // Search for jobs that start with the project number
-    const query = `SELECT * FROM Customer WHERE Job = true AND DisplayName LIKE '${projectNumber}%'`;
+    // Search for jobs that start with the project number (including inactive)
+    const query = `SELECT * FROM Customer WHERE Job = true AND DisplayName LIKE '${projectNumber}%' AND Active IN (true, false)`;
     const data = await makeQBORequest(
       'GET',
       `query?query=${encodeURIComponent(query)}`
