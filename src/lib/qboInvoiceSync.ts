@@ -60,15 +60,43 @@ async function getOrCreateServiceItem(): Promise<string> {
       return data.QueryResponse.Item[0].Id;
     }
 
+    // Need to find a valid income account first
+    console.log('Finding income account...');
+    const accountQuery = `SELECT * FROM Account WHERE AccountType = 'Income' AND AccountSubType = 'ServiceFeeIncome' MAXRESULTS 1`;
+    const accountData = await makeQBORequest(
+      'GET',
+      `query?query=${encodeURIComponent(accountQuery)}`
+    );
+
+    let incomeAccountId = '79'; // Default Services income account ID (common in QB)
+    
+    if (accountData.QueryResponse?.Account?.length > 0) {
+      incomeAccountId = accountData.QueryResponse.Account[0].Id;
+      console.log(`Using income account: ${incomeAccountId} (${accountData.QueryResponse.Account[0].Name})`);
+    } else {
+      // Try to find ANY income account
+      const anyIncomeQuery = `SELECT * FROM Account WHERE AccountType = 'Income' MAXRESULTS 1`;
+      const anyIncomeData = await makeQBORequest(
+        'GET',
+        `query?query=${encodeURIComponent(anyIncomeQuery)}`
+      );
+      
+      if (anyIncomeData.QueryResponse?.Account?.length > 0) {
+        incomeAccountId = anyIncomeData.QueryResponse.Account[0].Id;
+        console.log(`Using income account: ${incomeAccountId} (${anyIncomeData.QueryResponse.Account[0].Name})`);
+      }
+    }
+
     // Create service item
     const itemData = {
       Name: 'Construction Services',
       Type: 'Service',
       IncomeAccountRef: {
-        value: '1', // Default income account - you may need to customize
+        value: incomeAccountId,
       },
     };
 
+    console.log('Creating service item with account:', incomeAccountId);
     const response = await makeQBORequest('POST', 'item', itemData);
     return response.Item.Id;
   } catch (error) {
