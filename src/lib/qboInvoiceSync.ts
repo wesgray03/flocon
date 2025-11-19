@@ -69,10 +69,12 @@ async function getOrCreateServiceItem(): Promise<string> {
     );
 
     let incomeAccountId = '79'; // Default Services income account ID (common in QB)
-    
+
     if (accountData.QueryResponse?.Account?.length > 0) {
       incomeAccountId = accountData.QueryResponse.Account[0].Id;
-      console.log(`Using income account: ${incomeAccountId} (${accountData.QueryResponse.Account[0].Name})`);
+      console.log(
+        `Using income account: ${incomeAccountId} (${accountData.QueryResponse.Account[0].Name})`
+      );
     } else {
       // Try to find ANY income account
       const anyIncomeQuery = `SELECT * FROM Account WHERE AccountType = 'Income' MAXRESULTS 1`;
@@ -80,10 +82,12 @@ async function getOrCreateServiceItem(): Promise<string> {
         'GET',
         `query?query=${encodeURIComponent(anyIncomeQuery)}`
       );
-      
+
       if (anyIncomeData.QueryResponse?.Account?.length > 0) {
         incomeAccountId = anyIncomeData.QueryResponse.Account[0].Id;
-        console.log(`Using income account: ${incomeAccountId} (${anyIncomeData.QueryResponse.Account[0].Name})`);
+        console.log(
+          `Using income account: ${incomeAccountId} (${anyIncomeData.QueryResponse.Account[0].Name})`
+        );
       }
     }
 
@@ -114,7 +118,7 @@ export async function syncPayAppToQBO(
 ): Promise<{ success: boolean; invoiceId?: string; error?: string }> {
   // Use provided client or fall back to default
   const client = supabaseClient || supabase;
-  
+
   try {
     console.log(`Starting sync for pay app: ${payAppId}`);
 
@@ -332,11 +336,15 @@ export async function syncPayAppToQBO(
  * Pull payment information from QuickBooks for an invoice
  */
 export async function pullPaymentFromQBO(
-  payAppId: string
+  payAppId: string,
+  supabaseClient?: SupabaseClient
 ): Promise<{ success: boolean; paymentTotal?: number; error?: string }> {
+  // Use provided client or fall back to default
+  const client = supabaseClient || supabase;
+  
   try {
     // 1. Get pay app with QB invoice ID
-    const { data: payApp, error: payAppError } = await supabase
+    const { data: payApp, error: payAppError } = await client
       .from('engagement_pay_apps')
       .select('qbo_invoice_id')
       .eq('id', payAppId)
@@ -369,7 +377,7 @@ export async function pullPaymentFromQBO(
     const paymentTotal = totalAmount - balance;
 
     // 3. Update pay app with payment info and status
-    const { error: updateError } = await supabase
+    const { error: updateError } = await client
       .from('engagement_pay_apps')
       .update({
         qbo_payment_total: paymentTotal,

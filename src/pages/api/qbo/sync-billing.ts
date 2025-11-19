@@ -28,10 +28,12 @@ export default async function handler(
       console.error('NEXT_PUBLIC_SUPABASE_URL is not set');
       return res.status(500).json({ error: 'Supabase URL not configured' });
     }
-    
+
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
       console.error('SUPABASE_SERVICE_ROLE_KEY is not set');
-      return res.status(500).json({ error: 'Supabase service role key not configured' });
+      return res
+        .status(500)
+        .json({ error: 'Supabase service role key not configured' });
     }
 
     console.log('Environment check passed');
@@ -95,9 +97,9 @@ export default async function handler(
           successCount++;
           console.log(`Successfully synced pay app ${payApp.id}`);
 
-          // Then, pull payment status
+          // Then, pull payment status (pass service role client)
           try {
-            await pullPaymentFromQBO(payApp.id);
+            await pullPaymentFromQBO(payApp.id, supabase);
           } catch (paymentError) {
             console.error(
               `Error pulling payment for ${payApp.id}:`,
