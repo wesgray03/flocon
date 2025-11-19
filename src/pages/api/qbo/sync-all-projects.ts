@@ -48,7 +48,6 @@ export default async function handler(
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-  try {
     // Get all projects that haven't been synced yet (or optionally all)
     const { onlyUnsynced } = req.body;
 
