@@ -82,10 +82,11 @@ export default async function handler(
     for (const payApp of payApps) {
       let matched = false;
 
-      // Try to match by DocNumber (pay app number)
-      if (payApp.pay_app_number) {
+      // Try to match by DocNumber in format: ProjectNumber-PayAppNumber (e.g., "1289-1")
+      if (engagement.project_number && payApp.pay_app_number) {
+        const expectedDocNumber = `${engagement.project_number}-${payApp.pay_app_number}`;
         const matchingInvoice = qbInvoices.find(
-          (inv: any) => inv.DocNumber === payApp.pay_app_number
+          (inv: any) => inv.DocNumber === expectedDocNumber
         );
 
         if (matchingInvoice) {

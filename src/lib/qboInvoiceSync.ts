@@ -126,6 +126,11 @@ export async function syncPayAppToQBO(
     // 4. Build invoice with single line for current payment due
     const paymentAmount = payApp.current_payment_due || 0;
 
+    // Build DocNumber in format: ProjectNumber-PayAppNumber (e.g., "1289-1")
+    const docNumber = engagement.project_number && payApp.pay_app_number
+      ? `${engagement.project_number}-${payApp.pay_app_number}`
+      : payApp.pay_app_number || undefined;
+
     const lines: QBOInvoice['Line'] = [
       {
         Description:
@@ -149,7 +154,7 @@ export async function syncPayAppToQBO(
         value: engagement.qbo_job_id, // Bill to the job/project
       },
       Line: lines,
-      DocNumber: payApp.pay_app_number || undefined,
+      DocNumber: docNumber,
       TxnDate: payApp.period_end || new Date().toISOString().split('T')[0],
     };
 
