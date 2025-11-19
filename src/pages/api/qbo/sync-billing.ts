@@ -2,7 +2,7 @@
  * API endpoint to sync all pay apps for a project to QuickBooks
  */
 import { pullPaymentFromQBO, syncPayAppToQBO } from '@/lib/qboInvoiceSync';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
@@ -22,6 +22,12 @@ export default async function handler(
     if (!projectId) {
       return res.status(400).json({ error: 'Project ID is required' });
     }
+
+    // Initialize Supabase client with service role key to bypass RLS
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Get all pay apps for this project
     console.log('Querying pay apps with engagement_id:', projectId);
