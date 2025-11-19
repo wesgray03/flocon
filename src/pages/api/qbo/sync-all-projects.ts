@@ -2,15 +2,29 @@
  * API endpoint to sync all projects to QuickBooks (one-time bulk operation)
  */
 import { syncEngagementToQBO } from '@/lib/qboSync';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+// Use service role key for server-side operations
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Log the request for debugging
+  console.log('sync-all-projects called with method:', req.method);
+  
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    console.error('Invalid method:', req.method);
+    return res.status(405).json({ 
+      error: 'Method not allowed',
+      received: req.method,
+      expected: 'POST'
+    });
   }
 
   try {
