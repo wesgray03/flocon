@@ -42,6 +42,8 @@ export async function fetchPayrollFromGL(
       `reports/TransactionList?${params.toString()}`
     );
 
+    console.log('TransactionList response structure:', JSON.stringify(transactionList, null, 2).substring(0, 2000));
+
     const rows = transactionList?.Rows?.Row || [];
 
     // Filter for Payroll Check transactions
