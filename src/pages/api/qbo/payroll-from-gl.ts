@@ -202,11 +202,9 @@ export async function fetchPayrollFromGL(
       transactionsFound,
       method: 'GeneralLedger_PayrollCheck',
     };
-  } catch (transactionListError: any) {
-    console.error('TransactionList failed:', transactionListError.message);
   }
 
-  // Fallback
+  // Fallback if both methods fail
   return {
     payrollTotal: 0,
     accountsChecked: [],
