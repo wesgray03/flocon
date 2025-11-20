@@ -708,7 +708,7 @@ export default function ProspectDetailPage() {
         .from('engagement_comments')
         .insert({
           engagement_id: prospect.id,
-          comment: commentText,
+          comment_text: commentText,
           user_id: user?.id || null,
         });
 
