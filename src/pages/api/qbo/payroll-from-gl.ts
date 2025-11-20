@@ -39,31 +39,39 @@ export async function fetchPayrollFromGL(
   );
 
   // Parse GL report for Payroll expenses
-  const payrollAccounts = [
-    '54000 direct salaries',
-    '54100',
-    'field wages',
-    'field payroll',
-    'simple ira',
-  ];
+  // Look for accounts starting with 54xxx (Direct Salaries Wages & Benefits)
+  const isPayrollAccount = (accountName: string): boolean => {
+    const name = accountName.toLowerCase().trim();
+    // Check if starts with 54 followed by numbers
+    if (/^54\d{3}/.test(accountName.trim())) {
+      return true;
+    }
+    // Also check for account name keywords
+    return (
+      name.includes('direct salaries') ||
+      name.includes('field wages') ||
+      name.includes('field payroll') ||
+      name.includes('simple ira')
+    );
+  };
 
   const traverseRows = (rows: any[], parentAccount?: string) => {
     rows.forEach((row: any) => {
       if (row.type === 'Data' && row.ColData) {
         // In GL, account name is typically in ColData[0]
         const accountCol = row.ColData[0];
-        const accountName = (accountCol?.value || '').toLowerCase();
+        const accountName = (accountCol?.value || '').trim();
         const accountId = accountCol?.id || '';
 
         // Check if this is a payroll expense account
-        const isPayrollAccount = payrollAccounts.some(keyword =>
-          accountName.includes(keyword)
-        );
+        const isPayroll = isPayrollAccount(accountName) || 
+                         (parentAccount && isPayrollAccount(parentAccount));
 
-        if (isPayrollAccount || (parentAccount && payrollAccounts.some(keyword => parentAccount.includes(keyword)))) {
+        if (isPayroll) {
           // Transaction type is typically in ColData[1]
           const txnType = row.ColData[1]?.value || '';
 
+          // Only process Payroll Check transactions
           if (txnType === 'Payroll Check') {
             // Customer/Job is typically in ColData[3]
             const customerCol = row.ColData[3];
@@ -71,18 +79,18 @@ export async function fetchPayrollFromGL(
             const customerName = customerCol?.value || '';
 
             // Skip if this is a credit to cash/liability account
+            const lowerAccountName = accountName.toLowerCase();
             const isCashOrLiability =
-              accountName.includes('cash') ||
-              accountName.includes('checking') ||
-              accountName.includes('savings') ||
-              accountName.includes('bank') ||
-              accountName.includes('payable') ||
-              accountName.includes('liability') ||
-              accountName.includes('payroll liabilities') ||
-              accountName.includes('direct deposit');
+              lowerAccountName.includes('cash') ||
+              lowerAccountName.includes('checking') ||
+              lowerAccountName.includes('savings') ||
+              lowerAccountName.includes('bank') ||
+              lowerAccountName.includes('payable') ||
+              lowerAccountName.includes('liability') ||
+              lowerAccountName.includes('direct deposit');
 
             if (!isCashOrLiability) {
-              // Amount is typically in ColData[6] or ColData[7]
+              // Amount is typically in ColData[6] (Debit) or ColData[7] (Credit)
               const debitCol = row.ColData[6];
               const amountStr = (debitCol?.value || '').replace(/,/g, '').trim();
               const amount = parseFloat(amountStr) || 0;
@@ -93,7 +101,7 @@ export async function fetchPayrollFromGL(
                   payrollTotal += amount;
                   transactionsFound++;
                   console.log(
-                    `Found payroll: $${amount} for ${customerName || 'No Customer'} in ${accountName}`
+                    `Found payroll: $${amount} for ${customerName || 'No Customer'} in ${accountName} (Account #${accountId})`
                   );
                 }
               }
