@@ -111,7 +111,8 @@ export async function fetchPayrollFromGL(
       // Check for section headers (Income, COGS, Expenses)
       if (row.Header) {
         const headerText = row.Header.ColData?.[0]?.value || '';
-        console.log(`${indent}📁 Section: "${headerText}"`);
+        const headerAmount = row.Header.ColData?.[1]?.value || '';
+        console.log(`${indent}📁 Section: "${headerText}" Amount: ${headerAmount}`);
         
         // Skip income section entirely
         if (headerText.toLowerCase().includes('income')) {
@@ -123,6 +124,14 @@ export async function fetchPayrollFromGL(
         if (row.Rows?.Row) {
           traverseRows(row.Rows.Row, depth + 1);
         }
+        return;
+      }
+
+      // Check for Summary rows (subtotals)
+      if (row.Summary) {
+        const summaryText = row.Summary.ColData?.[0]?.value || '';
+        const summaryAmount = row.Summary.ColData?.[1]?.value || '';
+        console.log(`${indent}📊 Summary: "${summaryText}" Amount: ${summaryAmount}`);
         return;
       }
 
