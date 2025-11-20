@@ -73,6 +73,8 @@ export function DashboardHeader({
   menuItems,
   actionButton,
   exportButton,
+  showInactive = false,
+  onToggleInactive,
 }: DashboardHeaderProps) {
   return (
     <div
