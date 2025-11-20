@@ -177,6 +177,7 @@ export default function ProspectDetailPage() {
             start_date: prospectData.est_start_date,
             bid_date: prospectData.bid_date,
             sharepoint_folder: prospectData.sharepoint_folder,
+            active: prospectData.active,
             trades: (prospectData.engagement_trades || []).map(
               (et: {
                 trade_id: string;
