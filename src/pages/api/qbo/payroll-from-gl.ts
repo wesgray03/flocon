@@ -134,8 +134,16 @@ export async function fetchPayrollFromGL(
           return;
         }
 
-        // Always traverse children to get all detail accounts
-        // Don't use parent totals - sum children for accuracy
+        // If this section has an amount AND is an expense account, add the parent amount
+        if (headerAmount !== 0 && isExpenseAccount(headerText)) {
+          totalCost += Math.abs(headerAmount);
+          accountsUsed.add(headerText);
+          console.log(
+            `${indent}  ✅ Added parent account: $${Math.abs(headerAmount)}`
+          );
+        }
+
+        // Also traverse children to add their amounts (parent + children = total)
         if (row.Rows?.Row) {
           traverseRows(row.Rows.Row, depth + 1);
         }
