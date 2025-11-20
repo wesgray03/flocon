@@ -265,6 +265,10 @@ export default function BillingModule({
         ) / 100;
 
       // Calculate retainage held from all previous pay apps
+      // Since total_retainage is cumulative, we need to either:
+      // 1. Take the last pay app's total_retainage (already cumulative), OR
+      // 2. Sum the period-specific retainage_completed_work from each pay app
+      // We'll use option 2 to sum the actual retainage withheld each period
       const retainageHeld =
         Math.round(
           payApps
@@ -274,7 +278,7 @@ export default function BillingModule({
                 app.pay_app_number !== null &&
                 Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
             )
-            .reduce((sum, app) => sum + (app.total_retainage || 0), 0) * 100
+            .reduce((sum, app) => sum + (app.retainage_completed_work || 0), 0) * 100
         ) / 100;
 
       // If billing retainage, the current payment is the retainage balance
