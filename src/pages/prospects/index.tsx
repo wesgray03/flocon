@@ -446,7 +446,7 @@ export default function ProspectsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showInactive]);
 
   const handleDelete = async (id: string) => {
     try {
