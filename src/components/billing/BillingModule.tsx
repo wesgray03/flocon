@@ -219,7 +219,7 @@ export default function BillingModule({
           line.stored_materials;
         return sum + currentTotal;
       }, 0);
-      
+
       // Calculate retainage for CURRENT period only (not cumulative)
       const currentPeriodRetainage =
         Math.round(
@@ -227,12 +227,13 @@ export default function BillingModule({
             const currentPeriodWork =
               line.current_completed + line.stored_materials;
             const retainage =
-              Math.round(currentPeriodWork * (line.retainage_percent / 100) * 100) /
-              100;
+              Math.round(
+                currentPeriodWork * (line.retainage_percent / 100) * 100
+              ) / 100;
             return sum + retainage;
           }, 0) * 100
         ) / 100;
-      
+
       // Calculate TOTAL cumulative retainage on all work to date
       const totalRetainage =
         Math.round(
@@ -247,7 +248,7 @@ export default function BillingModule({
             return sum + retainage;
           }, 0) * 100
         ) / 100;
-        
+
       const totalEarnedLessRetainage =
         Math.round((totalCompletedAndStored - totalRetainage) * 100) / 100;
 
@@ -278,7 +279,10 @@ export default function BillingModule({
                 app.pay_app_number !== null &&
                 Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
             )
-            .reduce((sum, app) => sum + (app.retainage_completed_work || 0), 0) * 100
+            .reduce(
+              (sum, app) => sum + (app.retainage_completed_work || 0),
+              0
+            ) * 100
         ) / 100;
 
       // If billing retainage, the current payment is the retainage balance
@@ -477,7 +481,10 @@ export default function BillingModule({
         unit_cost: cost,
         extended_cost: extended,
         category: sovForm.category || null,
-        retainage_percent: sovForm.retainage_percent !== '' ? Number(sovForm.retainage_percent) : 5.0,
+        retainage_percent:
+          sovForm.retainage_percent !== ''
+            ? Number(sovForm.retainage_percent)
+            : 5.0,
       };
 
       if (editingSOVLine) {

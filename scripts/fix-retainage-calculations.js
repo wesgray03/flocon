@@ -17,7 +17,10 @@ async function fixRetainageCalculations() {
   try {
     // Read the migration SQL
     const migrationSQL = readFileSync(
-      join(__dirname, '../db/migrations/2025-11-20-fix-retainage-calculations.sql'),
+      join(
+        __dirname,
+        '../db/migrations/2025-11-20-fix-retainage-calculations.sql'
+      ),
       'utf-8'
     );
 
@@ -71,38 +74,49 @@ async function fixManually() {
         .eq('pay_app_id', payApp.id);
 
       if (lineError) {
-        console.error(`❌ Error fetching line progress for pay app ${payApp.id}:`, lineError);
+        console.error(
+          `❌ Error fetching line progress for pay app ${payApp.id}:`,
+          lineError
+        );
         errorCount++;
         continue;
       }
 
       if (!lineProgress || lineProgress.length === 0) {
-        console.log(`⚠️  Pay app ${payApp.pay_app_number || payApp.id} has no line progress, skipping`);
+        console.log(
+          `⚠️  Pay app ${payApp.pay_app_number || payApp.id} has no line progress, skipping`
+        );
         continue;
       }
 
       // Calculate current period retainage (only on current_completed + stored_materials)
-      const currentPeriodRetainage = Math.round(
-        lineProgress.reduce((sum, line) => {
-          const currentPeriodWork = line.current_completed + line.stored_materials;
-          const retainage = Math.round(
-            currentPeriodWork * (line.retainage_percent / 100) * 100
-          ) / 100;
-          return sum + retainage;
-        }, 0) * 100
-      ) / 100;
+      const currentPeriodRetainage =
+        Math.round(
+          lineProgress.reduce((sum, line) => {
+            const currentPeriodWork =
+              line.current_completed + line.stored_materials;
+            const retainage =
+              Math.round(
+                currentPeriodWork * (line.retainage_percent / 100) * 100
+              ) / 100;
+            return sum + retainage;
+          }, 0) * 100
+        ) / 100;
 
       // Calculate total cumulative retainage (on all work to date)
-      const totalCumulativeRetainage = Math.round(
-        lineProgress.reduce((sum, line) => {
-          const totalToDate =
-            line.previous_completed + line.current_completed + line.stored_materials;
-          const retainage = Math.round(
-            totalToDate * (line.retainage_percent / 100) * 100
-          ) / 100;
-          return sum + retainage;
-        }, 0) * 100
-      ) / 100;
+      const totalCumulativeRetainage =
+        Math.round(
+          lineProgress.reduce((sum, line) => {
+            const totalToDate =
+              line.previous_completed +
+              line.current_completed +
+              line.stored_materials;
+            const retainage =
+              Math.round(totalToDate * (line.retainage_percent / 100) * 100) /
+              100;
+            return sum + retainage;
+          }, 0) * 100
+        ) / 100;
 
       // Update the pay app
       const { error: updateError } = await supabase
@@ -120,8 +134,8 @@ async function fixManually() {
       } else {
         console.log(
           `✅ Pay app #${payApp.pay_app_number || '?'}: ` +
-          `current=${currentPeriodRetainage.toFixed(2)}, ` +
-          `cumulative=${totalCumulativeRetainage.toFixed(2)}`
+            `current=${currentPeriodRetainage.toFixed(2)}, ` +
+            `cumulative=${totalCumulativeRetainage.toFixed(2)}`
         );
         updatedCount++;
       }
@@ -159,12 +173,14 @@ async function verifyFix() {
   payApps.forEach((app) => {
     console.log(
       `  ${String(app.pay_app_number || '?').padEnd(5)} | ` +
-      `$${String(app.retainage_completed_work?.toFixed(2) || '0.00').padStart(12)} | ` +
-      `$${String(app.total_retainage?.toFixed(2) || '0.00').padStart(12)}`
+        `$${String(app.retainage_completed_work?.toFixed(2) || '0.00').padStart(12)} | ` +
+        `$${String(app.total_retainage?.toFixed(2) || '0.00').padStart(12)}`
     );
   });
 
-  console.log('\n✅ Fix complete! New pay apps will now calculate retainage correctly.\n');
+  console.log(
+    '\n✅ Fix complete! New pay apps will now calculate retainage correctly.\n'
+  );
 }
 
 fixRetainageCalculations().catch(console.error);

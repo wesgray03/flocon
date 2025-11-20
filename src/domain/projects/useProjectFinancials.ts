@@ -128,12 +128,12 @@ export function useProjectFinancials(
           0
         );
 
-        // Fetch QBO costs if we have a job ID (using cached endpoint)
+        // Fetch QBO costs if we have a job ID
         let qboCosts = { costToDate: 0, cashOut: 0 };
         if (qboJobId) {
           try {
             const costResponse = await fetch(
-              `/api/qbo/project-costs-cached?qboJobId=${qboJobId}&engagementId=${projectId}`
+              `/api/qbo/project-costs?qboJobId=${qboJobId}`
             );
             if (costResponse.ok) {
               const costData = await costResponse.json();

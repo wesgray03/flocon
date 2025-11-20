@@ -62,8 +62,7 @@ export default async function handler(
         .single();
 
       if (cached) {
-        const cacheAge =
-          Date.now() - new Date(cached.last_synced_at).getTime();
+        const cacheAge = Date.now() - new Date(cached.last_synced_at).getTime();
         const cacheAgeMinutes = cacheAge / 1000 / 60;
 
         // If cache is fresh, return it
@@ -178,7 +177,8 @@ export default async function handler(
       });
     });
 
-    const netCostToDate = billsTotal + purchasesTotal + payrollTotal - creditsTotal;
+    const netCostToDate =
+      billsTotal + purchasesTotal + payrollTotal - creditsTotal;
 
     // Update cache
     const cacheData = {

@@ -43,7 +43,7 @@ async function initializeCostCache() {
           const data = await response.json();
           console.log(
             `   ✅ Net Cost: $${data.netCostToDate.toFixed(2)} ` +
-            `(Bills: ${data.billsCount}, Purchases: ${data.purchasesCount})`
+              `(Bills: ${data.billsCount}, Purchases: ${data.purchasesCount})`
           );
           successCount++;
         } else {
@@ -57,7 +57,7 @@ async function initializeCostCache() {
       }
 
       // Add a small delay to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     console.log(`\n${'='.repeat(60)}`);
@@ -69,7 +69,6 @@ async function initializeCostCache() {
     console.log('1. Financial Overview will now load much faster');
     console.log('2. Cache refreshes automatically after 1 hour');
     console.log('3. Add a "Refresh Costs" button for manual updates\n');
-
   } catch (err) {
     console.error('❌ Error:', err.message);
   }
