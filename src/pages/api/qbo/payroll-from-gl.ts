@@ -101,12 +101,12 @@ export async function fetchPayrollFromGL(
         `TransactionList: Found ${transactionsFound} payroll checks, total: $${payrollTotal}`
       );
 
-      return res.status(200).json({
+      return {
         payrollTotal,
         accountsChecked: ['TransactionList'],
         transactionsFound,
         method: 'TransactionList_PayrollCheck',
-      });
+      };
     } catch (transactionListError: any) {
       console.log(
         'TransactionList failed, trying GeneralLedger:',
