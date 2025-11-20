@@ -10,7 +10,7 @@ interface PayrollGLCosts {
   method: string;
 }
 
-// Exported function to fetch payroll costs (can be called from other endpoints)
+// Exported function to fetch ALL costs from GL (can be called from other endpoints)
 export async function fetchPayrollFromGL(
   qboJobId: string,
   startDate?: string,
@@ -19,13 +19,12 @@ export async function fetchPayrollFromGL(
   const dateStart = startDate || '2000-01-01';
   const dateEnd = endDate || '2099-12-31';
 
-  let payrollTotal = 0;
+  let totalDebits = 0;
+  let totalCredits = 0;
   let transactionsFound = 0;
 
-  // Use GeneralLedger report filtered by customer to get ALL expense transactions
-  console.log(
-    `Fetching GeneralLedger for customer ${qboJobId}...`
-  );
+  // Use GeneralLedger report filtered by customer to get ALL transactions
+  console.log(`Fetching GeneralLedger for customer ${qboJobId}...`);
 
   const glParams = new URLSearchParams({
     start_date: dateStart,
@@ -44,7 +43,7 @@ export async function fetchPayrollFromGL(
     const name = accountName.trim();
     // QuickBooks account numbering:
     // 1xxxx = Assets
-    // 2xxxx = Liabilities  
+    // 2xxxx = Liabilities
     // 3xxxx = Equity
     // 4xxxx = Income
     // 5xxxx = Cost of Goods Sold
@@ -52,34 +51,38 @@ export async function fetchPayrollFromGL(
     return /^[123]\d{4}/.test(name);
   };
 
-  const traverseRows = (rows: any[], parentAccount?: string) => {
+  const traverseRows = (rows: any[]) => {
     rows.forEach((row: any) => {
       if (row.type === 'Data' && row.ColData) {
         // In GL, account name is typically in ColData[0]
         const accountCol = row.ColData[0];
         const accountName = (accountCol?.value || '').trim();
-        
+
         // Skip balance sheet accounts
         if (isBalanceSheetAccount(accountName)) {
           return;
         }
 
-        // Transaction type in ColData[1]
-        const txnType = row.ColData[1]?.value || '';
-        
-        // Only process Payroll Check transactions for this payroll endpoint
-        if (txnType === 'Payroll Check') {
-          // Amount is typically in ColData[6] (Debit)
-          const debitCol = row.ColData[6];
-          const amountStr = (debitCol?.value || '').replace(/,/g, '').trim();
-          const amount = parseFloat(amountStr) || 0;
+        // Debit in ColData[6], Credit in ColData[7]
+        const debitCol = row.ColData[6];
+        const creditCol = row.ColData[7];
 
-          if (amount > 0) {
-            payrollTotal += amount;
-            transactionsFound++;
-            console.log(
-              `Payroll: $${amount} in ${accountName}`
-            );
+        const debitStr = (debitCol?.value || '').replace(/,/g, '').trim();
+        const creditStr = (creditCol?.value || '').replace(/,/g, '').trim();
+
+        const debit = parseFloat(debitStr) || 0;
+        const credit = parseFloat(creditStr) || 0;
+
+        if (debit > 0 || credit > 0) {
+          totalDebits += debit;
+          totalCredits += credit;
+          transactionsFound++;
+
+          if (debit > 0) {
+            console.log(`Debit: $${debit} in ${accountName}`);
+          }
+          if (credit > 0) {
+            console.log(`Credit: $${credit} in ${accountName}`);
           }
         }
       }
@@ -95,15 +98,17 @@ export async function fetchPayrollFromGL(
     traverseRows(generalLedger.Rows.Row);
   }
 
+  const netTotal = totalDebits - totalCredits;
+
   console.log(
-    `GeneralLedger: Found ${transactionsFound} payroll checks, total: $${payrollTotal}`
+    `GeneralLedger: ${transactionsFound} transactions, Debits: $${totalDebits}, Credits: $${totalCredits}, Net: $${netTotal}`
   );
 
   return {
-    payrollTotal,
+    payrollTotal: netTotal,
     accountsChecked: ['GeneralLedger'],
     transactionsFound,
-    method: 'GeneralLedger_PayrollCheck',
+    method: 'GeneralLedger_All_Transactions',
   };
 }
 

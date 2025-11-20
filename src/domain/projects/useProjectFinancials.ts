@@ -132,11 +132,20 @@ export function useProjectFinancials(
         let qboCosts = { costToDate: 0, cashOut: 0 };
         if (qboJobId) {
           try {
-            console.log('Fetching QBO costs for job:', qboJobId, 'engagement:', projectId);
+            console.log(
+              'Fetching QBO costs for job:',
+              qboJobId,
+              'engagement:',
+              projectId
+            );
             const costResponse = await fetch(
               `/api/qbo/project-costs-cached?qboJobId=${qboJobId}&engagementId=${projectId}`
             );
-            console.log('Cost response status:', costResponse.status, costResponse.ok);
+            console.log(
+              'Cost response status:',
+              costResponse.status,
+              costResponse.ok
+            );
             if (costResponse.ok) {
               const costData = await costResponse.json();
               console.log('Cost data received:', costData);

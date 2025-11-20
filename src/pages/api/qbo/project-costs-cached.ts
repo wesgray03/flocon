@@ -1,6 +1,5 @@
 // api/qbo/project-costs-cached.ts
 // Cached version of project costs - checks cache first, then falls back to QBO API
-import { makeQBORequest } from '@/lib/qboClient';
 import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { fetchPayrollFromGL } from './payroll-from-gl';
@@ -20,20 +19,6 @@ type ProjectCosts = {
 };
 
 const CACHE_TTL_MINUTES = 60; // Cache valid for 1 hour
-
-// Helper to check if a line references a specific job
-function lineReferencesJob(line: any, jobId: string): boolean {
-  const customerRef =
-    line.CustomerRef?.value ||
-    line.AccountBasedExpenseLineDetail?.CustomerRef?.value ||
-    line.ItemBasedExpenseLineDetail?.CustomerRef?.value;
-  return customerRef === jobId;
-}
-
-// Helper to get line amount
-function getLineAmount(line: any): number {
-  return parseFloat(line.Amount || '0');
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -76,7 +61,7 @@ export default async function handler(
       if (cacheError) {
         console.error('Cache query error:', cacheError);
       }
-      
+
       console.log('Cache result:', cached ? 'found' : 'not found');
 
       if (cached && !cacheError) {
@@ -111,99 +96,32 @@ export default async function handler(
     const dateStart = '2000-01-01';
     const dateEnd = '2099-12-31';
 
-    // Query Bills
-    const billsQuery = `SELECT * FROM Bill WHERE TxnDate >= '${dateStart}' AND TxnDate <= '${dateEnd}' MAXRESULTS 1000`;
-    const billsResult: any = await makeQBORequest(
-      'GET',
-      `query?query=${encodeURIComponent(billsQuery)}`
+    // Fetch ALL costs from General Ledger report (debits - credits)
+    console.log('Fetching all costs from GL...');
+    const glData = await fetchPayrollFromGL(
+      qboJobId as string,
+      dateStart,
+      dateEnd
     );
-    const allBills = billsResult?.QueryResponse?.Bill || [];
-
-    let billsTotal = 0;
-    let billsCount = 0;
-    allBills.forEach((bill: any) => {
-      const lines = bill.Line || [];
-      lines.forEach((line: any) => {
-        if (lineReferencesJob(line, qboJobId as string)) {
-          billsTotal += getLineAmount(line);
-          billsCount++;
-        }
-      });
-    });
-
-    // Query Purchases
-    const purchasesQuery = `SELECT * FROM Purchase WHERE TxnDate >= '${dateStart}' AND TxnDate <= '${dateEnd}' MAXRESULTS 1000`;
-    const purchasesResult: any = await makeQBORequest(
-      'GET',
-      `query?query=${encodeURIComponent(purchasesQuery)}`
+    const netCostToDate = glData.payrollTotal || 0; // Now returns net total, not just payroll
+    const transactionsFound = glData.transactionsFound || 0;
+    console.log(
+      `GL Report: $${netCostToDate} (${transactionsFound} transactions)`
     );
-    const allPurchases = purchasesResult?.QueryResponse?.Purchase || [];
-
-    let purchasesTotal = 0;
-    let purchasesCount = 0;
-    allPurchases.forEach((purchase: any) => {
-      const lines = purchase.Line || [];
-      lines.forEach((line: any) => {
-        if (lineReferencesJob(line, qboJobId as string)) {
-          purchasesTotal += getLineAmount(line);
-          purchasesCount++;
-        }
-      });
-    });
-
-    // Fetch payroll costs from General Ledger (Reports API)
-    let payrollTotal = 0;
-    let payrollCount = 0;
-    try {
-      console.log('Fetching payroll from GL...');
-      const payrollData = await fetchPayrollFromGL(
-        qboJobId as string,
-        dateStart,
-        dateEnd
-      );
-      payrollTotal = payrollData.payrollTotal || 0;
-      payrollCount = payrollData.transactionsFound || 0;
-      console.log(`Payroll from GL: $${payrollTotal} (${payrollCount} transactions)`);
-    } catch (payrollError: any) {
-      console.log('Payroll fetch failed:', payrollError.message);
-    }
-
-    // Query Vendor Credits
-    const creditsQuery = `SELECT * FROM VendorCredit WHERE TxnDate >= '${dateStart}' AND TxnDate <= '${dateEnd}' MAXRESULTS 1000`;
-    const creditsResult: any = await makeQBORequest(
-      'GET',
-      `query?query=${encodeURIComponent(creditsQuery)}`
-    );
-    const allCredits = creditsResult?.QueryResponse?.VendorCredit || [];
-
-    let creditsTotal = 0;
-    let creditsCount = 0;
-    allCredits.forEach((credit: any) => {
-      const lines = credit.Line || [];
-      lines.forEach((line: any) => {
-        if (lineReferencesJob(line, qboJobId as string)) {
-          creditsTotal += getLineAmount(line);
-          creditsCount++;
-        }
-      });
-    });
-
-    const netCostToDate =
-      billsTotal + purchasesTotal + payrollTotal - creditsTotal;
 
     // Update cache
     const cacheData = {
       engagement_id: engagementId,
       qbo_job_id: qboJobId,
-      bills_total: billsTotal,
-      purchases_total: purchasesTotal,
-      payroll_total: payrollTotal,
-      credits_total: creditsTotal,
+      bills_total: 0,
+      purchases_total: 0,
+      payroll_total: 0,
+      credits_total: 0,
       net_cost_to_date: netCostToDate,
-      bills_count: billsCount,
-      purchases_count: purchasesCount,
-      payroll_count: payrollCount,
-      credits_count: creditsCount,
+      bills_count: 0,
+      purchases_count: 0,
+      payroll_count: 0,
+      credits_count: transactionsFound,
       last_synced_at: new Date().toISOString(),
     };
 
@@ -213,23 +131,21 @@ export default async function handler(
 
     console.log(`✅ Updated cost cache for ${engagementId}`);
     console.log('Returning fresh QBO data:', {
-      billsTotal,
-      purchasesTotal,
-      payrollTotal,
-      creditsTotal,
       netCostToDate,
+      transactionsFound,
+      method: 'GeneralLedger',
     });
 
     return res.status(200).json({
-      billsTotal,
-      purchasesTotal,
-      payrollTotal,
-      creditsTotal,
+      billsTotal: 0,
+      purchasesTotal: 0,
+      payrollTotal: 0,
+      creditsTotal: 0,
       netCostToDate,
-      billsCount,
-      purchasesCount,
-      payrollCount,
-      creditsCount,
+      billsCount: 0,
+      purchasesCount: 0,
+      payrollCount: 0,
+      creditsCount: transactionsFound,
       cached: false,
       lastSynced: new Date().toISOString(),
     });
