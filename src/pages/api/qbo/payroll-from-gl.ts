@@ -38,17 +38,17 @@ export async function fetchPayrollFromGL(
     `reports/GeneralLedger?${glParams.toString()}`
   );
 
-  // Balance sheet account prefixes to exclude (assets, liabilities, equity)
-  const isBalanceSheetAccount = (accountName: string): boolean => {
+  // Balance sheet and income account prefixes to exclude
+  const isExcludedAccount = (accountName: string): boolean => {
     const name = accountName.trim();
     // QuickBooks account numbering:
-    // 1xxxx = Assets
-    // 2xxxx = Liabilities
-    // 3xxxx = Equity
-    // 4xxxx = Income
-    // 5xxxx = Cost of Goods Sold
-    // 6xxxx+ = Expenses
-    return /^[123]\d{4}/.test(name);
+    // 1xxxx = Assets (exclude)
+    // 2xxxx = Liabilities (exclude)
+    // 3xxxx = Equity (exclude)
+    // 4xxxx = Income (exclude)
+    // 5xxxx = Cost of Goods Sold (include)
+    // 6xxxx+ = Expenses (include)
+    return /^[1234]\d{4}/.test(name);
   };
 
   const traverseRows = (rows: any[]) => {
@@ -58,8 +58,8 @@ export async function fetchPayrollFromGL(
         const accountCol = row.ColData[0];
         const accountName = (accountCol?.value || '').trim();
 
-        // Skip balance sheet accounts
-        if (isBalanceSheetAccount(accountName)) {
+        // Skip balance sheet and income accounts
+        if (isExcludedAccount(accountName)) {
           return;
         }
 
