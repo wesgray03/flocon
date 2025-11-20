@@ -32,7 +32,7 @@ export async function fetchPayrollFromGL(
   });
 
   console.log(`Fetching ProfitAndLoss report for customer ${qboJobId}...`);
-  
+
   const profitAndLoss: any = await makeQBORequest(
     'GET',
     `reports/ProfitAndLoss?${plParams.toString()}`

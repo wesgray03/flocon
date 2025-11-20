@@ -392,7 +392,8 @@ export default function ProspectDetailPage() {
       const { data: reasons } = await supabase
         .from('lost_reasons')
         .select('id, reason')
-        .order('reason');
+        .eq('is_active', true)
+        .order('display_order', { ascending: true, nullsFirst: false });
       setLostReasons(reasons || []);
     } catch (err) {
       console.error('Error loading dropdown options:', err);
@@ -670,13 +671,12 @@ export default function ProspectDetailPage() {
 
     setConverting(true);
     try {
-      // Update engagement to mark as lost using active flag
+      // Update engagement to mark as lost using active flag and lost_reason_id
       const { error: updateError } = await supabase
         .from('engagements')
         .update({
           active: false,
           lost_reason_id: selectedLostReasonId,
-          lost_at: new Date().toISOString(),
         })
         .eq('id', prospect.id);
 

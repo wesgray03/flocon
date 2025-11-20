@@ -164,7 +164,7 @@ export default function BillingModule({
           previous_completed: prevCompleted,
           current_completed: 0,
           stored_materials: 0,
-          retainage_percent: sovLine.retainage_percent || 5,
+          retainage_percent: sovLine.retainage_percent ?? 5,
         };
       });
       setSovLineProgress(initialProgress);
