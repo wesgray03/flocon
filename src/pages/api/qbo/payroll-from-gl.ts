@@ -1,5 +1,5 @@
 // api/qbo/payroll-from-gl.ts
-// Fetch costs from General Ledger report with manual customer filtering
+// Fetch costs from QuickBooks Query API with line-item customer filtering
 import { makeQBORequest } from '@/lib/qboClient';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -10,7 +10,7 @@ interface PayrollGLCosts {
   method: string;
 }
 
-// Exported function to fetch ALL costs from GL (can be called from other endpoints)
+// Exported function to fetch costs using Query API (filters by customer/job on line items)
 export async function fetchPayrollFromGL(
   qboJobId: string,
   startDate?: string,
@@ -19,126 +19,111 @@ export async function fetchPayrollFromGL(
   const dateStart = startDate || '2000-01-01';
   const dateEnd = endDate || '2099-12-31';
 
-  let totalDebits = 0;
-  let totalCredits = 0;
+  let totalCost = 0;
   let transactionsFound = 0;
+  const accountsUsed = new Set<string>();
 
-  // Use GeneralLedger report WITHOUT customer filter (we'll filter transactions manually)
-  console.log(`Fetching GeneralLedger...`);
+  // Helper function to check if account is COGS or Expense account
+  const isExpenseAccount = (accountName: string): boolean => {
+    if (!accountName) return false;
 
-  const glParams = new URLSearchParams({
-    start_date: dateStart,
-    end_date: dateEnd,
-    accounting_method: 'Accrual',
-  });
+    // Try to match by account number first (5xxxx or 6xxxx)
+    const numberMatch = accountName.match(/^(\d{5})/);
+    if (numberMatch) {
+      const num = numberMatch[1];
+      return /^[56]\d{4}/.test(num);
+    }
 
-  const generalLedger: any = await makeQBORequest(
-    'GET',
-    `reports/GeneralLedger?${glParams.toString()}`
-  );
+    // If no number, match by account name keywords for COGS and Expenses
+    const lowerName = accountName.toLowerCase();
+    const expenseKeywords = [
+      'cost of goods sold',
+      'cogs',
+      'job expenses',
+      'job materials',
+      'cost of labor',
+      'labor',
+      'materials',
+      'advertising',
+      'automobile',
+      'fuel',
+      'dues',
+      'subscriptions',
+      'equipment rental',
+      'insurance',
+      'legal',
+      'professional fees',
+      'accounting',
+      'bookkeeper',
+      'lawyer',
+      'maintenance',
+      'repair',
+      'meals',
+      'entertainment',
+      'office expenses',
+      'rent',
+      'lease',
+      'utilities',
+      'gas and electric',
+      'telephone',
+      'installation',
+      'plants and soil',
+      'sprinklers',
+      'decks and patios',
+      'pest control',
+    ];
 
-  // Only include COGS and Expenses
-  const isIncludedAccount = (accountNumber: string): boolean => {
-    const num = accountNumber.trim();
-    // QuickBooks account numbering:
-    // 5xxxx = Cost of Goods Sold (include)
-    // 6xxxx+ = Expenses (include)
-    return /^[56]\d{4}/.test(num);
+    return expenseKeywords.some((keyword) => lowerName.includes(keyword));
   };
 
-  const traverseRows = (rows: any[], currentAccount?: string) => {
-    rows.forEach((row: any) => {
-      // Check if this is an account header row
-      if (row.Header?.ColData) {
-        const accountHeader = row.Header.ColData[0]?.value || '';
-        const accountMatch = accountHeader.match(/^(\d{5})/); // Extract account number
-        const accountNumber = accountMatch ? accountMatch[1] : '';
+  // Query all Purchase transactions in date range
+  try {
+    const query = `SELECT * FROM Purchase WHERE TxnDate >= '${dateStart}' AND TxnDate <= '${dateEnd}' MAXRESULTS 1000`;
+    const encodedQuery = encodeURIComponent(query);
 
-        // Recursively traverse this account's transactions
-        if (row.Rows?.Row) {
-          traverseRows(row.Rows.Row, accountNumber);
-        }
-        return;
-      }
+    const queryResult: any = await makeQBORequest(
+      'GET',
+      `query?query=${encodedQuery}`
+    );
 
-      if (row.type === 'Data' && row.ColData && currentAccount) {
-        // Only include COGS and Expense accounts
-        if (!isIncludedAccount(currentAccount)) {
-          return;
-        }
+    if (queryResult?.QueryResponse?.Purchase) {
+      const purchases = queryResult.QueryResponse.Purchase;
 
-        // Debug: Log all ColData to see structure
-        if (transactionsFound === 0) {
-          console.log('First transaction ColData structure:');
-          row.ColData.forEach((col: any, idx: number) => {
-            console.log(`  ColData[${idx}]: ${JSON.stringify(col)}`);
-          });
-        }
+      purchases.forEach((purchase: any) => {
+        if (!purchase.Line) return;
 
-        // Check if this transaction is for the specified job/customer
-        // Try multiple possible locations for customer ID
-        let customer = '';
-        
-        // Check each ColData entry for customer info
-        for (let i = 0; i < row.ColData.length; i++) {
-          const col = row.ColData[i];
-          const value = (col?.value || '').trim();
-          
-          // If this value matches our job ID, we found it
-          if (value === qboJobId) {
-            customer = value;
-            console.log(`Found customer ${qboJobId} in ColData[${i}]`);
-            break;
+        purchase.Line.forEach((line: any) => {
+          if (!line.AccountBasedExpenseLineDetail) return;
+
+          const detail = line.AccountBasedExpenseLineDetail;
+          const accountName = detail.AccountRef?.name || '';
+          const customerId = detail.CustomerRef?.value || '';
+          const amount = parseFloat(line.Amount || '0');
+
+          // Only include expense accounts
+          if (!isExpenseAccount(accountName)) {
+            return;
           }
-        }
-        
-        // Skip if not for our job
-        if (customer !== qboJobId) {
-          return;
-        }
 
-        // Debit in ColData[6], Credit in ColData[7]
-        const debitCol = row.ColData[6];
-        const creditCol = row.ColData[7];
-
-        const debitStr = (debitCol?.value || '').replace(/,/g, '').trim();
-        const creditStr = (creditCol?.value || '').replace(/,/g, '').trim();
-
-        const debit = parseFloat(debitStr) || 0;
-        const credit = parseFloat(creditStr) || 0;
-
-        if (debit > 0 || credit > 0) {
-          totalDebits += debit;
-          totalCredits += credit;
-          transactionsFound++;
-
-          console.log(`Account ${currentAccount}, Customer ${customer}: Debit=$${debit}, Credit=$${credit}`);
-        }
-      }
-
-      // Traverse nested rows
-      if (row.Rows?.Row) {
-        traverseRows(row.Rows.Row, currentAccount);
-      }
-    });
-  };
-
-  if (generalLedger?.Rows?.Row) {
-    traverseRows(generalLedger.Rows.Row);
+          // Only include lines assigned to our customer/job
+          if (customerId === qboJobId) {
+            totalCost += amount;
+            transactionsFound++;
+            accountsUsed.add(accountName);
+          }
+        });
+      });
+    }
+  } catch (queryError: any) {
+    console.error('Query API failed:', queryError.message);
+    throw queryError;
   }
 
-  // GL: Net cost = debits - credits
-  const netCost = totalDebits - totalCredits;
-
-  console.log(
-    `GeneralLedger for job ${qboJobId}: ${transactionsFound} transactions, Debits: $${totalDebits}, Credits: $${totalCredits}, Net: $${netCost}`
-  );
-
   return {
-    payrollTotal: netCost,
-    accountsChecked: ['GeneralLedger_5xxxx_6xxxx'],
+    payrollTotal: totalCost,
+    accountsChecked: Array.from(accountsUsed),
     transactionsFound,
-    method: 'GeneralLedger_Customer_Filtered',
+    method: 'QueryAPI',
   };
 }
 
