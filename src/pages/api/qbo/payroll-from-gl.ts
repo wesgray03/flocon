@@ -113,8 +113,6 @@ export async function fetchPayrollFromGL(
     if (!rows) return;
 
     rows.forEach((row: any) => {
-      const indent = '  '.repeat(depth);
-
       // Check for section headers (Income, COGS, Expenses)
       if (row.Header) {
         const headerText = row.Header.ColData?.[0]?.value || '';
@@ -124,13 +122,8 @@ export async function fetchPayrollFromGL(
         );
         const headerAmount = parseFloat(headerAmountStr) || 0;
 
-        console.log(
-          `${indent}📁 Section: "${headerText}" Amount: ${headerAmountStr}`
-        );
-
         // Skip income section entirely
         if (headerText.toLowerCase().includes('income')) {
-          console.log(`${indent}  ⏭️  Skipping income section`);
           return;
         }
 
@@ -138,9 +131,6 @@ export async function fetchPayrollFromGL(
         if (headerAmount !== 0 && isExpenseAccount(headerText)) {
           totalCost += Math.abs(headerAmount);
           accountsUsed.add(headerText);
-          console.log(
-            `${indent}  ✅ Added parent account: $${Math.abs(headerAmount)}`
-          );
         }
 
         // Also traverse children to add their amounts (parent + children = total)
@@ -150,13 +140,8 @@ export async function fetchPayrollFromGL(
         return;
       }
 
-      // Check for Summary rows (subtotals)
+      // Check for Summary rows (subtotals) - skip these
       if (row.Summary) {
-        const summaryText = row.Summary.ColData?.[0]?.value || '';
-        const summaryAmount = row.Summary.ColData?.[1]?.value || '';
-        console.log(
-          `${indent}📊 Summary: "${summaryText}" Amount: ${summaryAmount}`
-        );
         return;
       }
 
@@ -166,16 +151,11 @@ export async function fetchPayrollFromGL(
         const amountStr = (row.ColData[1]?.value || '0').replace(/[,()]/g, '');
         const amount = parseFloat(amountStr) || 0;
 
-        console.log(`${indent}Account: "${accountName}" Amount: $${amount}`);
-
         // Only include expense/COGS accounts
         if (isExpenseAccount(accountName) && amount !== 0) {
           // P&L shows expenses as positive, so we add them
           totalCost += Math.abs(amount);
           accountsUsed.add(accountName);
-          console.log(`${indent}  ✅ Added: $${Math.abs(amount)}`);
-        } else if (amount !== 0) {
-          console.log(`${indent}  ❌ Skipped (not expense account)`);
         }
       }
 
@@ -187,13 +167,7 @@ export async function fetchPayrollFromGL(
   };
 
   if (profitAndLoss?.Rows?.Row) {
-    console.log('🔍 Traversing P&L Report Structure for job', qboJobId);
     traverseRows(profitAndLoss.Rows.Row, 0);
-    console.log(
-      `\n💰 Final Total: $${totalCost.toFixed(2)} from ${accountsUsed.size} accounts`
-    );
-  } else {
-    console.log('❌ No rows found in P&L report for job', qboJobId);
   }
 
   return {
