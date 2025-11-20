@@ -22,7 +22,8 @@ export async function fetchPayrollFromGL(
   let totalCost = 0;
   const accountsUsed = new Set<string>();
 
-  // Use ProfitAndLoss report with customer filter
+  // Use ProfitAndLossDetail report which shows transaction-level detail
+  // This gives us more granular data than the summary P&L
   const plParams = new URLSearchParams({
     start_date: dateStart,
     end_date: dateEnd,
@@ -30,9 +31,11 @@ export async function fetchPayrollFromGL(
     customer: qboJobId,
   });
 
-  const profitAndLoss: any = await makeQBORequest(
+  console.log(`Fetching ProfitAndLossDetail report for customer ${qboJobId}...`);
+  
+  const profitAndLossDetail: any = await makeQBORequest(
     'GET',
-    `reports/ProfitAndLoss?${plParams.toString()}`
+    `reports/ProfitAndLossDetail?${plParams.toString()}`
   );
 
   // Helper to check if account is COGS or Expense (not Income)
@@ -48,12 +51,16 @@ export async function fetchPayrollFromGL(
 
     // If no number, match by account name keywords for COGS and Expenses
     const lowerName = accountName.toLowerCase();
-    
+
     // Explicitly exclude income
-    if (lowerName.includes('income') || lowerName.includes('revenue') || lowerName.includes('sales')) {
+    if (
+      lowerName.includes('income') ||
+      lowerName.includes('revenue') ||
+      lowerName.includes('sales')
+    ) {
       return false;
     }
-    
+
     const expenseKeywords = [
       'cost of goods sold',
       'cogs',
@@ -107,31 +114,38 @@ export async function fetchPayrollFromGL(
 
     rows.forEach((row: any) => {
       const indent = '  '.repeat(depth);
-      
+
       // Check for section headers (Income, COGS, Expenses)
       if (row.Header) {
         const headerText = row.Header.ColData?.[0]?.value || '';
-        const headerAmountStr = (row.Header.ColData?.[1]?.value || '').replace(/[,()]/g, '');
+        const headerAmountStr = (row.Header.ColData?.[1]?.value || '').replace(
+          /[,()]/g,
+          ''
+        );
         const headerAmount = parseFloat(headerAmountStr) || 0;
-        
-        console.log(`${indent}📁 Section: "${headerText}" Amount: ${headerAmountStr}`);
-        
+
+        console.log(
+          `${indent}📁 Section: "${headerText}" Amount: ${headerAmountStr}`
+        );
+
         // Skip income section entirely
         if (headerText.toLowerCase().includes('income')) {
           console.log(`${indent}  ⏭️  Skipping income section`);
           return;
         }
-        
+
         // If this section header has an amount AND is an expense account, add it directly
         // This handles parent accounts where not all children are visible due to customer filtering
         if (headerAmount !== 0 && isExpenseAccount(headerText)) {
           totalCost += Math.abs(headerAmount);
           accountsUsed.add(headerText);
-          console.log(`${indent}  ✅ Added section total: $${Math.abs(headerAmount)}`);
+          console.log(
+            `${indent}  ✅ Added section total: $${Math.abs(headerAmount)}`
+          );
           // Don't traverse children - we already have the total
           return;
         }
-        
+
         // Process subsections (for section headers with no amount, like "Cost of Goods Sold")
         if (row.Rows?.Row) {
           traverseRows(row.Rows.Row, depth + 1);
@@ -143,7 +157,9 @@ export async function fetchPayrollFromGL(
       if (row.Summary) {
         const summaryText = row.Summary.ColData?.[0]?.value || '';
         const summaryAmount = row.Summary.ColData?.[1]?.value || '';
-        console.log(`${indent}📊 Summary: "${summaryText}" Amount: ${summaryAmount}`);
+        console.log(
+          `${indent}📊 Summary: "${summaryText}" Amount: ${summaryAmount}`
+        );
         return;
       }
 
@@ -173,12 +189,14 @@ export async function fetchPayrollFromGL(
     });
   };
 
-  if (profitAndLoss?.Rows?.Row) {
-    console.log('🔍 Traversing P&L Report Structure for job', qboJobId);
-    traverseRows(profitAndLoss.Rows.Row, 0);
-    console.log(`\n💰 Final Total: $${totalCost.toFixed(2)} from ${accountsUsed.size} accounts`);
+  if (profitAndLossDetail?.Rows?.Row) {
+    console.log('🔍 Traversing P&L Detail Report Structure for job', qboJobId);
+    traverseRows(profitAndLossDetail.Rows.Row, 0);
+    console.log(
+      `\n💰 Final Total: $${totalCost.toFixed(2)} from ${accountsUsed.size} accounts`
+    );
   } else {
-    console.log('❌ No rows found in P&L report for job', qboJobId);
+    console.log('❌ No rows found in P&L Detail report for job', qboJobId);
   }
 
   return {
