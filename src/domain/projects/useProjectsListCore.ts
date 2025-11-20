@@ -291,7 +291,8 @@ export function useProjectsListCore(showInactive: boolean = false) {
 
   useEffect(() => {
     loadProjects();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showInactive]);
 
   // Unique suggestions for filter inputs
   const uniqueValues = useMemo(
