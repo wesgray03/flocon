@@ -37,6 +37,7 @@ type Prospect = {
   estimating_type?: 'Budget' | 'Construction' | null;
   probability_level_id?: string | null;
   sharepoint_folder?: string | null;
+  active?: boolean | null;
   trades?: { id: string; code: string; name: string; amount: number }[];
   extended?: number | null;
 };
@@ -671,6 +672,10 @@ export default function ProspectDetailPage() {
 
     setConverting(true);
     try {
+      // Get the lost reason name
+      const lostReason = lostReasons.find(r => r.id === selectedLostReasonId);
+      const reasonText = lostReason?.reason || 'Unknown reason';
+
       // Update engagement to mark as lost using active flag and lost_reason_id
       const { error: updateError } = await supabase
         .from('engagements')
@@ -681,6 +686,35 @@ export default function ProspectDetailPage() {
         .eq('id', prospect.id);
 
       if (updateError) throw updateError;
+
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Create automatic comment
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+      
+      const commentText = `Job was marked as lost @ ${formattedDate} because of ${reasonText}.`;
+      
+      const { error: commentError } = await supabase
+        .from('engagement_comments')
+        .insert({
+          engagement_id: prospect.id,
+          comment: commentText,
+          user_id: user?.id || null,
+        });
+
+      if (commentError) {
+        console.error('Error creating auto-comment:', commentError);
+        // Don't fail the whole operation if comment fails
+      }
 
       notify('Marked as lost successfully', 'success');
       setShowLostModal(false);
@@ -898,7 +932,7 @@ export default function ProspectDetailPage() {
               }}
               className="prospect-action-buttons"
             >
-              {!editMode && !editTradesMode && (
+              {!editMode && !editTradesMode && prospect?.active !== false && (
                 <>
                   <button
                     onClick={handleMarkAsLost}
