@@ -1,5 +1,5 @@
 // api/qbo/payroll-from-gl.ts
-// Fetch costs from QuickBooks Query API with line-item customer filtering
+// Fetch costs from QuickBooks Profit & Loss report filtered by customer
 import { makeQBORequest } from '@/lib/qboClient';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -10,7 +10,7 @@ interface PayrollGLCosts {
   method: string;
 }
 
-// Exported function to fetch costs using Query API (filters by customer/job on line items)
+// Exported function to fetch costs using P&L report with customer filter
 export async function fetchPayrollFromGL(
   qboJobId: string,
   startDate?: string,
@@ -20,14 +20,26 @@ export async function fetchPayrollFromGL(
   const dateEnd = endDate || '2099-12-31';
 
   let totalCost = 0;
-  let transactionsFound = 0;
   const accountsUsed = new Set<string>();
 
-  // Helper function to check if account is COGS or Expense account
+  // Use ProfitAndLoss report with customer filter
+  const plParams = new URLSearchParams({
+    start_date: dateStart,
+    end_date: dateEnd,
+    accounting_method: 'Accrual',
+    customer: qboJobId,
+  });
+
+  const profitAndLoss: any = await makeQBORequest(
+    'GET',
+    `reports/ProfitAndLoss?${plParams.toString()}`
+  );
+
+  // Helper to check if account is COGS or Expense (not Income)
   const isExpenseAccount = (accountName: string): boolean => {
     if (!accountName) return false;
 
-    // Try to match by account number first (5xxxx or 6xxxx)
+    // Match by account number first (5xxxx or 6xxxx)
     const numberMatch = accountName.match(/^(\d{5})/);
     if (numberMatch) {
       const num = numberMatch[1];
@@ -36,6 +48,12 @@ export async function fetchPayrollFromGL(
 
     // If no number, match by account name keywords for COGS and Expenses
     const lowerName = accountName.toLowerCase();
+    
+    // Explicitly exclude income
+    if (lowerName.includes('income') || lowerName.includes('revenue') || lowerName.includes('sales')) {
+      return false;
+    }
+    
     const expenseKeywords = [
       'cost of goods sold',
       'cogs',
@@ -76,54 +94,57 @@ export async function fetchPayrollFromGL(
     return expenseKeywords.some((keyword) => lowerName.includes(keyword));
   };
 
-  // Query all Purchase transactions in date range
-  try {
-    const query = `SELECT * FROM Purchase WHERE TxnDate >= '${dateStart}' AND TxnDate <= '${dateEnd}' MAXRESULTS 1000`;
-    const encodedQuery = encodeURIComponent(query);
+  // Traverse P&L report rows recursively
+  const traverseRows = (rows: any[]) => {
+    if (!rows) return;
 
-    const queryResult: any = await makeQBORequest(
-      'GET',
-      `query?query=${encodedQuery}`
-    );
+    rows.forEach((row: any) => {
+      // Check for section headers (Income, COGS, Expenses)
+      if (row.Header) {
+        const headerText = row.Header.ColData?.[0]?.value || '';
+        
+        // Skip income section entirely
+        if (headerText.toLowerCase().includes('income')) {
+          return;
+        }
+        
+        // Process subsections
+        if (row.Rows?.Row) {
+          traverseRows(row.Rows.Row);
+        }
+        return;
+      }
 
-    if (queryResult?.QueryResponse?.Purchase) {
-      const purchases = queryResult.QueryResponse.Purchase;
+      // Data rows with account details
+      if (row.ColData && row.ColData[0]?.value) {
+        const accountName = row.ColData[0].value;
+        const amountStr = (row.ColData[1]?.value || '0').replace(/[,()]/g, '');
+        const amount = parseFloat(amountStr) || 0;
 
-      purchases.forEach((purchase: any) => {
-        if (!purchase.Line) return;
+        // Only include expense/COGS accounts
+        if (isExpenseAccount(accountName) && amount !== 0) {
+          // P&L shows expenses as positive, so we add them
+          totalCost += Math.abs(amount);
+          accountsUsed.add(accountName);
+        }
+      }
 
-        purchase.Line.forEach((line: any) => {
-          if (!line.AccountBasedExpenseLineDetail) return;
+      // Recursively process nested rows
+      if (row.Rows?.Row) {
+        traverseRows(row.Rows.Row);
+      }
+    });
+  };
 
-          const detail = line.AccountBasedExpenseLineDetail;
-          const accountName = detail.AccountRef?.name || '';
-          const customerId = detail.CustomerRef?.value || '';
-          const amount = parseFloat(line.Amount || '0');
-
-          // Only include expense accounts
-          if (!isExpenseAccount(accountName)) {
-            return;
-          }
-
-          // Only include lines assigned to our customer/job
-          if (customerId === qboJobId) {
-            totalCost += amount;
-            transactionsFound++;
-            accountsUsed.add(accountName);
-          }
-        });
-      });
-    }
-  } catch (queryError: any) {
-    console.error('Query API failed:', queryError.message);
-    throw queryError;
+  if (profitAndLoss?.Rows?.Row) {
+    traverseRows(profitAndLoss.Rows.Row);
   }
 
   return {
     payrollTotal: totalCost,
     accountsChecked: Array.from(accountsUsed),
-    transactionsFound,
-    method: 'QueryAPI',
+    transactionsFound: accountsUsed.size,
+    method: 'ProfitAndLoss',
   };
 }
 
