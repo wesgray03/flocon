@@ -22,108 +22,15 @@ export async function fetchPayrollFromGL(
   let payrollTotal = 0;
   let transactionsFound = 0;
 
-  // Try TransactionList report first (faster)
-  try {
-    console.log(
-      'Attempting TransactionList report for Payroll Check transactions...'
-    );
-
-    const params = new URLSearchParams({
-      start_date: dateStart,
-      end_date: dateEnd,
-    });
-
-    if (qboJobId) {
-      params.append('customer', qboJobId as string);
-    }
-
-    const transactionList: any = await makeQBORequest(
-      'GET',
-      `reports/TransactionList?${params.toString()}`
-    );
-
-    console.log('TransactionList response structure:', JSON.stringify(transactionList, null, 2).substring(0, 2000));
-
-    const rows = transactionList?.Rows?.Row || [];
-
-    // Filter for Payroll Check transactions
-    rows.forEach((row: any) => {
-      if (row.type === 'Data' && row.ColData) {
-        // Transaction type is typically in ColData[1]
-        const txnType = row.ColData[1]?.value || '';
-
-        if (txnType === 'Payroll Check') {
-          // Customer/Job is typically in ColData[4]
-          const customerCol = row.ColData[4];
-          const customerId = customerCol?.id || '';
-          const customerName = customerCol?.value || '';
-
-          // Account name/type is typically in ColData[5] or ColData[6]
-          const accountCol = row.ColData[5] || row.ColData[6];
-          const accountName = (accountCol?.value || '').toLowerCase();
-
-          // Skip if this is a credit to cash/liability account
-          // Look for: cash, checking, savings, bank, payable, liability
-          const isCashOrLiability =
-            accountName.includes('cash') ||
-            accountName.includes('checking') ||
-            accountName.includes('savings') ||
-            accountName.includes('bank') ||
-            accountName.includes('payable') ||
-            accountName.includes('liability') ||
-            accountName.includes('payroll liabilities');
-
-          if (!isCashOrLiability) {
-            // Amount is typically in last column (ColData[8] or similar)
-            const amountCol = row.ColData[row.ColData.length - 1];
-            const amountStr = (amountCol?.value || '').replace(/,/g, '');
-            const amount = Math.abs(parseFloat(amountStr) || 0);
-
-            // Match by customer ID or name
-            if (
-              customerId === qboJobId ||
-              customerName.includes(qboJobId as string)
-            ) {
-              payrollTotal += amount;
-              transactionsFound++;
-              console.log(
-                `Found payroll check: $${amount} for ${customerName} (${accountName})`
-              );
-            } else if (!qboJobId) {
-              // If no job filter, include all payroll checks
-              payrollTotal += amount;
-              transactionsFound++;
-            }
-          }
-        }
-      }
-    });
-
-    console.log(
-      `TransactionList: Found ${transactionsFound} payroll checks, total: $${payrollTotal}`
-    );
-
-    return {
-      payrollTotal,
-      accountsChecked: ['TransactionList'],
-      transactionsFound,
-      method: 'TransactionList_PayrollCheck',
-    };
-  } catch (transactionListError: any) {
-    console.log(
-      'TransactionList failed, trying GeneralLedger:',
-      transactionListError.message
-    );
-  }
-
-  // Fallback to GeneralLedger if TransactionList fails
+  // Use GeneralLedger report to find payroll costs by account and customer
   console.log(
-    'Attempting GeneralLedger report for Payroll Check transactions...'
+    'Fetching GeneralLedger report for Payroll expense accounts...'
   );
 
   const glParams = new URLSearchParams({
     start_date: dateStart,
     end_date: dateEnd,
+    accounting_method: 'Accrual',
   });
 
   const generalLedger: any = await makeQBORequest(
@@ -131,61 +38,74 @@ export async function fetchPayrollFromGL(
     `reports/GeneralLedger?${glParams.toString()}`
   );
 
-  // Parse GL report for Payroll Check transactions
-  const traverseRows = (rows: any[]) => {
+  // Parse GL report for Payroll expenses
+  const payrollAccounts = [
+    '54000 direct salaries',
+    '54100',
+    'field wages',
+    'field payroll',
+    'simple ira',
+  ];
+
+  const traverseRows = (rows: any[], parentAccount?: string) => {
     rows.forEach((row: any) => {
       if (row.type === 'Data' && row.ColData) {
-        // Transaction type is typically in ColData[1]
-        const txnType = row.ColData[1]?.value || '';
+        // In GL, account name is typically in ColData[0]
+        const accountCol = row.ColData[0];
+        const accountName = (accountCol?.value || '').toLowerCase();
+        const accountId = accountCol?.id || '';
 
-        if (txnType === 'Payroll Check') {
-          // Customer/Job is typically in ColData[3]
-          const customerCol = row.ColData[3];
-          const customerId = customerCol?.id || '';
-          const customerName = customerCol?.value || '';
+        // Check if this is a payroll expense account
+        const isPayrollAccount = payrollAccounts.some(keyword =>
+          accountName.includes(keyword)
+        );
 
-          // Account name is typically in ColData[0] in GL
-          const accountCol = row.ColData[0];
-          const accountName = (accountCol?.value || '').toLowerCase();
+        if (isPayrollAccount || (parentAccount && payrollAccounts.some(keyword => parentAccount.includes(keyword)))) {
+          // Transaction type is typically in ColData[1]
+          const txnType = row.ColData[1]?.value || '';
 
-          // Skip if this is a credit to cash/liability account
-          const isCashOrLiability =
-            accountName.includes('cash') ||
-            accountName.includes('checking') ||
-            accountName.includes('savings') ||
-            accountName.includes('bank') ||
-            accountName.includes('payable') ||
-            accountName.includes('liability') ||
-            accountName.includes('payroll liabilities');
+          if (txnType === 'Payroll Check') {
+            // Customer/Job is typically in ColData[3]
+            const customerCol = row.ColData[3];
+            const customerId = customerCol?.id || '';
+            const customerName = customerCol?.value || '';
 
-          if (!isCashOrLiability) {
-            // Amount is typically in ColData[6]
-            const amountCol = row.ColData[6];
-            const amountStr = (amountCol?.value || '').replace(/,/g, '');
-            const amount = Math.abs(parseFloat(amountStr) || 0);
+            // Skip if this is a credit to cash/liability account
+            const isCashOrLiability =
+              accountName.includes('cash') ||
+              accountName.includes('checking') ||
+              accountName.includes('savings') ||
+              accountName.includes('bank') ||
+              accountName.includes('payable') ||
+              accountName.includes('liability') ||
+              accountName.includes('payroll liabilities') ||
+              accountName.includes('direct deposit');
 
-            // Match by customer ID or name
-            if (
-              customerId === qboJobId ||
-              customerName.includes(qboJobId as string)
-            ) {
-              payrollTotal += amount;
-              transactionsFound++;
-              console.log(
-                `Found payroll check in GL: $${amount} for ${customerName} (${accountName})`
-              );
-            } else if (!qboJobId) {
-              // If no job filter, include all payroll checks
-              payrollTotal += amount;
-              transactionsFound++;
+            if (!isCashOrLiability) {
+              // Amount is typically in ColData[6] or ColData[7]
+              const debitCol = row.ColData[6];
+              const amountStr = (debitCol?.value || '').replace(/,/g, '').trim();
+              const amount = parseFloat(amountStr) || 0;
+
+              // Match by customer ID or name (if qboJobId is provided)
+              if (!qboJobId || customerId === qboJobId || customerName.includes(qboJobId)) {
+                if (amount > 0) {
+                  payrollTotal += amount;
+                  transactionsFound++;
+                  console.log(
+                    `Found payroll: $${amount} for ${customerName || 'No Customer'} in ${accountName}`
+                  );
+                }
+              }
             }
           }
         }
       }
 
-      // Traverse nested rows
+      // Traverse nested rows (account hierarchies)
       if (row.Rows?.Row) {
-        traverseRows(row.Rows.Row);
+        const currentAccount = row.ColData?.[0]?.value || parentAccount;
+        traverseRows(row.Rows.Row, currentAccount);
       }
     });
   };
