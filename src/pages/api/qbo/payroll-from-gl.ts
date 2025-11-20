@@ -89,28 +89,39 @@ export async function fetchPayrollFromGL(
       'sprinklers',
       'decks and patios',
       'pest control',
+      'wages',
+      'salaries',
+      'payroll',
+      'benefits',
+      'reimbursements',
+      'travel expense',
+      'subcontractors',
     ];
 
     return expenseKeywords.some((keyword) => lowerName.includes(keyword));
   };
 
   // Traverse P&L report rows recursively
-  const traverseRows = (rows: any[]) => {
+  const traverseRows = (rows: any[], depth: number = 0) => {
     if (!rows) return;
 
     rows.forEach((row: any) => {
+      const indent = '  '.repeat(depth);
+      
       // Check for section headers (Income, COGS, Expenses)
       if (row.Header) {
         const headerText = row.Header.ColData?.[0]?.value || '';
+        console.log(`${indent}📁 Section: "${headerText}"`);
         
         // Skip income section entirely
         if (headerText.toLowerCase().includes('income')) {
+          console.log(`${indent}  ⏭️  Skipping income section`);
           return;
         }
         
         // Process subsections
         if (row.Rows?.Row) {
-          traverseRows(row.Rows.Row);
+          traverseRows(row.Rows.Row, depth + 1);
         }
         return;
       }
@@ -121,23 +132,32 @@ export async function fetchPayrollFromGL(
         const amountStr = (row.ColData[1]?.value || '0').replace(/[,()]/g, '');
         const amount = parseFloat(amountStr) || 0;
 
+        console.log(`${indent}Account: "${accountName}" Amount: $${amount}`);
+
         // Only include expense/COGS accounts
         if (isExpenseAccount(accountName) && amount !== 0) {
           // P&L shows expenses as positive, so we add them
           totalCost += Math.abs(amount);
           accountsUsed.add(accountName);
+          console.log(`${indent}  ✅ Added: $${Math.abs(amount)}`);
+        } else if (amount !== 0) {
+          console.log(`${indent}  ❌ Skipped (not expense account)`);
         }
       }
 
       // Recursively process nested rows
       if (row.Rows?.Row) {
-        traverseRows(row.Rows.Row);
+        traverseRows(row.Rows.Row, depth + 1);
       }
     });
   };
 
   if (profitAndLoss?.Rows?.Row) {
-    traverseRows(profitAndLoss.Rows.Row);
+    console.log('🔍 Traversing P&L Report Structure for job', qboJobId);
+    traverseRows(profitAndLoss.Rows.Row, 0);
+    console.log(`\n💰 Final Total: $${totalCost.toFixed(2)} from ${accountsUsed.size} accounts`);
+  } else {
+    console.log('❌ No rows found in P&L report for job', qboJobId);
   }
 
   return {
