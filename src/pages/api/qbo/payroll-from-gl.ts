@@ -111,8 +111,10 @@ export async function fetchPayrollFromGL(
       // Check for section headers (Income, COGS, Expenses)
       if (row.Header) {
         const headerText = row.Header.ColData?.[0]?.value || '';
-        const headerAmount = row.Header.ColData?.[1]?.value || '';
-        console.log(`${indent}📁 Section: "${headerText}" Amount: ${headerAmount}`);
+        const headerAmountStr = (row.Header.ColData?.[1]?.value || '').replace(/[,()]/g, '');
+        const headerAmount = parseFloat(headerAmountStr) || 0;
+        
+        console.log(`${indent}📁 Section: "${headerText}" Amount: ${headerAmountStr}`);
         
         // Skip income section entirely
         if (headerText.toLowerCase().includes('income')) {
@@ -120,7 +122,17 @@ export async function fetchPayrollFromGL(
           return;
         }
         
-        // Process subsections
+        // If this section header has an amount AND is an expense account, add it directly
+        // This handles parent accounts where not all children are visible due to customer filtering
+        if (headerAmount !== 0 && isExpenseAccount(headerText)) {
+          totalCost += Math.abs(headerAmount);
+          accountsUsed.add(headerText);
+          console.log(`${indent}  ✅ Added section total: $${Math.abs(headerAmount)}`);
+          // Don't traverse children - we already have the total
+          return;
+        }
+        
+        // Process subsections (for section headers with no amount, like "Cost of Goods Sold")
         if (row.Rows?.Row) {
           traverseRows(row.Rows.Row, depth + 1);
         }
