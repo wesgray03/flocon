@@ -1,5 +1,5 @@
 // api/qbo/payroll-from-gl.ts
-// Extract payroll costs from General Ledger by querying payroll expense accounts
+// Fetch costs from General Ledger report with manual customer filtering
 import { makeQBORequest } from '@/lib/qboClient';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
