@@ -1180,6 +1180,12 @@ export default function ProspectsPage() {
                       Probability{sortIndicator('probability_level_name')}
                     </th>
                     <th
+                      style={thStatus}
+                      onClick={() => handleSort('status')}
+                    >
+                      Status{sortIndicator('status')}
+                    </th>
+                    <th
                       style={thBidDate}
                       onClick={() => handleSort('bid_date')}
                     >
@@ -1190,12 +1196,6 @@ export default function ProspectsPage() {
                       onClick={() => handleSort('last_call')}
                     >
                       Last Follow Up{sortIndicator('last_call')}
-                    </th>
-                    <th
-                      style={thStatus}
-                      onClick={() => handleSort('status')}
-                    >
-                      Status{sortIndicator('status')}
                     </th>
                     <th style={thMoney} onClick={() => handleSort('extended')}>
                       Bid Amount{sortIndicator('extended')}
@@ -1279,8 +1279,6 @@ export default function ProspectsPage() {
                         placeholder="Filter probability..."
                       />
                     </th>
-                    <th style={thBidDate}></th>
-                    <th style={thBidDate}></th>
                     <th style={thStatus}>
                       <MultiFilterInput
                         values={filters.status}
@@ -1291,6 +1289,8 @@ export default function ProspectsPage() {
                         placeholder="Filter status..."
                       />
                     </th>
+                    <th style={thBidDate}></th>
+                    <th style={thBidDate}></th>
                     <th
                       style={{
                         ...thMoney,
@@ -1433,8 +1433,6 @@ export default function ProspectsPage() {
                             : '—'}
                         </span>
                       </td>
-                      <td style={td}>{dateStr(prospect.bid_date)}</td>
-                      <td style={td}>{dateStr(prospect.last_call)}</td>
                       <td style={td}>
                         <span
                           style={{
@@ -1456,6 +1454,8 @@ export default function ProspectsPage() {
                           {prospect.status || 'Active'}
                         </span>
                       </td>
+                      <td style={td}>{dateStr(prospect.bid_date)}</td>
+                      <td style={td}>{dateStr(prospect.last_call)}</td>
                       <td
                         style={tdRight}
                         title={
