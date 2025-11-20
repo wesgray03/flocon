@@ -55,13 +55,13 @@ export default async function handler(
 
     // Check cache first (unless force refresh is requested)
     if (forceRefresh !== 'true') {
-      const { data: cached } = await supabase
+      const { data: cached, error: cacheError } = await supabase
         .from('qbo_cost_cache')
         .select('*')
         .eq('engagement_id', engagementId)
-        .single();
+        .maybeSingle();
 
-      if (cached) {
+      if (cached && !cacheError) {
         const cacheAge = Date.now() - new Date(cached.last_synced_at).getTime();
         const cacheAgeMinutes = cacheAge / 1000 / 60;
 
