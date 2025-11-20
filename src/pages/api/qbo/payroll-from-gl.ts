@@ -22,14 +22,15 @@ export async function fetchPayrollFromGL(
   let payrollTotal = 0;
   let transactionsFound = 0;
 
-  // Use GeneralLedger report to find payroll costs by account and customer
+  // Use GeneralLedger report filtered by customer to get ALL expense transactions
   console.log(
-    'Fetching GeneralLedger report for Payroll expense accounts...'
+    `Fetching GeneralLedger for customer ${qboJobId}...`
   );
 
   const glParams = new URLSearchParams({
     start_date: dateStart,
     end_date: dateEnd,
+    customer: qboJobId,
     accounting_method: 'Accrual',
   });
 
@@ -38,21 +39,17 @@ export async function fetchPayrollFromGL(
     `reports/GeneralLedger?${glParams.toString()}`
   );
 
-  // Parse GL report for Payroll expenses
-  // Look for accounts starting with 54xxx (Direct Salaries Wages & Benefits)
-  const isPayrollAccount = (accountName: string): boolean => {
-    const name = accountName.toLowerCase().trim();
-    // Check if starts with 54 followed by numbers
-    if (/^54\d{3}/.test(accountName.trim())) {
-      return true;
-    }
-    // Also check for account name keywords
-    return (
-      name.includes('direct salaries') ||
-      name.includes('field wages') ||
-      name.includes('field payroll') ||
-      name.includes('simple ira')
-    );
+  // Balance sheet account prefixes to exclude (assets, liabilities, equity)
+  const isBalanceSheetAccount = (accountName: string): boolean => {
+    const name = accountName.trim();
+    // QuickBooks account numbering:
+    // 1xxxx = Assets
+    // 2xxxx = Liabilities  
+    // 3xxxx = Equity
+    // 4xxxx = Income
+    // 5xxxx = Cost of Goods Sold
+    // 6xxxx+ = Expenses
+    return /^[123]\d{4}/.test(name);
   };
 
   const traverseRows = (rows: any[], parentAccount?: string) => {
@@ -61,59 +58,35 @@ export async function fetchPayrollFromGL(
         // In GL, account name is typically in ColData[0]
         const accountCol = row.ColData[0];
         const accountName = (accountCol?.value || '').trim();
-        const accountId = accountCol?.id || '';
+        
+        // Skip balance sheet accounts
+        if (isBalanceSheetAccount(accountName)) {
+          return;
+        }
 
-        // Check if this is a payroll expense account
-        const isPayroll = isPayrollAccount(accountName) || 
-                         (parentAccount && isPayrollAccount(parentAccount));
+        // Transaction type in ColData[1]
+        const txnType = row.ColData[1]?.value || '';
+        
+        // Only process Payroll Check transactions for this payroll endpoint
+        if (txnType === 'Payroll Check') {
+          // Amount is typically in ColData[6] (Debit)
+          const debitCol = row.ColData[6];
+          const amountStr = (debitCol?.value || '').replace(/,/g, '').trim();
+          const amount = parseFloat(amountStr) || 0;
 
-        if (isPayroll) {
-          // Transaction type is typically in ColData[1]
-          const txnType = row.ColData[1]?.value || '';
-
-          // Only process Payroll Check transactions
-          if (txnType === 'Payroll Check') {
-            // Customer/Job is typically in ColData[3]
-            const customerCol = row.ColData[3];
-            const customerId = customerCol?.id || '';
-            const customerName = customerCol?.value || '';
-
-            // Skip if this is a credit to cash/liability account
-            const lowerAccountName = accountName.toLowerCase();
-            const isCashOrLiability =
-              lowerAccountName.includes('cash') ||
-              lowerAccountName.includes('checking') ||
-              lowerAccountName.includes('savings') ||
-              lowerAccountName.includes('bank') ||
-              lowerAccountName.includes('payable') ||
-              lowerAccountName.includes('liability') ||
-              lowerAccountName.includes('direct deposit');
-
-            if (!isCashOrLiability) {
-              // Amount is typically in ColData[6] (Debit) or ColData[7] (Credit)
-              const debitCol = row.ColData[6];
-              const amountStr = (debitCol?.value || '').replace(/,/g, '').trim();
-              const amount = parseFloat(amountStr) || 0;
-
-              // Match by customer ID or name (if qboJobId is provided)
-              if (!qboJobId || customerId === qboJobId || customerName.includes(qboJobId)) {
-                if (amount > 0) {
-                  payrollTotal += amount;
-                  transactionsFound++;
-                  console.log(
-                    `Found payroll: $${amount} for ${customerName || 'No Customer'} in ${accountName} (Account #${accountId})`
-                  );
-                }
-              }
-            }
+          if (amount > 0) {
+            payrollTotal += amount;
+            transactionsFound++;
+            console.log(
+              `Payroll: $${amount} in ${accountName}`
+            );
           }
         }
       }
 
-      // Traverse nested rows (account hierarchies)
+      // Traverse nested rows
       if (row.Rows?.Row) {
-        const currentAccount = row.ColData?.[0]?.value || parentAccount;
-        traverseRows(row.Rows.Row, currentAccount);
+        traverseRows(row.Rows.Row);
       }
     });
   };
