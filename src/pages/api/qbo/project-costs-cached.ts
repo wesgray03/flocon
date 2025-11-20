@@ -154,19 +154,25 @@ export default async function handler(
     let payrollTotal = 0;
     let payrollCount = 0;
     try {
-      // Build the URL for internal API call
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://flocon.vercel.app';
+      console.log('Fetching payroll from GL...');
       const payrollResponse = await fetch(
-        `${baseUrl}/api/qbo/payroll-from-gl?qboJobId=${qboJobId}&startDate=${dateStart}&endDate=${dateEnd}`
+        `${req.headers.origin || 'https://flocon.vercel.app'}/api/qbo/payroll-from-gl?qboJobId=${qboJobId}&startDate=${dateStart}&endDate=${dateEnd}`,
+        {
+          headers: {
+            Cookie: req.headers.cookie || '',
+          },
+        }
       );
 
+      console.log('Payroll response status:', payrollResponse.status);
       if (payrollResponse.ok) {
         const payrollData = await payrollResponse.json();
         payrollTotal = payrollData.payrollTotal || 0;
         payrollCount = payrollData.transactionsFound || 0;
         console.log(`Payroll from GL: $${payrollTotal} (${payrollCount} transactions)`);
       } else {
-        console.log('Payroll data not available:', await payrollResponse.text());
+        const errorText = await payrollResponse.text();
+        console.log('Payroll data not available:', errorText);
       }
     } catch (payrollError: any) {
       console.log('Payroll fetch failed:', payrollError.message);
