@@ -134,19 +134,8 @@ export async function fetchPayrollFromGL(
           return;
         }
 
-        // If this section header has an amount AND is an expense account, add it directly
-        // This handles parent accounts where not all children are visible due to customer filtering
-        if (headerAmount !== 0 && isExpenseAccount(headerText)) {
-          totalCost += Math.abs(headerAmount);
-          accountsUsed.add(headerText);
-          console.log(
-            `${indent}  ✅ Added section total: $${Math.abs(headerAmount)}`
-          );
-          // Don't traverse children - we already have the total
-          return;
-        }
-
-        // Process subsections (for section headers with no amount, like "Cost of Goods Sold")
+        // Always traverse children to get all detail accounts
+        // Don't use parent totals - sum children for accuracy
         if (row.Rows?.Row) {
           traverseRows(row.Rows.Row, depth + 1);
         }
