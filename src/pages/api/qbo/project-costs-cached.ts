@@ -3,6 +3,7 @@
 import { makeQBORequest } from '@/lib/qboClient';
 import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { fetchPayrollFromGL } from './payroll-from-gl';
 
 type ProjectCosts = {
   billsTotal: number;
@@ -155,25 +156,14 @@ export default async function handler(
     let payrollCount = 0;
     try {
       console.log('Fetching payroll from GL...');
-      const payrollResponse = await fetch(
-        `${req.headers.origin || 'https://flocon.vercel.app'}/api/qbo/payroll-from-gl?qboJobId=${qboJobId}&startDate=${dateStart}&endDate=${dateEnd}`,
-        {
-          headers: {
-            Cookie: req.headers.cookie || '',
-          },
-        }
+      const payrollData = await fetchPayrollFromGL(
+        qboJobId as string,
+        dateStart,
+        dateEnd
       );
-
-      console.log('Payroll response status:', payrollResponse.status);
-      if (payrollResponse.ok) {
-        const payrollData = await payrollResponse.json();
-        payrollTotal = payrollData.payrollTotal || 0;
-        payrollCount = payrollData.transactionsFound || 0;
-        console.log(`Payroll from GL: $${payrollTotal} (${payrollCount} transactions)`);
-      } else {
-        const errorText = await payrollResponse.text();
-        console.log('Payroll data not available:', errorText);
-      }
+      payrollTotal = payrollData.payrollTotal || 0;
+      payrollCount = payrollData.transactionsFound || 0;
+      console.log(`Payroll from GL: $${payrollTotal} (${payrollCount} transactions)`);
     } catch (payrollError: any) {
       console.log('Payroll fetch failed:', payrollError.message);
     }

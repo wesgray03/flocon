@@ -10,26 +10,17 @@ interface PayrollGLCosts {
   method: string;
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<PayrollGLCosts | { error: string }>
-) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+// Exported function to fetch payroll costs (can be called from other endpoints)
+export async function fetchPayrollFromGL(
+  qboJobId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<PayrollGLCosts> {
+  const dateStart = startDate || '2000-01-01';
+  const dateEnd = endDate || '2099-12-31';
 
-  const { qboJobId, startDate, endDate } = req.query;
-
-  if (!qboJobId) {
-    return res.status(400).json({ error: 'qboJobId is required' });
-  }
-
-  try {
-    const dateStart = (startDate as string) || '2000-01-01';
-    const dateEnd = (endDate as string) || '2099-12-31';
-
-    let payrollTotal = 0;
-    let transactionsFound = 0;
+  let payrollTotal = 0;
+  let transactionsFound = 0;
 
     // Try TransactionList report first (faster)
     try {
@@ -205,12 +196,47 @@ export default async function handler(
       `GeneralLedger: Found ${transactionsFound} payroll checks, total: $${payrollTotal}`
     );
 
-    return res.status(200).json({
+    return {
       payrollTotal,
       accountsChecked: ['GeneralLedger'],
       transactionsFound,
       method: 'GeneralLedger_PayrollCheck',
-    });
+    };
+  } catch (transactionListError: any) {
+    console.error('TransactionList failed:', transactionListError.message);
+  }
+
+  // Fallback
+  return {
+    payrollTotal: 0,
+    accountsChecked: [],
+    transactionsFound: 0,
+    method: 'none',
+  };
+}
+
+// API handler
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<PayrollGLCosts | { error: string }>
+) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { qboJobId, startDate, endDate } = req.query;
+
+  if (!qboJobId) {
+    return res.status(400).json({ error: 'qboJobId is required' });
+  }
+
+  try {
+    const result = await fetchPayrollFromGL(
+      qboJobId as string,
+      startDate as string,
+      endDate as string
+    );
+    return res.status(200).json(result);
   } catch (error: any) {
     console.error('Error fetching payroll from GL:', error);
     return res.status(500).json({
