@@ -22,13 +22,16 @@ const CACHE_TTL_MINUTES = 60; // Cache valid for 1 hour
 
 // Helper to check if a line references a specific job
 function lineReferencesJob(line: any, jobId: string): boolean {
-  const customerRef = line.CustomerRef?.value || line.customer_ref?.value;
+  const customerRef =
+    line.CustomerRef?.value ||
+    line.AccountBasedExpenseLineDetail?.CustomerRef?.value ||
+    line.ItemBasedExpenseLineDetail?.CustomerRef?.value;
   return customerRef === jobId;
 }
 
 // Helper to get line amount
 function getLineAmount(line: any): number {
-  return Number(line.Amount || line.amount || 0);
+  return parseFloat(line.Amount || '0');
 }
 
 export default async function handler(
