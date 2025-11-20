@@ -41,13 +41,20 @@ export default async function handler(
 
   const { qboJobId, engagementId, forceRefresh } = req.query;
 
+  console.log('=== QBO Costs Cached Request ===');
+  console.log('qboJobId:', qboJobId);
+  console.log('engagementId:', engagementId);
+  console.log('forceRefresh:', forceRefresh);
+
   if (!qboJobId || !engagementId) {
+    console.error('Missing required parameters');
     return res
       .status(400)
       .json({ error: 'qboJobId and engagementId are required' });
   }
 
   try {
+    console.log('Creating Supabase client...');
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -55,11 +62,18 @@ export default async function handler(
 
     // Check cache first (unless force refresh is requested)
     if (forceRefresh !== 'true') {
+      console.log('Checking cache for engagement:', engagementId);
       const { data: cached, error: cacheError } = await supabase
         .from('qbo_cost_cache')
         .select('*')
         .eq('engagement_id', engagementId)
         .maybeSingle();
+
+      if (cacheError) {
+        console.error('Cache query error:', cacheError);
+      }
+      
+      console.log('Cache result:', cached ? 'found' : 'not found');
 
       if (cached && !cacheError) {
         const cacheAge = Date.now() - new Date(cached.last_synced_at).getTime();
