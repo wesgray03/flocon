@@ -8,7 +8,7 @@ const supabase = createClient(
 
 async function checkSchema() {
   console.log('Checking engagements table schema...\n');
-  
+
   // Try to select a single row to see columns
   const { data, error } = await supabase
     .from('engagements')
@@ -30,7 +30,7 @@ async function checkSchema() {
       .from('engagements')
       .select('id,name,type,active,lost_reason_id,probability')
       .limit(1);
-    
+
     if (err) {
       console.error('Error checking specific columns:', err.message);
       console.error('Details:', err);
@@ -40,7 +40,9 @@ async function checkSchema() {
   }
 }
 
-checkSchema().then(() => process.exit(0)).catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+checkSchema()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

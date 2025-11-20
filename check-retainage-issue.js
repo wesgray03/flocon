@@ -8,9 +8,9 @@ const supabase = createClient(
 
 async function checkProject() {
   const projectId = 'e4ac4d86-8eca-474f-a91a-af42668d1b64';
-  
+
   console.log('Checking project retainage settings...\n');
-  
+
   // Get project details
   const { data: project, error } = await supabase
     .from('engagements')
@@ -27,8 +27,11 @@ async function checkProject() {
   console.log('Contract Amount:', project.contract_amount);
   console.log('Contract Budget:', project.contract_budget);
   console.log('\nRetainage-related fields:');
-  console.log('Fields in project:', Object.keys(project).filter(k => k.toLowerCase().includes('retain')));
-  
+  console.log(
+    'Fields in project:',
+    Object.keys(project).filter((k) => k.toLowerCase().includes('retain'))
+  );
+
   // Get SOV lines
   const { data: sovLines, error: sovError } = await supabase
     .from('engagement_sov_lines')
@@ -42,7 +45,7 @@ async function checkProject() {
   }
 
   console.log('\nSOV Lines count:', sovLines.length);
-  
+
   if (sovLines.length > 0) {
     console.log('\nSOV Lines:');
     sovLines.forEach((line) => {
@@ -57,7 +60,9 @@ async function checkProject() {
   }
 }
 
-checkProject().then(() => process.exit(0)).catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+checkProject()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

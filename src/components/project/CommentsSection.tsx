@@ -37,6 +37,7 @@ export function CommentsSection({
   const [loadingComments, setLoadingComments] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState('');
+  const [isFollowUp, setIsFollowUp] = useState(false);
 
   // Mention functionality state
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -223,6 +224,7 @@ export function CommentsSection({
             engagement_id: projectId,
             user_id: user.id,
             comment_text: newComment.trim(),
+            is_follow_up: isFollowUp,
           },
         ])
         .select('id, engagement_id, user_id, comment_text, created_at')
@@ -293,6 +295,19 @@ export function CommentsSection({
 
       setComments([newCommentObj, ...comments]);
       setNewComment('');
+      setIsFollowUp(false);
+
+      // Update engagement's last_call if this is a follow-up
+      if (isFollowUp) {
+        const { error: lastCallError } = await supabase
+          .from('engagements')
+          .update({ last_call: new Date().toISOString().split('T')[0] })
+          .eq('id', projectId);
+
+        if (lastCallError) {
+          console.error('Error updating last_call:', lastCallError);
+        }
+      }
     } catch (err) {
       console.error('Unexpected error:', err);
       alert('Unexpected error adding comment');
@@ -498,6 +513,39 @@ export function CommentsSection({
               marginBottom: 8,
             }}
           />
+
+          {/* Follow-up Checkbox */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginBottom: 8,
+            }}
+          >
+            <input
+              type="checkbox"
+              id="is-follow-up"
+              checked={isFollowUp}
+              onChange={(e) => setIsFollowUp(e.target.checked)}
+              style={{
+                width: 16,
+                height: 16,
+                cursor: 'pointer',
+              }}
+            />
+            <label
+              htmlFor="is-follow-up"
+              style={{
+                fontSize: 13,
+                color: colors.textPrimary,
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
+            >
+              Mark as follow-up (updates last contact date)
+            </label>
+          </div>
 
           {/* Mentions Dropdown */}
           {showMentions && filteredUsers.length > 0 && (

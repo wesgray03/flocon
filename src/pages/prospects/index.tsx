@@ -352,6 +352,7 @@ export default function ProspectsPage() {
           )
         `
         )
+        .eq('active', true)
         .order('bid_date', { ascending: false });
 
       if (engagementsError) throw engagementsError;
