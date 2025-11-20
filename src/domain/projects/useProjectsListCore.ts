@@ -138,7 +138,7 @@ export function useProjectsListCore(showInactive: boolean = false) {
           'id, name, project_number, stage_id, sharepoint_folder, contract_amount, start_date, end_date, qbo_job_id, active'
         )
         .eq('type', 'project')
-        .eq('active', !showInactive)
+        .eq('active', showInactive ? false : true)
         .order('project_number', {
           ascending: false,
         });
