@@ -28,6 +28,7 @@ type Props = {
   onRowClick: (row: Row) => void;
   onEdit: (row: Row) => void;
   onDelete: (row: Row) => Promise<void> | void;
+  userType?: string | null;
 };
 
 export function ProjectsTable({
@@ -40,6 +41,7 @@ export function ProjectsTable({
   onRowClick,
   onEdit,
   onDelete,
+  userType,
 }: Props) {
   return (
     <div
@@ -319,27 +321,29 @@ export function ProjectsTable({
                 >
                   <Pencil size={16} />
                 </button>
-                <button
-                  type="button"
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 4,
-                    color: colors.logoRed,
-                    marginLeft: 4,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                  onClick={async () => {
-                    await onDelete(r);
-                  }}
-                  title="Delete project"
-                  aria-label="Delete project"
-                >
-                  <Trash2 size={16} />
-                </button>
+                {userType === 'Admin' && (
+                  <button
+                    type="button"
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 4,
+                      color: colors.logoRed,
+                      marginLeft: 4,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onClick={async () => {
+                      await onDelete(r);
+                    }}
+                    title="Delete project"
+                    aria-label="Delete project"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </td>
             </tr>
           ))}

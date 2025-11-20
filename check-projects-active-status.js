@@ -25,11 +25,13 @@ async function checkProjectsActiveStatus() {
       return;
     }
 
-    console.log(`Found ${projects?.length || 0} projects (showing first 10):\n`);
+    console.log(
+      `Found ${projects?.length || 0} projects (showing first 10):\n`
+    );
 
-    const activeTrue = projects?.filter(p => p.active === true).length || 0;
-    const activeFalse = projects?.filter(p => p.active === false).length || 0;
-    const activeNull = projects?.filter(p => p.active === null).length || 0;
+    const activeTrue = projects?.filter((p) => p.active === true).length || 0;
+    const activeFalse = projects?.filter((p) => p.active === false).length || 0;
+    const activeNull = projects?.filter((p) => p.active === null).length || 0;
 
     console.log('Summary:');
     console.log(`- active = true: ${activeTrue}`);
@@ -41,7 +43,6 @@ async function checkProjectsActiveStatus() {
       console.log(`${i + 1}. ${p.project_number || 'N/A'} - ${p.name}`);
       console.log(`   active: ${p.active}`);
     });
-
   } catch (err) {
     console.error('Unexpected error:', err);
   }

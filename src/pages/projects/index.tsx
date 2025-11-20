@@ -369,12 +369,24 @@ export default function ProjectsPage() {
   // Authentication state
   const [authChecked, setAuthChecked] = useState(false);
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
+  const [userType, setUserType] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
         const { data } = await supabase.auth.getUser();
         setSessionEmail(data.user?.email ?? null);
+        
+        // Fetch user type
+        if (data.user?.email) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('user_type')
+            .eq('email', data.user.email)
+            .maybeSingle();
+          
+          setUserType(userData?.user_type || null);
+        }
       } finally {
         setAuthChecked(true);
       }
@@ -1002,7 +1014,9 @@ export default function ProjectsPage() {
             sortIndicator={sortIndicator}
             onRowClick={(r) => router.push(`/projects/${r.id}`)}
             onEdit={(r) => openForEdit(r)}
+            userType={userType}
             onDelete={async (r) => {
+              if (userType !== 'Admin') return; // Only admins can delete
               if (
                 !confirm(
                   `Are you sure you want to delete "${r.project_name}"? This action cannot be undone.`

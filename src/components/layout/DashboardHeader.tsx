@@ -193,7 +193,7 @@ export function DashboardHeader({
               transition: 'all 0.2s ease',
             }}
           >
-            Show Inactive
+            Active Only
           </button>
         )}
       </div>

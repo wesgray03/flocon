@@ -674,7 +674,7 @@ export default function ProspectDetailPage() {
     setConverting(true);
     try {
       // Get the lost reason name
-      const lostReason = lostReasons.find(r => r.id === selectedLostReasonId);
+      const lostReason = lostReasons.find((r) => r.id === selectedLostReasonId);
       const reasonText = lostReason?.reason || 'Unknown reason';
 
       // Update engagement to mark as lost using active flag and lost_reason_id
@@ -689,8 +689,10 @@ export default function ProspectDetailPage() {
       if (updateError) throw updateError;
 
       // Get current user from auth
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+
       // Find the matching user in the users table by email
       let userId = null;
       if (authUser?.email) {
@@ -701,22 +703,22 @@ export default function ProspectDetailPage() {
           .maybeSingle();
         userId = userData?.id || null;
       }
-      
+
       // Create automatic comment
       const now = new Date();
-      const formattedDate = now.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
+      const formattedDate = now.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
         year: 'numeric',
       });
       const formattedTime = now.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true
+        hour12: true,
       });
-      
-      const commentText = `Job was marked as lost @ ${formattedDate}, ${formattedTime}. The lost reason is ${reasonText}.`;
-      
+
+      const commentText = `@Mladen Jerkovic Prospect was marked as lost on ${formattedDate} at ${formattedTime}. The lost reason is ${reasonText}.`;
+
       const { data: commentData, error: commentError } = await supabase
         .from('engagement_comments')
         .insert({

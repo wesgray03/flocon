@@ -27,7 +27,9 @@ async function checkLostComments() {
       return;
     }
 
-    console.log(`Found ${lostProspects?.length || 0} recently lost prospects:\n`);
+    console.log(
+      `Found ${lostProspects?.length || 0} recently lost prospects:\n`
+    );
 
     for (const prospect of lostProspects || []) {
       console.log(`\n--- ${prospect.name} ---`);
@@ -55,7 +57,6 @@ async function checkLostComments() {
         console.log('  No comments found');
       }
     }
-
   } catch (err) {
     console.error('Unexpected error:', err);
   }

@@ -66,6 +66,7 @@ interface Prospect {
   stage: string | null;
   last_call: string | null;
   status: string | null;
+  lost_reason_name: string | null;
   probability_level_id: string | null;
   probability_level_name: string | null;
   probability_percentage: number | null;
@@ -79,6 +80,7 @@ interface Prospect {
 export default function ProspectsPage() {
   const router = useRouter();
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
+  const [userType, setUserType] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Modal states
@@ -109,7 +111,7 @@ export default function ProspectsPage() {
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showInactive, setShowInactive] = useState(false);
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
 
   // Sort and Filter state
   const [sortKey, setSortKey] = useState<SortKey>('none');
@@ -224,6 +226,17 @@ export default function ProspectsPage() {
         router.push('/auth/signin');
       } else {
         setSessionEmail(session.user.email ?? null);
+        
+        // Fetch user type
+        if (session.user.email) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('user_type')
+            .eq('email', session.user.email)
+            .maybeSingle();
+          
+          setUserType(userData?.user_type || null);
+        }
       }
     };
     checkSession();
@@ -325,6 +338,9 @@ export default function ProspectsPage() {
       percentage: number;
       color: string | null;
     } | null;
+    lost_reason?: {
+      reason: string;
+    } | null;
     user_id: string | null;
     bid_date: string | null;
     last_call: string | null;
@@ -332,6 +348,7 @@ export default function ProspectsPage() {
     est_start_date: string | null;
     sharepoint_folder: string | null;
     type: string;
+    active: boolean;
     engagement_trades?: EngagementTradeRow[] | null;
     users?: { name: string | null } | null;
   };
@@ -346,6 +363,7 @@ export default function ProspectsPage() {
           `
           *,
           probability_level:probability_levels ( id, name, percentage, color ),
+          lost_reason:lost_reasons ( reason ),
           engagement_trades (
             trade_id,
             estimated_amount,
@@ -353,7 +371,6 @@ export default function ProspectsPage() {
           )
         `
         )
-        .eq('active', showInactive ? false : true)
         .order('bid_date', { ascending: false });
 
       if (engagementsError) throw engagementsError;
@@ -427,7 +444,10 @@ export default function ProspectsPage() {
             estimating_type: item.estimating_type || 'Budget',
             stage: 'Construction',
             last_call: item.last_call,
-            status: 'Active',
+            status: item.active === false 
+              ? (item.lost_reason?.reason ? `Inactive - ${item.lost_reason.reason}` : 'Inactive')
+              : 'Active',
+            lost_reason_name: item.lost_reason?.reason || null,
             probability_level_id: item.probability_level_id,
             probability_level_name: item.probability_level?.name || null,
             probability_percentage: probabilityPercentage,
@@ -446,7 +466,15 @@ export default function ProspectsPage() {
     } finally {
       setLoading(false);
     }
-  }, [showInactive]);
+  }, [showActiveOnly]);
+
+  // Filter prospects by active status
+  const displayedProspects = useMemo(() => {
+    if (showActiveOnly) {
+      return prospects.filter(p => p.status === 'Active');
+    }
+    return prospects;
+  }, [prospects, showActiveOnly]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -514,7 +542,7 @@ export default function ProspectsPage() {
   useEffect(() => {
     loadProspects();
     loadOptions();
-  }, [loadProspects, loadOptions, showInactive]);
+  }, [loadProspects, loadOptions, showActiveOnly]);
 
   const formatProbability = (probability: string | null | undefined) => {
     if (!probability) return '—';
@@ -719,7 +747,12 @@ export default function ProspectsPage() {
       return tokens.some((t) => v.includes(String(t).toLowerCase()));
     };
 
-    const filtered = prospects.filter(
+    // First filter by active status if showActiveOnly is true
+    let result = showActiveOnly 
+      ? prospects.filter(p => p.status === 'Active')
+      : prospects;
+
+    const filtered = result.filter(
       (prospect) =>
         matchesTokens(prospect.name, filters.name) &&
         matchesTokens(prospect.customer_name, filters.customer) &&
@@ -752,7 +785,7 @@ export default function ProspectsPage() {
     });
 
     return filtered;
-  }, [prospects, sortKey, sortOrder, filters]);
+  }, [prospects, sortKey, sortOrder, filters, showActiveOnly]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortOrder((o) => (o === 'asc' ? 'desc' : 'asc'));
@@ -792,8 +825,8 @@ export default function ProspectsPage() {
         activeTab="prospects"
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
-        showInactive={showInactive}
-        onToggleInactive={() => setShowInactive(!showInactive)}
+        showInactive={showActiveOnly}
+        onToggleInactive={() => setShowActiveOnly(!showActiveOnly)}
         menuItems={
           <SharedMenu
             onClose={() => setMenuOpen(false)}
@@ -1144,6 +1177,9 @@ export default function ProspectsPage() {
                     >
                       Last Follow Up{sortIndicator('last_call')}
                     </th>
+                    <th style={thStatus}>
+                      Status
+                    </th>
                     <th style={thMoney} onClick={() => handleSort('extended')}>
                       Bid Amount{sortIndicator('extended')}
                     </th>
@@ -1228,6 +1264,7 @@ export default function ProspectsPage() {
                     </th>
                     <th style={thBidDate}></th>
                     <th style={thBidDate}></th>
+                    <th style={thStatus}></th>
                     <th
                       style={{
                         ...thMoney,
@@ -1371,6 +1408,21 @@ export default function ProspectsPage() {
                       </td>
                       <td style={td}>{dateStr(prospect.bid_date)}</td>
                       <td style={td}>{dateStr(prospect.last_call)}</td>
+                      <td style={td}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '4px 8px',
+                            borderRadius: 4,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            background: prospect.status === 'Active' ? '#4CAF5020' : '#94a3b820',
+                            color: prospect.status === 'Active' ? '#4CAF50' : '#64748b',
+                          }}
+                        >
+                          {prospect.status || 'Active'}
+                        </span>
+                      </td>
                       <td
                         style={tdRight}
                         title={
@@ -1443,26 +1495,28 @@ export default function ProspectsPage() {
                           >
                             <Pencil size={16} />
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDeleteConfirmId(prospect.id);
-                            }}
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              cursor: 'pointer',
-                              padding: 4,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: colors.logoRed,
-                              transition: 'color 0.2s',
-                            }}
-                            title="Delete Prospect"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {userType === 'Admin' && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteConfirmId(prospect.id);
+                              }}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: 4,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: colors.logoRed,
+                                transition: 'color 0.2s',
+                              }}
+                              title="Delete Prospect"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
