@@ -22,20 +22,20 @@ export async function fetchPayrollFromGL(
   let totalCost = 0;
   const accountsUsed = new Set<string>();
 
-  // Use ProfitAndLossDetail report which shows transaction-level detail
-  // This gives us more granular data than the summary P&L
+  // Use ProfitAndLoss report with customer filter
   const plParams = new URLSearchParams({
     start_date: dateStart,
     end_date: dateEnd,
     accounting_method: 'Accrual',
     customer: qboJobId,
+    summarize_column_by: 'Total',
   });
 
-  console.log(`Fetching ProfitAndLossDetail report for customer ${qboJobId}...`);
+  console.log(`Fetching ProfitAndLoss report for customer ${qboJobId}...`);
   
-  const profitAndLossDetail: any = await makeQBORequest(
+  const profitAndLoss: any = await makeQBORequest(
     'GET',
-    `reports/ProfitAndLossDetail?${plParams.toString()}`
+    `reports/ProfitAndLoss?${plParams.toString()}`
   );
 
   // Helper to check if account is COGS or Expense (not Income)
@@ -189,14 +189,14 @@ export async function fetchPayrollFromGL(
     });
   };
 
-  if (profitAndLossDetail?.Rows?.Row) {
-    console.log('🔍 Traversing P&L Detail Report Structure for job', qboJobId);
-    traverseRows(profitAndLossDetail.Rows.Row, 0);
+  if (profitAndLoss?.Rows?.Row) {
+    console.log('🔍 Traversing P&L Report Structure for job', qboJobId);
+    traverseRows(profitAndLoss.Rows.Row, 0);
     console.log(
       `\n💰 Final Total: $${totalCost.toFixed(2)} from ${accountsUsed.size} accounts`
     );
   } else {
-    console.log('❌ No rows found in P&L Detail report for job', qboJobId);
+    console.log('❌ No rows found in P&L report for job', qboJobId);
   }
 
   return {
