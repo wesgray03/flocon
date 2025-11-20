@@ -376,7 +376,7 @@ export default function ProjectsPage() {
       try {
         const { data } = await supabase.auth.getUser();
         setSessionEmail(data.user?.email ?? null);
-        
+
         // Fetch user type
         if (data.user?.email) {
           const { data: userData } = await supabase
@@ -384,7 +384,7 @@ export default function ProjectsPage() {
             .select('user_type')
             .eq('email', data.user.email)
             .maybeSingle();
-          
+
           setUserType(userData?.user_type || null);
         }
       } finally {

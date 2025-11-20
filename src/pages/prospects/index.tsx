@@ -226,7 +226,7 @@ export default function ProspectsPage() {
         router.push('/auth/signin');
       } else {
         setSessionEmail(session.user.email ?? null);
-        
+
         // Fetch user type
         if (session.user.email) {
           const { data: userData } = await supabase
@@ -234,7 +234,7 @@ export default function ProspectsPage() {
             .select('user_type')
             .eq('email', session.user.email)
             .maybeSingle();
-          
+
           setUserType(userData?.user_type || null);
         }
       }
@@ -444,9 +444,12 @@ export default function ProspectsPage() {
             estimating_type: item.estimating_type || 'Budget',
             stage: 'Construction',
             last_call: item.last_call,
-            status: item.active === false 
-              ? (item.lost_reason?.reason ? `Inactive - ${item.lost_reason.reason}` : 'Inactive')
-              : 'Active',
+            status:
+              item.active === false
+                ? item.lost_reason?.reason
+                  ? `Inactive - ${item.lost_reason.reason}`
+                  : 'Inactive'
+                : 'Active',
             lost_reason_name: item.lost_reason?.reason || null,
             probability_level_id: item.probability_level_id,
             probability_level_name: item.probability_level?.name || null,
@@ -471,7 +474,7 @@ export default function ProspectsPage() {
   // Filter prospects by active status
   const displayedProspects = useMemo(() => {
     if (showActiveOnly) {
-      return prospects.filter(p => p.status === 'Active');
+      return prospects.filter((p) => p.status === 'Active');
     }
     return prospects;
   }, [prospects, showActiveOnly]);
@@ -748,8 +751,8 @@ export default function ProspectsPage() {
     };
 
     // First filter by active status if showActiveOnly is true
-    let result = showActiveOnly 
-      ? prospects.filter(p => p.status === 'Active')
+    let result = showActiveOnly
+      ? prospects.filter((p) => p.status === 'Active')
       : prospects;
 
     const filtered = result.filter(
@@ -1160,7 +1163,7 @@ export default function ProspectsPage() {
                       Type{sortIndicator('estimating_type')}
                     </th>
                     <th
-                      style={thStatus}
+                      style={thProbability}
                       onClick={() => handleSort('probability_level_name')}
                     >
                       Probability{sortIndicator('probability_level_name')}
@@ -1177,9 +1180,7 @@ export default function ProspectsPage() {
                     >
                       Last Follow Up{sortIndicator('last_call')}
                     </th>
-                    <th style={thStatus}>
-                      Status
-                    </th>
+                    <th style={thStatus}>Status</th>
                     <th style={thMoney} onClick={() => handleSort('extended')}>
                       Bid Amount{sortIndicator('extended')}
                     </th>
@@ -1416,8 +1417,14 @@ export default function ProspectsPage() {
                             borderRadius: 4,
                             fontSize: 12,
                             fontWeight: 600,
-                            background: prospect.status === 'Active' ? '#4CAF5020' : '#94a3b820',
-                            color: prospect.status === 'Active' ? '#4CAF50' : '#64748b',
+                            background:
+                              prospect.status === 'Active'
+                                ? '#4CAF5020'
+                                : '#94a3b820',
+                            color:
+                              prospect.status === 'Active'
+                                ? '#4CAF50'
+                                : '#64748b',
                           }}
                         >
                           {prospect.status || 'Active'}
@@ -1446,6 +1453,16 @@ export default function ProspectsPage() {
                           fontWeight: 600,
                           color: colors.textPrimary,
                         }}
+                        title={
+                          prospect.trades && prospect.trades.length > 0
+                            ? prospect.trades
+                                .map(
+                                  (t) =>
+                                    `${t.name} (${t.code}): ${formatCurrency(t.amount)}`
+                                )
+                                .join('\n')
+                            : undefined
+                        }
                       >
                         {prospect.bid_amount
                           ? formatCurrency(prospect.bid_amount)
@@ -2219,8 +2236,9 @@ const thCustomer: React.CSSProperties = { ...th, width: 180, minWidth: 150 };
 const thContact: React.CSSProperties = { ...th, width: 140, minWidth: 120 };
 const thManager: React.CSSProperties = { ...th, width: 140, minWidth: 120 };
 const thArchitect: React.CSSProperties = { ...th, width: 140, minWidth: 120 };
+const thProbability: React.CSSProperties = { ...th, width: 140, minWidth: 130 };
 const thBidDate: React.CSSProperties = { ...th, width: 100, minWidth: 90 };
-const thStatus: React.CSSProperties = { ...th, width: 160, minWidth: 140 };
+const thStatus: React.CSSProperties = { ...th, width: 190, minWidth: 180 };
 const thMoney: React.CSSProperties = { ...thRight, width: 110, minWidth: 100 };
 const thActions: React.CSSProperties = {
   ...thCenter,
