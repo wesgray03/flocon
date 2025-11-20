@@ -39,8 +39,8 @@ export async function fetchPayrollFromGL(
   );
 
   // Balance sheet and income account prefixes to exclude
-  const isExcludedAccount = (accountName: string): boolean => {
-    const name = accountName.trim();
+  const isExcludedAccount = (accountNumber: string): boolean => {
+    const num = accountNumber.trim();
     // QuickBooks account numbering:
     // 1xxxx = Assets (exclude)
     // 2xxxx = Liabilities (exclude)
@@ -48,18 +48,27 @@ export async function fetchPayrollFromGL(
     // 4xxxx = Income (exclude)
     // 5xxxx = Cost of Goods Sold (include)
     // 6xxxx+ = Expenses (include)
-    return /^[1234]\d{4}/.test(name);
+    return /^[1234]\d{4}/.test(num);
   };
 
-  const traverseRows = (rows: any[]) => {
+  const traverseRows = (rows: any[], currentAccount?: string) => {
     rows.forEach((row: any) => {
-      if (row.type === 'Data' && row.ColData) {
-        // In GL, account name is typically in ColData[0]
-        const accountCol = row.ColData[0];
-        const accountName = (accountCol?.value || '').trim();
+      // Check if this is an account header row
+      if (row.Header?.ColData) {
+        const accountHeader = row.Header.ColData[0]?.value || '';
+        const accountMatch = accountHeader.match(/^(\d{5})/); // Extract account number
+        const accountNumber = accountMatch ? accountMatch[1] : '';
+        
+        // Recursively traverse this account's transactions
+        if (row.Rows?.Row) {
+          traverseRows(row.Rows.Row, accountNumber);
+        }
+        return;
+      }
 
-        // Skip balance sheet and income accounts
-        if (isExcludedAccount(accountName)) {
+      if (row.type === 'Data' && row.ColData && currentAccount) {
+        // Skip if this account should be excluded
+        if (isExcludedAccount(currentAccount)) {
           return;
         }
 
@@ -79,17 +88,17 @@ export async function fetchPayrollFromGL(
           transactionsFound++;
 
           if (debit > 0) {
-            console.log(`Debit: $${debit} in ${accountName}`);
+            console.log(`Debit: $${debit} in account ${currentAccount}`);
           }
           if (credit > 0) {
-            console.log(`Credit: $${credit} in ${accountName}`);
+            console.log(`Credit: $${credit} in account ${currentAccount}`);
           }
         }
       }
 
       // Traverse nested rows
       if (row.Rows?.Row) {
-        traverseRows(row.Rows.Row);
+        traverseRows(row.Rows.Row, currentAccount);
       }
     });
   };
