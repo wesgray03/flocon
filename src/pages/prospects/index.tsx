@@ -109,6 +109,7 @@ export default function ProspectsPage() {
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showInactive, setShowInactive] = useState(false);
 
   // Sort and Filter state
   const [sortKey, setSortKey] = useState<SortKey>('none');
@@ -352,7 +353,7 @@ export default function ProspectsPage() {
           )
         `
         )
-        .eq('active', true)
+        .eq('active', !showInactive)
         .order('bid_date', { ascending: false });
 
       if (engagementsError) throw engagementsError;
@@ -513,7 +514,7 @@ export default function ProspectsPage() {
   useEffect(() => {
     loadProspects();
     loadOptions();
-  }, [loadProspects, loadOptions]);
+  }, [loadProspects, loadOptions, showInactive]);
 
   const formatProbability = (probability: string | null | undefined) => {
     if (!probability) return '—';
@@ -791,6 +792,8 @@ export default function ProspectsPage() {
         activeTab="prospects"
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
+        showInactive={showInactive}
+        onToggleInactive={() => setShowInactive(!showInactive)}
         menuItems={
           <SharedMenu
             onClose={() => setMenuOpen(false)}

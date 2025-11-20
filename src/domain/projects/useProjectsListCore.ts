@@ -73,7 +73,7 @@ interface ProjectDashboardRow {
  * Encapsulates: loading, normalization, filtering, sorting & derived suggestions.
  * Keeps the page component declarative and focused on layout / modals.
  */
-export function useProjectsListCore() {
+export function useProjectsListCore(showInactive: boolean = false) {
   const [rows, setRows] = useState<ProjectListRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -132,28 +132,18 @@ export function useProjectsListCore() {
   const loadProjects = async () => {
     setLoading(true);
     try {
-      // Get Archive stage ID first
-      const { data: archiveStage } = await supabase
-        .from('stages')
-        .select('id')
-        .eq('name', 'Archive')
-        .single();
-
-      let query = supabase
+      const query = supabase
         .from('engagements')
         .select(
-          'id, name, project_number, stage_id, sharepoint_folder, contract_amount, start_date, end_date, qbo_job_id'
+          'id, name, project_number, stage_id, sharepoint_folder, contract_amount, start_date, end_date, qbo_job_id, active'
         )
-        .eq('type', 'project');
+        .eq('type', 'project')
+        .eq('active', !showInactive)
+        .order('project_number', {
+          ascending: false,
+        });
 
-      // Exclude Archive stage if it exists
-      if (archiveStage?.id) {
-        query = query.neq('stage_id', archiveStage.id);
-      }
-
-      const { data, error } = await query.order('project_number', {
-        ascending: false,
-      });
+      const { data, error } = await query;
       if (error) {
         console.error('Project dashboard load error:', error.message ?? error);
         setRows([]);

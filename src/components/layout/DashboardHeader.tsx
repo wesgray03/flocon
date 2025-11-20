@@ -62,6 +62,8 @@ interface DashboardHeaderProps {
   menuItems: React.ReactNode;
   actionButton?: React.ReactNode;
   exportButton?: React.ReactNode;
+  showInactive?: boolean;
+  onToggleInactive?: () => void;
 }
 
 export function DashboardHeader({
@@ -172,6 +174,26 @@ export function DashboardHeader({
         >
           Projects
         </span>
+        {onToggleInactive && (
+          <button
+            onClick={onToggleInactive}
+            style={{
+              marginLeft: 8,
+              background: showInactive ? colors.navy : '#ebe5db',
+              color: showInactive ? '#fff' : colors.textPrimary,
+              border: '1px solid ' + (showInactive ? colors.navy : '#d4cfc5'),
+              borderRadius: 6,
+              padding: '6px 12px',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Show Inactive
+          </button>
+        )}
       </div>
 
       {/* Right: Export Button + Menu Button */}

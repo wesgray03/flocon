@@ -388,6 +388,7 @@ export default function ProjectsPage() {
     };
   }, []);
   const router = useRouter();
+  const [showInactive, setShowInactive] = useState(false);
   // Domain list core
   const {
     rows,
@@ -401,7 +402,7 @@ export default function ProjectsPage() {
     handleSort,
     sortIndicator,
     refresh,
-  } = useProjectsListCore();
+  } = useProjectsListCore(showInactive);
   const [showModal, setShowModal] = useState(false);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -786,6 +787,8 @@ export default function ProjectsPage() {
         activeTab="projects"
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
+        showInactive={showInactive}
+        onToggleInactive={() => setShowInactive(!showInactive)}
         menuItems={
           <SharedMenu
             onClose={() => setMenuOpen(false)}
