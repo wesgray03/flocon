@@ -215,6 +215,13 @@ export default async function handler(
       .upsert(cacheData, { onConflict: 'engagement_id' });
 
     console.log(`✅ Updated cost cache for ${engagementId}`);
+    console.log('Returning fresh QBO data:', {
+      billsTotal,
+      purchasesTotal,
+      payrollTotal,
+      creditsTotal,
+      netCostToDate,
+    });
 
     return res.status(200).json({
       billsTotal,
