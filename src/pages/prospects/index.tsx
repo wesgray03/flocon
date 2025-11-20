@@ -1321,6 +1321,7 @@ export default function ProspectsPage() {
                             architect: [],
                             estimating_type: [],
                             probability_level: [],
+                            status: [],
                           })
                         }
                         style={{
