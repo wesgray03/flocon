@@ -23,32 +23,28 @@ export async function fetchPayrollFromGL(
   let totalCredits = 0;
   let transactionsFound = 0;
 
-  // Use GeneralLedger report filtered by customer to get ALL transactions
-  console.log(`Fetching GeneralLedger for customer ${qboJobId}...`);
+  // Use ProfitAndLoss report filtered by customer - better customer filtering than GL
+  console.log(`Fetching ProfitAndLoss for customer ${qboJobId}...`);
 
-  const glParams = new URLSearchParams({
+  const plParams = new URLSearchParams({
     start_date: dateStart,
     end_date: dateEnd,
     customer: qboJobId,
     accounting_method: 'Accrual',
   });
 
-  const generalLedger: any = await makeQBORequest(
+  const profitAndLoss: any = await makeQBORequest(
     'GET',
-    `reports/GeneralLedger?${glParams.toString()}`
+    `reports/ProfitAndLoss?${plParams.toString()}`
   );
 
-  // Balance sheet and income account prefixes to exclude
-  const isExcludedAccount = (accountNumber: string): boolean => {
+  // Only include COGS and Expenses
+  const isIncludedAccount = (accountNumber: string): boolean => {
     const num = accountNumber.trim();
     // QuickBooks account numbering:
-    // 1xxxx = Assets (exclude)
-    // 2xxxx = Liabilities (exclude)
-    // 3xxxx = Equity (exclude)
-    // 4xxxx = Income (exclude)
     // 5xxxx = Cost of Goods Sold (include)
     // 6xxxx+ = Expenses (include)
-    return /^[1234]\d{4}/.test(num);
+    return /^[56]\d{4}/.test(num);
   };
 
   const traverseRows = (rows: any[], currentAccount?: string) => {
@@ -67,8 +63,8 @@ export async function fetchPayrollFromGL(
       }
 
       if (row.type === 'Data' && row.ColData && currentAccount) {
-        // Skip if this account should be excluded
-        if (isExcludedAccount(currentAccount)) {
+        // Only include COGS and Expense accounts
+        if (!isIncludedAccount(currentAccount)) {
           return;
         }
 
@@ -103,21 +99,22 @@ export async function fetchPayrollFromGL(
     });
   };
 
-  if (generalLedger?.Rows?.Row) {
-    traverseRows(generalLedger.Rows.Row);
+  if (profitAndLoss?.Rows?.Row) {
+    traverseRows(profitAndLoss.Rows.Row);
   }
 
-  const netTotal = totalDebits - totalCredits;
+  // P&L shows expenses as positive, so total is just debits (expenses/COGS)
+  const totalCosts = totalDebits;
 
   console.log(
-    `GeneralLedger: ${transactionsFound} transactions, Debits: $${totalDebits}, Credits: $${totalCredits}, Net: $${netTotal}`
+    `ProfitAndLoss: ${transactionsFound} transactions, Total Costs: $${totalCosts}`
   );
 
   return {
-    payrollTotal: netTotal,
-    accountsChecked: ['GeneralLedger'],
+    payrollTotal: totalCosts,
+    accountsChecked: ['ProfitAndLoss_COGS_Expenses'],
     transactionsFound,
-    method: 'GeneralLedger_All_Transactions',
+    method: 'ProfitAndLoss_Customer_Filtered',
   };
 }
 
