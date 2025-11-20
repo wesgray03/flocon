@@ -219,45 +219,63 @@ export default function BillingModule({
           line.stored_materials;
         return sum + currentTotal;
       }, 0);
-      const totalRetainage = Math.round(
-        sovLineProgress.reduce((sum, line) => {
-          const currentTotal =
-            line.previous_completed +
-            line.current_completed +
-            line.stored_materials;
-          const retainage = Math.round(
-            currentTotal * (line.retainage_percent / 100) * 100
-          ) / 100;
-          return sum + retainage;
-        }, 0) * 100
-      ) / 100;
-      const totalEarnedLessRetainage = Math.round(
-        (totalCompletedAndStored - totalRetainage) * 100
-      ) / 100;
+      
+      // Calculate retainage for CURRENT period only (not cumulative)
+      const currentPeriodRetainage =
+        Math.round(
+          sovLineProgress.reduce((sum, line) => {
+            const currentPeriodWork =
+              line.current_completed + line.stored_materials;
+            const retainage =
+              Math.round(currentPeriodWork * (line.retainage_percent / 100) * 100) /
+              100;
+            return sum + retainage;
+          }, 0) * 100
+        ) / 100;
+      
+      // Calculate TOTAL cumulative retainage on all work to date
+      const totalRetainage =
+        Math.round(
+          sovLineProgress.reduce((sum, line) => {
+            const totalToDate =
+              line.previous_completed +
+              line.current_completed +
+              line.stored_materials;
+            const retainage =
+              Math.round(totalToDate * (line.retainage_percent / 100) * 100) /
+              100;
+            return sum + retainage;
+          }, 0) * 100
+        ) / 100;
+        
+      const totalEarnedLessRetainage =
+        Math.round((totalCompletedAndStored - totalRetainage) * 100) / 100;
 
       // Get previous payments from prior pay apps
-      const previousPayments = Math.round(
-        payApps
-          .filter(
-            (app) =>
-              payAppForm.pay_app_number &&
-              app.pay_app_number !== null &&
-              Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
-          )
-          .reduce((sum, app) => sum + app.current_payment_due, 0) * 100
-      ) / 100;
+      const previousPayments =
+        Math.round(
+          payApps
+            .filter(
+              (app) =>
+                payAppForm.pay_app_number &&
+                app.pay_app_number !== null &&
+                Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
+            )
+            .reduce((sum, app) => sum + app.current_payment_due, 0) * 100
+        ) / 100;
 
       // Calculate retainage held from all previous pay apps
-      const retainageHeld = Math.round(
-        payApps
-          .filter(
-            (app) =>
-              payAppForm.pay_app_number &&
-              app.pay_app_number !== null &&
-              Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
-          )
-          .reduce((sum, app) => sum + (app.total_retainage || 0), 0) * 100
-      ) / 100;
+      const retainageHeld =
+        Math.round(
+          payApps
+            .filter(
+              (app) =>
+                payAppForm.pay_app_number &&
+                app.pay_app_number !== null &&
+                Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
+            )
+            .reduce((sum, app) => sum + (app.total_retainage || 0), 0) * 100
+        ) / 100;
 
       // If billing retainage, the current payment is the retainage balance
       // Otherwise, calculate normal current payment due
@@ -281,7 +299,7 @@ export default function BillingModule({
         status: payAppForm.status || 'Submitted',
         // AIA G703S calculated fields
         total_completed_and_stored: totalCompletedAndStored,
-        retainage_completed_work: totalRetainage,
+        retainage_completed_work: currentPeriodRetainage,
         retainage_stored_materials: 0,
         total_retainage: totalRetainage,
         total_earned_less_retainage: totalEarnedLessRetainage,
@@ -455,7 +473,7 @@ export default function BillingModule({
         unit_cost: cost,
         extended_cost: extended,
         category: sovForm.category || null,
-        retainage_percent: Number(sovForm.retainage_percent) || 5.0,
+        retainage_percent: sovForm.retainage_percent !== '' ? Number(sovForm.retainage_percent) : 5.0,
       };
 
       if (editingSOVLine) {
