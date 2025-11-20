@@ -717,7 +717,7 @@ export default function ProspectDetailPage() {
         hour12: true,
       });
 
-      const commentText = `@Mladen Jerkovic Prospect was marked as lost on ${formattedDate} at ${formattedTime}. The lost reason is ${reasonText}.`;
+      const commentText = `Prospect was marked as lost on ${formattedDate} at ${formattedTime}. The lost reason is ${reasonText}.`;
 
       const { data: commentData, error: commentError } = await supabase
         .from('engagement_comments')
@@ -725,6 +725,7 @@ export default function ProspectDetailPage() {
           engagement_id: prospect.id,
           comment_text: commentText,
           user_id: userId,
+          is_follow_up: true,
         })
         .select();
 
@@ -734,6 +735,16 @@ export default function ProspectDetailPage() {
         // Don't fail the whole operation if comment fails
       } else {
         console.log('Auto-comment created successfully:', commentData);
+
+        // Update last_call since this comment is marked as follow-up
+        const { error: lastCallError } = await supabase
+          .from('engagements')
+          .update({ last_call: new Date().toISOString().split('T')[0] })
+          .eq('id', prospect.id);
+
+        if (lastCallError) {
+          console.error('Error updating last_call:', lastCallError);
+        }
       }
 
       notify('Marked as lost successfully', 'success');

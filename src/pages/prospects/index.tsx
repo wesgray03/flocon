@@ -2238,8 +2238,8 @@ const thManager: React.CSSProperties = { ...th, width: 140, minWidth: 120 };
 const thArchitect: React.CSSProperties = { ...th, width: 140, minWidth: 120 };
 const thProbability: React.CSSProperties = { ...th, width: 140, minWidth: 130 };
 const thBidDate: React.CSSProperties = { ...th, width: 100, minWidth: 90 };
-const thStatus: React.CSSProperties = { ...th, width: 190, minWidth: 180 };
-const thMoney: React.CSSProperties = { ...thRight, width: 110, minWidth: 100 };
+const thStatus: React.CSSProperties = { ...th, width: 110, minWidth: 100 };
+const thMoney: React.CSSProperties = { ...thRight, width: 105, minWidth: 95 };
 const thActions: React.CSSProperties = {
   ...thCenter,
   width: 100,
