@@ -33,6 +33,7 @@ type Filters = {
   architect: string[];
   estimating_type: string[];
   probability_level: string[];
+  status: string[];
 };
 
 type SortKey =
@@ -46,7 +47,8 @@ type SortKey =
   | 'estimating_type'
   | 'bid_amount'
   | 'bid_date'
-  | 'last_call';
+  | 'last_call'
+  | 'status';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -124,6 +126,7 @@ export default function ProspectsPage() {
     architect: [],
     estimating_type: [],
     probability_level: [],
+    status: [],
   });
 
   // Edit/Delete state
@@ -210,6 +213,13 @@ export default function ProspectsPage() {
         new Set(
           prospects
             .map((p) => p.probability_level_name)
+            .filter((v): v is string => !!v)
+        )
+      ),
+      status: Array.from(
+        new Set(
+          prospects
+            .map((p) => p.status)
             .filter((v): v is string => !!v)
         )
       ),
@@ -766,7 +776,8 @@ export default function ProspectsPage() {
         matchesTokens(
           prospect.probability_level_name,
           filters.probability_level
-        )
+        ) &&
+        matchesTokens(prospect.status, filters.status)
     );
 
     if (sortKey === 'none') return filtered;
@@ -1180,7 +1191,12 @@ export default function ProspectsPage() {
                     >
                       Last Follow Up{sortIndicator('last_call')}
                     </th>
-                    <th style={thStatus}>Status</th>
+                    <th
+                      style={thStatus}
+                      onClick={() => handleSort('status')}
+                    >
+                      Status{sortIndicator('status')}
+                    </th>
                     <th style={thMoney} onClick={() => handleSort('extended')}>
                       Bid Amount{sortIndicator('extended')}
                     </th>
@@ -1265,7 +1281,16 @@ export default function ProspectsPage() {
                     </th>
                     <th style={thBidDate}></th>
                     <th style={thBidDate}></th>
-                    <th style={thStatus}></th>
+                    <th style={thStatus}>
+                      <MultiFilterInput
+                        values={filters.status}
+                        onChangeValues={(vals) =>
+                          setFilters((f) => ({ ...f, status: vals }))
+                        }
+                        suggestions={uniqueValues.status}
+                        placeholder="Filter status..."
+                      />
+                    </th>
                     <th
                       style={{
                         ...thMoney,

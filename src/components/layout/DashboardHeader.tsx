@@ -193,7 +193,7 @@ export function DashboardHeader({
               transition: 'all 0.2s ease',
             }}
           >
-            Active Only
+            {activeTab === 'prospects' ? 'Active Only' : 'Show Inactive'}
           </button>
         )}
       </div>
