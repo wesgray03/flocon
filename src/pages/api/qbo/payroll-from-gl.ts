@@ -67,10 +67,30 @@ export async function fetchPayrollFromGL(
           return;
         }
 
+        // Debug: Log all ColData to see structure
+        if (transactionsFound === 0) {
+          console.log('First transaction ColData structure:');
+          row.ColData.forEach((col: any, idx: number) => {
+            console.log(`  ColData[${idx}]: ${JSON.stringify(col)}`);
+          });
+        }
+
         // Check if this transaction is for the specified job/customer
-        // Customer is typically in ColData[3] in GL reports
-        const customerCol = row.ColData[3];
-        const customer = (customerCol?.value || '').trim();
+        // Try multiple possible locations for customer ID
+        let customer = '';
+        
+        // Check each ColData entry for customer info
+        for (let i = 0; i < row.ColData.length; i++) {
+          const col = row.ColData[i];
+          const value = (col?.value || '').trim();
+          
+          // If this value matches our job ID, we found it
+          if (value === qboJobId) {
+            customer = value;
+            console.log(`Found customer ${qboJobId} in ColData[${i}]`);
+            break;
+          }
+        }
         
         // Skip if not for our job
         if (customer !== qboJobId) {
