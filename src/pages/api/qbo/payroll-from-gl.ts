@@ -23,19 +23,18 @@ export async function fetchPayrollFromGL(
   let totalCredits = 0;
   let transactionsFound = 0;
 
-  // Use ProfitAndLoss report filtered by customer - better customer filtering than GL
-  console.log(`Fetching ProfitAndLoss for customer ${qboJobId}...`);
+  // Use GeneralLedger report WITHOUT customer filter (we'll filter transactions manually)
+  console.log(`Fetching GeneralLedger...`);
 
-  const plParams = new URLSearchParams({
+  const glParams = new URLSearchParams({
     start_date: dateStart,
     end_date: dateEnd,
-    customer: qboJobId,
     accounting_method: 'Accrual',
   });
 
-  const profitAndLoss: any = await makeQBORequest(
+  const generalLedger: any = await makeQBORequest(
     'GET',
-    `reports/ProfitAndLoss?${plParams.toString()}`
+    `reports/GeneralLedger?${glParams.toString()}`
   );
 
   // Only include COGS and Expenses
@@ -54,7 +53,7 @@ export async function fetchPayrollFromGL(
         const accountHeader = row.Header.ColData[0]?.value || '';
         const accountMatch = accountHeader.match(/^(\d{5})/); // Extract account number
         const accountNumber = accountMatch ? accountMatch[1] : '';
-        
+
         // Recursively traverse this account's transactions
         if (row.Rows?.Row) {
           traverseRows(row.Rows.Row, accountNumber);
@@ -65,6 +64,16 @@ export async function fetchPayrollFromGL(
       if (row.type === 'Data' && row.ColData && currentAccount) {
         // Only include COGS and Expense accounts
         if (!isIncludedAccount(currentAccount)) {
+          return;
+        }
+
+        // Check if this transaction is for the specified job/customer
+        // Customer is typically in ColData[3] in GL reports
+        const customerCol = row.ColData[3];
+        const customer = (customerCol?.value || '').trim();
+        
+        // Skip if not for our job
+        if (customer !== qboJobId) {
           return;
         }
 
@@ -83,12 +92,7 @@ export async function fetchPayrollFromGL(
           totalCredits += credit;
           transactionsFound++;
 
-          if (debit > 0) {
-            console.log(`Debit: $${debit} in account ${currentAccount}`);
-          }
-          if (credit > 0) {
-            console.log(`Credit: $${credit} in account ${currentAccount}`);
-          }
+          console.log(`Account ${currentAccount}, Customer ${customer}: Debit=$${debit}, Credit=$${credit}`);
         }
       }
 
@@ -99,22 +103,22 @@ export async function fetchPayrollFromGL(
     });
   };
 
-  if (profitAndLoss?.Rows?.Row) {
-    traverseRows(profitAndLoss.Rows.Row);
+  if (generalLedger?.Rows?.Row) {
+    traverseRows(generalLedger.Rows.Row);
   }
 
-  // P&L shows expenses as positive, so total is just debits (expenses/COGS)
-  const totalCosts = totalDebits;
+  // GL: Net cost = debits - credits
+  const netCost = totalDebits - totalCredits;
 
   console.log(
-    `ProfitAndLoss: ${transactionsFound} transactions, Total Costs: $${totalCosts}`
+    `GeneralLedger for job ${qboJobId}: ${transactionsFound} transactions, Debits: $${totalDebits}, Credits: $${totalCredits}, Net: $${netCost}`
   );
 
   return {
-    payrollTotal: totalCosts,
-    accountsChecked: ['ProfitAndLoss_COGS_Expenses'],
+    payrollTotal: netCost,
+    accountsChecked: ['GeneralLedger_5xxxx_6xxxx'],
     transactionsFound,
-    method: 'ProfitAndLoss_Customer_Filtered',
+    method: 'GeneralLedger_Customer_Filtered',
   };
 }
 
