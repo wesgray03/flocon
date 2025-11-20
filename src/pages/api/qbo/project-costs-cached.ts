@@ -150,28 +150,26 @@ export default async function handler(
       });
     });
 
-    // Query Payroll (simplified - may need payroll API)
+    // Fetch payroll costs from General Ledger (Reports API)
     let payrollTotal = 0;
     let payrollCount = 0;
     try {
-      const payrollQuery = `SELECT * FROM PayrollCheck WHERE TxnDate >= '${dateStart}' AND TxnDate <= '${dateEnd}' MAXRESULTS 1000`;
-      const payrollResult: any = await makeQBORequest(
-        'GET',
-        `query?query=${encodeURIComponent(payrollQuery)}`
+      // Build the URL for internal API call
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://flocon.vercel.app';
+      const payrollResponse = await fetch(
+        `${baseUrl}/api/qbo/payroll-from-gl?qboJobId=${qboJobId}&startDate=${dateStart}&endDate=${dateEnd}`
       );
-      const allPayroll = payrollResult?.QueryResponse?.PayrollCheck || [];
 
-      allPayroll.forEach((paycheck: any) => {
-        const lines = paycheck.Line || [];
-        lines.forEach((line: any) => {
-          if (lineReferencesJob(line, qboJobId as string)) {
-            payrollTotal += getLineAmount(line);
-            payrollCount++;
-          }
-        });
-      });
-    } catch (err) {
-      console.log('Payroll query failed (may require additional permissions)');
+      if (payrollResponse.ok) {
+        const payrollData = await payrollResponse.json();
+        payrollTotal = payrollData.payrollTotal || 0;
+        payrollCount = payrollData.transactionsFound || 0;
+        console.log(`Payroll from GL: $${payrollTotal} (${payrollCount} transactions)`);
+      } else {
+        console.log('Payroll data not available:', await payrollResponse.text());
+      }
+    } catch (payrollError: any) {
+      console.log('Payroll fetch failed:', payrollError.message);
     }
 
     // Query Vendor Credits
