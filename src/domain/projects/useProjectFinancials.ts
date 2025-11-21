@@ -118,18 +118,20 @@ export function useProjectFinancials(
           0
         );
         // Calculate net retainage: sum retainage held, subtract retainage released
-        const retainageToDate = payAppRows.reduce(
-          (sum, r) => {
-            if (r.is_retainage_billing) {
-              // Retainage release - subtract the payment amount
-              return sum - (Number(r.current_payment_due) || 0);
-            } else {
-              // Normal billing - add the retainage withheld
-              return sum + (Number(r.retainage_completed_work) || 0);
-            }
-          },
-          0
-        );
+        const retainageToDate = Math.round(
+          payAppRows.reduce(
+            (sum, r) => {
+              if (r.is_retainage_billing) {
+                // Retainage release - subtract the payment amount
+                return sum - (Number(r.current_payment_due) || 0);
+              } else {
+                // Normal billing - add the retainage withheld
+                return sum + (Number(r.retainage_completed_work) || 0);
+              }
+            },
+            0
+          ) * 100
+        ) / 100;
 
         // Calculate cash in from QBO payments
         const cashIn = payAppRows.reduce(
