@@ -114,14 +114,22 @@ export function useBillingCore(projectId?: string) {
   );
 
   const totalRetainage = useMemo(
-    () => payApps.reduce((sum, app) => {
-      // If it's a retainage billing (release), subtract it
-      if (app.is_retainage_billing) {
-        return sum - (app.amount ?? 0);
-      }
-      // Otherwise add the retainage withheld
-      return sum + (app.retainage_completed_work ?? 0);
-    }, 0),
+    () => {
+      let total = Math.round(
+        payApps.reduce((sum, app) => {
+          if (app.is_retainage_billing) {
+            // Retainage release - subtract the payment amount
+            return sum - (Number(app.current_payment_due) || 0);
+          } else {
+            // Normal billing - add the retainage withheld
+            return sum + (Number(app.retainage_completed_work) || 0);
+          }
+        }, 0) * 100
+      ) / 100;
+      // Fix negative zero display
+      if (total === 0) total = 0;
+      return total;
+    },
     [payApps]
   );
 
