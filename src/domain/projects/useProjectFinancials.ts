@@ -19,8 +19,6 @@ export type ProjectFinancials = {
   percentCompleteCost: number;
 
   // Profit (calculations)
-  contractProfitPercent: number;
-  changeOrderProfitPercent: number;
   totalProfitPercent: number;
   projectedProfitPercent: number;
   projectedProfitDollar: number;
@@ -57,8 +55,6 @@ export function useProjectFinancials(
     costToDate: 0,
     remainingCost: 0,
     percentCompleteCost: 0,
-    contractProfitPercent: 0,
-    changeOrderProfitPercent: 0,
     totalProfitPercent: 0,
     projectedProfitPercent: 0,
     projectedProfitDollar: 0,
@@ -194,12 +190,7 @@ export function useProjectFinancials(
 
         // Profit calculations
         const contractProfit = contractAmount - contractBudget;
-        const contractProfitPercent =
-          contractAmount > 0 ? (contractProfit / contractAmount) * 100 : 0;
-
         const coProfit = coSalesTotal - coBudgetTotal;
-        const changeOrderProfitPercent =
-          coSalesTotal > 0 ? (coProfit / coSalesTotal) * 100 : 0;
 
         const totalProfit = contractProfit + coProfit;
         const totalProfitPercent =
@@ -227,8 +218,6 @@ export function useProjectFinancials(
           costToDate,
           remainingCost,
           percentCompleteCost,
-          contractProfitPercent,
-          changeOrderProfitPercent,
           totalProfitPercent,
           projectedProfitPercent,
           projectedProfitDollar,
@@ -252,8 +241,6 @@ export function useProjectFinancials(
           costToDate: 0,
           remainingCost: 0,
           percentCompleteCost: 0,
-          contractProfitPercent: 0,
-          changeOrderProfitPercent: 0,
           totalProfitPercent: 0,
           projectedProfitPercent: 0,
           projectedProfitDollar: 0,

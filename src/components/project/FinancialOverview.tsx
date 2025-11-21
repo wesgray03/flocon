@@ -148,16 +148,6 @@ export function FinancialOverview({
             <>
               <SectionHeading title="Profit" marginTop />
               <Table>
-                <Row
-                  label="Contract Profit %"
-                  value={pct(financials.contractProfitPercent)}
-                  bold
-                />
-                <Row
-                  label="Change Order Profit %"
-                  value={pct(financials.changeOrderProfitPercent)}
-                  bold
-                />
                 {/* Consolidated: "Total GM %" and "Unadjusted GM%" */}
                 <Row
                   label="Total Profit %"
