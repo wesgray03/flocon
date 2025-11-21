@@ -67,6 +67,7 @@ interface Prospect {
   estimating_type: 'Budget' | 'Construction' | null;
   stage: string | null;
   last_call: string | null;
+  active: boolean;
   prospect_status: string | null;
   status: string | null;
   lost_reason_name: string | null;
@@ -460,6 +461,7 @@ export default function ProspectsPage() {
             estimating_type: item.estimating_type || 'Budget',
             stage: 'Construction',
             last_call: item.last_call,
+            active: item.active,
             prospect_status: item.prospect_status || 'active',
             status:
               item.prospect_status === 'lost' && item.lost_reason?.reason
@@ -767,7 +769,7 @@ export default function ProspectsPage() {
 
     // First filter by active status if showActiveOnly is true
     let result = showActiveOnly
-      ? prospects.filter((p) => p.status === 'Active')
+      ? prospects.filter((p) => p.active === true)
       : prospects;
 
     const filtered = result.filter(
