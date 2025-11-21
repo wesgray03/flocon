@@ -51,6 +51,7 @@ export default function BillingModule({
     setSovLines,
     sovTotal,
     totalBilled,
+    totalRetainage,
     loading,
   } = useBillingCore(projectId);
 
@@ -837,7 +838,7 @@ export default function BillingModule({
                   margin: 0,
                 }}
               >
-                Total Billed: {money(totalBilled)}
+                Total Billed: {money(totalBilled)} | Total Retainage: {money(totalRetainage)}
               </p>
             </div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>

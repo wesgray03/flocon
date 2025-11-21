@@ -113,6 +113,18 @@ export function useBillingCore(projectId?: string) {
     [payApps]
   );
 
+  const totalRetainage = useMemo(
+    () => payApps.reduce((sum, app) => {
+      // If it's a retainage billing (release), subtract it
+      if (app.is_retainage_billing) {
+        return sum - (app.amount ?? 0);
+      }
+      // Otherwise add the retainage withheld
+      return sum + (app.retainage_completed_work ?? 0);
+    }, 0),
+    [payApps]
+  );
+
   return {
     project,
     setProject,
@@ -122,6 +134,7 @@ export function useBillingCore(projectId?: string) {
     setSovLines,
     sovTotal,
     totalBilled,
+    totalRetainage,
     loading,
     loadPayApps,
   };
