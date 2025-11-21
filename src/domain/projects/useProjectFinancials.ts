@@ -135,22 +135,33 @@ export function useProjectFinancials(
         // Fix negative zero display
         if (retainageToDate === 0) retainageToDate = 0;
 
-        // Calculate cash in from QBO payments
-        const cashIn = payAppRows.reduce(
-          (sum, r) => sum + (Number(r.qbo_payment_total) || 0),
-          0
-        );
-
-        // Fetch QBO costs if we have a job ID (cached with 1-hour TTL)
+        // Fetch QBO cash flow data (cash basis P&L)
+        let cashIn = 0;
+        let cashOut = 0;
         let qboCosts = { costToDate: 0, cashOut: 0 };
+        
         if (qboJobId) {
           try {
             console.log(
-              'Fetching QBO costs for job:',
+              'Fetching QBO cash flow for job:',
               qboJobId,
               'engagement:',
               projectId
             );
+            
+            // Fetch cash basis P&L for cash flow
+            const cashFlowResponse = await fetch(
+              `/api/qbo/profit-loss-cash?qboJobId=${qboJobId}`
+            );
+            
+            if (cashFlowResponse.ok) {
+              const cashFlowData = await cashFlowResponse.json();
+              console.log('Cash flow data received:', cashFlowData);
+              cashIn = cashFlowData.income || 0;
+              cashOut = (cashFlowData.cogs || 0) + (cashFlowData.expenses || 0);
+            }
+            
+            // Fetch accrual costs for cost-to-date
             const costResponse = await fetch(
               `/api/qbo/project-costs-cached?qboJobId=${qboJobId}&engagementId=${projectId}`
             );
@@ -163,16 +174,12 @@ export function useProjectFinancials(
               const costData = await costResponse.json();
               console.log('Cost data received:', costData);
               qboCosts.costToDate = costData.netCostToDate || 0;
-              qboCosts.cashOut =
-                costData.billsTotal +
-                costData.purchasesTotal -
-                costData.creditsTotal; // For now, same as cost-to-date
               console.log('Parsed QBO costs:', qboCosts);
             } else {
               console.error('Cost response not OK:', await costResponse.text());
             }
           } catch (err) {
-            console.error('Failed to fetch QBO costs:', err);
+            console.error('Failed to fetch QBO data:', err);
           }
         }
 
@@ -209,10 +216,9 @@ export function useProjectFinancials(
           totalRevenue > 0 ? (projectedProfitDollar / totalRevenue) * 100 : 0;
 
         // Cash flow calculations
-        const cashOut = qboCosts.cashOut;
         const netCashFlow = cashIn - cashOut;
         const cashPositionPercent =
-          totalRevenue > 0 ? (netCashFlow / totalRevenue) * 100 : 0;
+          cashOut > 0 ? (cashIn / cashOut) * 100 : 0;
 
         if (!cancelled) {
           setFinancials({
