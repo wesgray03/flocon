@@ -313,6 +313,7 @@ export default function BillingModule({
         date_submitted: payAppForm.date_submitted || null,
         date_paid: payAppForm.date_paid || null,
         status: payAppForm.status || 'Submitted',
+        is_retainage_billing: payAppForm.billRetainage,
         // AIA G703S calculated fields
         total_completed_and_stored: totalCompletedAndStored,
         retainage_completed_work: currentPeriodRetainage,

@@ -90,7 +90,7 @@ export function useProjectFinancials(
         const { data: payApps, error: paError } = await supabase
           .from('engagement_pay_apps')
           .select(
-            'current_payment_due, retainage_completed_work, qbo_payment_total, status'
+            'current_payment_due, retainage_completed_work, is_retainage_billing, qbo_payment_total, status'
           )
           .eq('engagement_id', projectId);
 
@@ -117,8 +117,17 @@ export function useProjectFinancials(
           (sum, r) => sum + (Number(r.current_payment_due) || 0),
           0
         );
+        // Calculate net retainage: sum retainage held, subtract retainage released
         const retainageToDate = payAppRows.reduce(
-          (sum, r) => sum + (Number(r.retainage_completed_work) || 0),
+          (sum, r) => {
+            if (r.is_retainage_billing) {
+              // Retainage release - subtract the payment amount
+              return sum - (Number(r.current_payment_due) || 0);
+            } else {
+              // Normal billing - add the retainage withheld
+              return sum + (Number(r.retainage_completed_work) || 0);
+            }
+          },
           0
         );
 
