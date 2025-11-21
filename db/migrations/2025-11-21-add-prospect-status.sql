@@ -25,6 +25,6 @@ CREATE INDEX IF NOT EXISTS idx_engagements_prospect_status
 ON engagements(type, prospect_status) WHERE type = 'prospect';
 
 -- Add comment
-COMMENT ON COLUMN engagements.prospect_status IS 'Prospect lifecycle status: active (default), won (converted to project), lost (inactive), delayed (active but postponed), cancelled (inactive)';
+COMMENT ON COLUMN engagements.prospect_status IS 'Prospect lifecycle status: active (default/open), won (converted to project), lost (inactive), delayed (active but postponed), cancelled (inactive)';
 
 COMMIT;
