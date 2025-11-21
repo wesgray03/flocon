@@ -108,11 +108,6 @@ export function FinancialOverview({
                   bold
                 />
                 <Row
-                  label="Retainage-to-date"
-                  value={money(financials.retainageToDate)}
-                  bold
-                />
-                <Row
                   label="Remaining Billings"
                   value={money(financials.remainingBillings)}
                   bold
@@ -243,9 +238,6 @@ export function FinancialOverview({
 
           {isDesktop && (
             <>
-              <Table>
-                <Row label="" value="" />
-              </Table>
               <SectionHeading title="Cash Flow" marginTop />
               <Table>
                 <Row label="Cash In" value={money(financials.cashIn)} bold />
