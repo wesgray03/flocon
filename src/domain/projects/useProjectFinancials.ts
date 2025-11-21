@@ -218,7 +218,7 @@ export function useProjectFinancials(
         // Cash flow calculations
         const netCashFlow = cashIn - cashOut;
         const cashPositionPercent =
-          cashOut > 0 ? (cashIn / cashOut) * 100 : 0;
+          cashOut > 0 ? ((cashIn / cashOut) - 1) * 100 : 0;
 
         if (!cancelled) {
           setFinancials({
