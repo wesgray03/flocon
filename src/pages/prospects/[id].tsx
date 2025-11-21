@@ -19,7 +19,7 @@ import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
-import { Folder, Pencil, Plus, Save, Trash2, X } from 'lucide-react';
+import { Folder, Pencil, Plus, Save, Trash2, X, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
@@ -27,6 +27,7 @@ import { useEffect, useMemo, useState } from 'react';
 type Prospect = {
   id: string;
   name: string;
+  type?: 'prospect' | 'project' | null;
   customer_name?: string | null;
   contact_name?: string | null; // Prospect Contact
   architect?: string | null;
@@ -122,6 +123,7 @@ export default function ProspectDetailPage() {
   const [showContactsModal, setShowContactsModal] = useState(false);
   const [showLostModal, setShowLostModal] = useState(false);
   const [selectedLostReasonId, setSelectedLostReasonId] = useState<string>('');
+  const [showProspectMenu, setShowProspectMenu] = useState(false);
 
   const [toast, setToast] = useState<{
     message: string;
@@ -145,6 +147,21 @@ export default function ProspectDetailPage() {
     loadDropdownOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Close prospect menu when clicking outside
+  useEffect(() => {
+    if (!showProspectMenu) return;
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.prospect-action-buttons')) {
+        setShowProspectMenu(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProspectMenu]);
 
   const loadProspect = async () => {
     if (!id || typeof id !== 'string') return;
@@ -172,6 +189,7 @@ export default function ProspectDetailPage() {
         ? ({
             id: prospectData.id,
             name: prospectData.name,
+            type: prospectData.type,
             estimating_type: prospectData.estimating_type,
             probability_level_id: prospectData.probability_level_id,
             start_date: prospectData.est_start_date,
@@ -683,6 +701,7 @@ export default function ProspectDetailPage() {
         .update({
           active: false,
           lost_reason_id: selectedLostReasonId,
+          prospect_status: 'lost',
         })
         .eq('id', prospect.id);
 
@@ -823,6 +842,7 @@ export default function ProspectDetailPage() {
         .from('engagements')
         .update({
           project_number: nextProjectNumber.toString(),
+          prospect_status: 'won',
         })
         .eq('id', prospect.id);
 
@@ -867,6 +887,71 @@ export default function ProspectDetailPage() {
     } catch (err) {
       console.error('Error converting to project:', err);
       notify('Failed to convert to project', 'error');
+    } finally {
+      setConverting(false);
+    }
+  };
+
+  const handleMarkAsDelayed = async () => {
+    if (!prospect) return;
+
+    const confirmed = window.confirm(
+      `Mark "${prospect.name}" as delayed? The prospect will remain active but be marked as delayed.`
+    );
+    if (!confirmed) return;
+
+    setConverting(true);
+    try {
+      const { error: updateError } = await supabase
+        .from('engagements')
+        .update({
+          prospect_status: 'delayed',
+          active: true, // Delayed prospects stay active
+        })
+        .eq('id', prospect.id);
+
+      if (updateError) throw updateError;
+
+      notify('Marked as delayed successfully', 'success');
+      setShowProspectMenu(false);
+      await loadProspect();
+    } catch (err) {
+      console.error('Error marking as delayed:', err);
+      notify('Failed to mark as delayed', 'error');
+    } finally {
+      setConverting(false);
+    }
+  };
+
+  const handleMarkAsCancelled = async () => {
+    if (!prospect) return;
+
+    const confirmed = window.confirm(
+      `Mark "${prospect.name}" as cancelled? This will set the prospect to inactive.`
+    );
+    if (!confirmed) return;
+
+    setConverting(true);
+    try {
+      const { error: updateError } = await supabase
+        .from('engagements')
+        .update({
+          prospect_status: 'cancelled',
+          active: false, // Cancelled prospects become inactive
+        })
+        .eq('id', prospect.id);
+
+      if (updateError) throw updateError;
+
+      notify('Marked as cancelled successfully', 'success');
+      setShowProspectMenu(false);
+      // Redirect back to prospects list
+      setTimeout(() => {
+        router.push('/prospects');
+      }, 1500);
+    } catch (err) {
+      console.error('Error marking as cancelled:', err);
+      notify('Failed to mark as cancelled', 'error');
     } finally {
       setConverting(false);
     }
@@ -963,10 +1048,10 @@ export default function ProspectDetailPage() {
               }}
               className="prospect-action-buttons"
             >
-              {!editMode && !editTradesMode && prospect?.active !== false && (
-                <>
+              {!editMode && !editTradesMode && prospect?.active !== false && prospect?.type === 'prospect' && (
+                <div style={{ position: 'relative' }}>
                   <button
-                    onClick={handleMarkAsLost}
+                    onClick={() => setShowProspectMenu(!showProspectMenu)}
                     disabled={converting}
                     style={{
                       padding: '10px 24px',
@@ -979,7 +1064,7 @@ export default function ProspectDetailPage() {
                       cursor: converting ? 'not-allowed' : 'pointer',
                       opacity: converting ? 0.7 : 1,
                       transition: 'all 0.2s',
-                      width: 200,
+                      minWidth: 200,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -994,37 +1079,129 @@ export default function ProspectDetailPage() {
                       e.currentTarget.style.background = colors.navy;
                     }}
                   >
-                    {!converting && <Trash2 size={16} />}
-                    {converting ? 'Processing…' : 'Mark as Lost'}
+                    Prospect Options
+                    <ChevronDown size={16} />
                   </button>
-                  <button
-                    onClick={handleConvertToProject}
-                    disabled={converting}
-                    style={{
-                      padding: '10px 24px',
-                      background: colors.navy,
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: 8,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: converting ? 'not-allowed' : 'pointer',
-                      opacity: converting ? 0.7 : 1,
-                      transition: 'all 0.2s',
-                      width: 200,
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!converting) {
-                        e.currentTarget.style.background = '#0d1b2a';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = colors.navy;
-                    }}
-                  >
-                    {converting ? 'Converting…' : '🚀 Convert to Project'}
-                  </button>
-                </>
+                  
+                  {showProspectMenu && !converting && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        marginTop: 8,
+                        background: '#fff',
+                        border: `1px solid ${colors.border}`,
+                        borderRadius: 8,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        minWidth: 200,
+                        zIndex: 1000,
+                      }}
+                    >
+                      <button
+                        onClick={() => {
+                          setShowProspectMenu(false);
+                          handleConvertToProject();
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: `1px solid ${colors.border}`,
+                          textAlign: 'left',
+                          fontSize: 14,
+                          cursor: 'pointer',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f5f5f5';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent';
+                        }}
+                      >
+                        🚀 Mark as Won (Convert to Project)
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowProspectMenu(false);
+                          handleMarkAsLost();
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: `1px solid ${colors.border}`,
+                          textAlign: 'left',
+                          fontSize: 14,
+                          cursor: 'pointer',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f5f5f5';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent';
+                        }}
+                      >
+                        ❌ Mark as Lost
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowProspectMenu(false);
+                          handleMarkAsDelayed();
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: `1px solid ${colors.border}`,
+                          textAlign: 'left',
+                          fontSize: 14,
+                          cursor: 'pointer',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f5f5f5';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent';
+                        }}
+                      >
+                        ⏸️ Mark as Delayed
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowProspectMenu(false);
+                          handleMarkAsCancelled();
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'transparent',
+                          border: 'none',
+                          textAlign: 'left',
+                          fontSize: 14,
+                          cursor: 'pointer',
+                          transition: 'background 0.2s',
+                          borderBottomLeftRadius: 8,
+                          borderBottomRightRadius: 8,
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f5f5f5';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent';
+                        }}
+                      >
+                        🚫 Mark as Cancelled
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
             <div style={{ width: 0 }} />

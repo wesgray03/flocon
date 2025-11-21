@@ -217,11 +217,7 @@ export default function ProspectsPage() {
         )
       ),
       status: Array.from(
-        new Set(
-          prospects
-            .map((p) => p.status)
-            .filter((v): v is string => !!v)
-        )
+        new Set(prospects.map((p) => p.status).filter((v): v is string => !!v))
       ),
     }),
     [prospects]
@@ -1179,10 +1175,7 @@ export default function ProspectsPage() {
                     >
                       Probability{sortIndicator('probability_level_name')}
                     </th>
-                    <th
-                      style={thStatus}
-                      onClick={() => handleSort('status')}
-                    >
+                    <th style={thStatus} onClick={() => handleSort('status')}>
                       Status{sortIndicator('status')}
                     </th>
                     <th
