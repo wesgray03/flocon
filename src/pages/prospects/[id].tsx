@@ -1036,34 +1036,34 @@ export default function ProspectDetailPage() {
                   borderRadius: 6,
                   fontSize: 14,
                   fontWeight: 600,
-                  background:
-                    (prospect.prospect_status || '').startsWith('lost')
-                      ? '#ef444420'
-                      : prospect.prospect_status === 'active'
+                  background: (prospect.prospect_status || '').startsWith(
+                    'lost'
+                  )
+                    ? '#ef444420'
+                    : prospect.prospect_status === 'active'
                       ? '#4CAF5020'
                       : prospect.prospect_status === 'won'
-                      ? '#3b82f620'
-                      : prospect.prospect_status === 'delayed'
-                      ? '#f59e0b20'
-                      : '#94a3b820',
-                  color:
-                    (prospect.prospect_status || '').startsWith('lost')
-                      ? '#ef4444'
-                      : prospect.prospect_status === 'active'
+                        ? '#3b82f620'
+                        : prospect.prospect_status === 'delayed'
+                          ? '#f59e0b20'
+                          : '#94a3b820',
+                  color: (prospect.prospect_status || '').startsWith('lost')
+                    ? '#ef4444'
+                    : prospect.prospect_status === 'active'
                       ? '#4CAF50'
                       : prospect.prospect_status === 'won'
-                      ? '#3b82f6'
-                      : prospect.prospect_status === 'delayed'
-                      ? '#f59e0b'
-                      : '#64748b',
+                        ? '#3b82f6'
+                        : prospect.prospect_status === 'delayed'
+                          ? '#f59e0b'
+                          : '#64748b',
                 }}
               >
                 {prospect.prospect_status === 'lost' && prospect.lost_reason
                   ? `Lost - ${prospect.lost_reason}`
                   : prospect.prospect_status
-                  ? prospect.prospect_status.charAt(0).toUpperCase() +
-                    prospect.prospect_status.slice(1)
-                  : 'Active'}
+                    ? prospect.prospect_status.charAt(0).toUpperCase() +
+                      prospect.prospect_status.slice(1)
+                    : 'Active'}
               </span>
               {prospect.sharepoint_folder && (
                 <a

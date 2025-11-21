@@ -385,12 +385,15 @@ export default function ProspectsPage() {
       if (engagementsError) throw engagementsError;
 
       // Debug: Check what prospect_status values we're getting
-      console.log('First 3 prospects from DB:', engagementsData?.slice(0, 3).map(e => ({
-        name: e.name,
-        active: e.active,
-        prospect_status: e.prospect_status,
-        lost_reason: e.lost_reason?.reason
-      })));
+      console.log(
+        'First 3 prospects from DB:',
+        engagementsData?.slice(0, 3).map((e) => ({
+          name: e.name,
+          active: e.active,
+          prospect_status: e.prospect_status,
+          lost_reason: e.lost_reason?.reason,
+        }))
+      );
 
       const engagementIds = (engagementsData ?? []).map(
         (e: EngagementRow) => e.id
@@ -1445,7 +1448,9 @@ export default function ProspectsPage() {
                             borderRadius: 4,
                             fontSize: 12,
                             fontWeight: 600,
-                            background: (prospect.status || '').startsWith('lost')
+                            background: (prospect.status || '').startsWith(
+                              'lost'
+                            )
                               ? '#ef444420'
                               : prospect.status === 'active'
                                 ? '#4CAF5020'

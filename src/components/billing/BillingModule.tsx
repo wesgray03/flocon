@@ -252,18 +252,26 @@ export default function BillingModule({
       const totalEarnedLessRetainage =
         Math.round((totalCompletedAndStored - totalRetainage) * 100) / 100;
 
-      // Get previous payments from prior pay apps
+      // Get the most recent previous pay app's total_earned_less_retainage
+      // This gives us the cumulative amount earned (less retainage) through the last pay app
+      const previousPayApps = payApps
+        .filter(
+          (app) =>
+            payAppForm.pay_app_number &&
+            app.pay_app_number !== null &&
+            Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
+        )
+        .sort(
+          (a, b) =>
+            Number(b.pay_app_number || 0) - Number(a.pay_app_number || 0)
+        );
+
       const previousPayments =
-        Math.round(
-          payApps
-            .filter(
-              (app) =>
-                payAppForm.pay_app_number &&
-                app.pay_app_number !== null &&
-                Number(app.pay_app_number) < Number(payAppForm.pay_app_number)
-            )
-            .reduce((sum, app) => sum + app.current_payment_due, 0) * 100
-        ) / 100;
+        previousPayApps.length > 0
+          ? Math.round(
+              (previousPayApps[0].total_earned_less_retainage || 0) * 100
+            ) / 100
+          : 0;
 
       // Calculate retainage held from all previous pay apps
       // Since total_retainage is cumulative, we need to either:

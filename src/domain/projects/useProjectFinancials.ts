@@ -90,7 +90,7 @@ export function useProjectFinancials(
         const { data: payApps, error: paError } = await supabase
           .from('engagement_pay_apps')
           .select(
-            'current_payment_due, total_retainage, qbo_payment_total, status'
+            'current_payment_due, retainage_completed_work, qbo_payment_total, status'
           )
           .eq('engagement_id', projectId);
 
@@ -118,7 +118,7 @@ export function useProjectFinancials(
           0
         );
         const retainageToDate = payAppRows.reduce(
-          (sum, r) => sum + (Number(r.total_retainage) || 0),
+          (sum, r) => sum + (Number(r.retainage_completed_work) || 0),
           0
         );
 
