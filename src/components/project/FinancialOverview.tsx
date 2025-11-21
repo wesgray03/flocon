@@ -148,22 +148,24 @@ export function FinancialOverview({
             <>
               <SectionHeading title="Profit" marginTop />
               <Table>
-                {/* Consolidated: "Total GM %" and "Unadjusted GM%" */}
                 <Row
-                  label="Total Profit %"
-                  value={pct(financials.totalProfitPercent)}
+                  label="Current Profit ($)"
+                  value={money(financials.currentProfitDollar)}
                   bold
                 />
-                {/* Consolidated: "Expected GM %" and "Projected GP %" */}
                 <Row
-                  label="Projected Profit %"
-                  value={pct(financials.projectedProfitPercent)}
+                  label="Current Profit %"
+                  value={pct(financials.currentProfitPercent)}
                   bold
                 />
-                {/* From former Gross Profit section */}
                 <Row
                   label="Projected Profit ($)"
                   value={money(financials.projectedProfitDollar)}
+                  bold
+                />
+                <Row
+                  label="Projected Profit %"
+                  value={pct(financials.projectedProfitPercent)}
                   bold
                 />
               </Table>
@@ -268,18 +270,23 @@ export function FinancialOverview({
               <Table>
                 {/* Mobile view shows a concise subset */}
                 <Row
-                  label="Total Profit %"
-                  value={pct(financials.totalProfitPercent)}
+                  label="Current Profit ($)"
+                  value={money(financials.currentProfitDollar)}
                   bold
                 />
                 <Row
-                  label="Projected Profit %"
-                  value={pct(financials.projectedProfitPercent)}
+                  label="Current Profit %"
+                  value={pct(financials.currentProfitPercent)}
                   bold
                 />
                 <Row
                   label="Projected Profit ($)"
                   value={money(financials.projectedProfitDollar)}
+                  bold
+                />
+                <Row
+                  label="Projected Profit %"
+                  value={pct(financials.projectedProfitPercent)}
                   bold
                 />
               </Table>

@@ -18,10 +18,11 @@ export type ProjectFinancials = {
   remainingCost: number;
   percentCompleteCost: number;
 
-  // Profit (calculations)
-  totalProfitPercent: number;
-  projectedProfitPercent: number;
+  // Profit (calculations - accrual basis)
+  currentProfitDollar: number;
+  currentProfitPercent: number;
   projectedProfitDollar: number;
+  projectedProfitPercent: number;
 
   // Cash Flow (QBO cash basis)
   cashIn: number; // QBO payments received
@@ -55,9 +56,10 @@ export function useProjectFinancials(
     costToDate: 0,
     remainingCost: 0,
     percentCompleteCost: 0,
-    totalProfitPercent: 0,
-    projectedProfitPercent: 0,
+    currentProfitDollar: 0,
+    currentProfitPercent: 0,
     projectedProfitDollar: 0,
+    projectedProfitPercent: 0,
     cashIn: 0,
     cashOut: 0,
     netCashFlow: 0,
@@ -188,14 +190,13 @@ export function useProjectFinancials(
             ? (costToDate / totalContractBudget) * 100
             : 0;
 
-        // Profit calculations
-        const contractProfit = contractAmount - contractBudget;
-        const coProfit = coSalesTotal - coBudgetTotal;
+        // Profit calculations (accrual basis)
+        // Current profit = what we've billed - what we've spent
+        const currentProfitDollar = billingsToDate - costToDate;
+        const currentProfitPercent =
+          billingsToDate > 0 ? (currentProfitDollar / billingsToDate) * 100 : 0;
 
-        const totalProfit = contractProfit + coProfit;
-        const totalProfitPercent =
-          totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
-
+        // Projected profit = total revenue - costs to date
         const projectedProfitDollar = totalRevenue - costToDate;
         const projectedProfitPercent =
           totalRevenue > 0 ? (projectedProfitDollar / totalRevenue) * 100 : 0;
@@ -218,9 +219,10 @@ export function useProjectFinancials(
           costToDate,
           remainingCost,
           percentCompleteCost,
-          totalProfitPercent,
-          projectedProfitPercent,
+          currentProfitDollar,
+          currentProfitPercent,
           projectedProfitDollar,
+          projectedProfitPercent,
           cashIn,
           cashOut,
           netCashFlow,
@@ -241,9 +243,10 @@ export function useProjectFinancials(
           costToDate: 0,
           remainingCost: 0,
           percentCompleteCost: 0,
-          totalProfitPercent: 0,
-          projectedProfitPercent: 0,
+          currentProfitDollar: 0,
+          currentProfitPercent: 0,
           projectedProfitDollar: 0,
+          projectedProfitPercent: 0,
           cashIn: 0,
           cashOut: 0,
           netCashFlow: 0,
