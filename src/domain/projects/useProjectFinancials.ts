@@ -118,7 +118,7 @@ export function useProjectFinancials(
           0
         );
         // Calculate net retainage: sum retainage held, subtract retainage released
-        const retainageToDate = Math.round(
+        let retainageToDate = Math.round(
           payAppRows.reduce(
             (sum, r) => {
               if (r.is_retainage_billing) {
@@ -132,6 +132,8 @@ export function useProjectFinancials(
             0
           ) * 100
         ) / 100;
+        // Fix negative zero display
+        if (retainageToDate === 0) retainageToDate = 0;
 
         // Calculate cash in from QBO payments
         const cashIn = payAppRows.reduce(
