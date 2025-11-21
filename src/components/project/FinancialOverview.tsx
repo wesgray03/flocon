@@ -176,9 +176,29 @@ export function FinancialOverview({
               </Table>
             </>
           )}
+
+          {isDesktop && (
+            <>
+              <SectionHeading title="Cash Flow" marginTop />
+              <Table>
+                <Row label="Cash In" value={money(financials.cashIn)} bold />
+                <Row label="Cash Out" value={money(financials.cashOut)} bold />
+                <Row
+                  label="Net Cash Flow"
+                  value={money(financials.netCashFlow)}
+                  bold
+                />
+                <Row
+                  label="Cash Position (+/-)"
+                  value={pct(financials.cashPositionPercent)}
+                  bold
+                />
+              </Table>
+            </>
+          )}
         </div>
 
-        {/* Cost / (Cash Flow for desktop) */}
+        {/* Cost column */}
         <div>
           <SectionHeading title="Cost" />
           <Table>
@@ -237,29 +257,12 @@ export function FinancialOverview({
                   value={pct(financials.percentCompleteCost)}
                   bold
                 />
+                <Row label="" value="" />
               </>
             )}
           </Table>
 
-          {isDesktop ? (
-            <>
-              <SectionHeading title="Cash Flow" marginTop />
-              <Table>
-                <Row label="Cash In" value={money(financials.cashIn)} bold />
-                <Row label="Cash Out" value={money(financials.cashOut)} bold />
-                <Row
-                  label="Net Cash Flow"
-                  value={money(financials.netCashFlow)}
-                  bold
-                />
-                <Row
-                  label="Cash Position (+/-)"
-                  value={pct(financials.cashPositionPercent)}
-                  bold
-                />
-              </Table>
-            </>
-          ) : (
+          {!isDesktop && (
             <>
               <SectionHeading title="Cash Flow" marginTop />
               <Table>
