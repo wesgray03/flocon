@@ -48,6 +48,8 @@ export type PayApp = {
   qbo_sync_status: string | null;
   qbo_synced_at: string | null;
   qbo_payment_total: number | null;
+  // Retainage billing flag
+  is_retainage_billing?: boolean;
   qbo_sync_error: string | null;
   created_at: string;
 };
@@ -113,9 +115,9 @@ export function useBillingCore(projectId?: string) {
     [payApps]
   );
 
-  const totalRetainage = useMemo(
-    () => {
-      let total = Math.round(
+  const totalRetainage = useMemo(() => {
+    let total =
+      Math.round(
         payApps.reduce((sum, app) => {
           if (app.is_retainage_billing) {
             // Retainage release - subtract the payment amount
@@ -126,12 +128,10 @@ export function useBillingCore(projectId?: string) {
           }
         }, 0) * 100
       ) / 100;
-      // Fix negative zero display
-      if (total === 0) total = 0;
-      return total;
-    },
-    [payApps]
-  );
+    // Fix negative zero display
+    if (total === 0) total = 0;
+    return total;
+  }, [payApps]);
 
   return {
     project,
