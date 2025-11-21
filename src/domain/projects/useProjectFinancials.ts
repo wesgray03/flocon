@@ -68,24 +68,25 @@ export function useProjectFinancials(
     cashPositionPercent: 0,
   });
 
-  const load = useCallback(async (forceRefresh: boolean = false) => {
-    if (!projectId) return;
-    
-    setLoading(true);
-    try {
-      // Fetch change orders
-      const { data: changeOrders, error: coError } = await supabase
-        .from('engagement_change_orders')
-        .select('amount, budget_amount')
-        .eq('engagement_id', projectId)
-        .eq('deleted', false);
+  const load = useCallback(
+    async (forceRefresh: boolean = false) => {
+      if (!projectId) return;
 
-      if (coError) {
-        console.error('Failed to load change orders:', coError);
-      }
+      setLoading(true);
+      try {
+        // Fetch change orders
+        const { data: changeOrders, error: coError } = await supabase
+          .from('engagement_change_orders')
+          .select('amount, budget_amount')
+          .eq('engagement_id', projectId)
+          .eq('deleted', false);
 
-      // Fetch pay apps for billings and retainage
-      const { data: payApps, error: paError } = await supabase
+        if (coError) {
+          console.error('Failed to load change orders:', coError);
+        }
+
+        // Fetch pay apps for billings and retainage
+        const { data: payApps, error: paError } = await supabase
           .from('engagement_pay_apps')
           .select(
             'current_payment_due, retainage_completed_work, is_retainage_billing, qbo_payment_total, status'
@@ -264,7 +265,9 @@ export function useProjectFinancials(
       } finally {
         setLoading(false);
       }
-  }, [projectId, contractAmount, contractBudget, qboJobId]);
+    },
+    [projectId, contractAmount, contractBudget, qboJobId]
+  );
 
   useEffect(() => {
     load();

@@ -36,7 +36,14 @@ export function FinancialOverview({
 
   return (
     <div style={styles.cardStyle}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+        }}
+      >
         <h2 style={styles.sectionHeaderStyle}>Financial Overview</h2>
         {project?.qbo_job_id && (
           <button
@@ -242,6 +249,7 @@ export function FinancialOverview({
               <SectionHeading title="Cash Flow" marginTop />
               <Table>
                 <Row label="Cash In" value={money(financials.cashIn)} bold />
+                <Row label="Cash Out" value={money(financials.cashOut)} bold />
                 <Row
                   label="Net Cash Flow"
                   value={money(financials.netCashFlow)}
