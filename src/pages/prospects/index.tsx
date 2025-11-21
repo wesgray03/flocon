@@ -67,6 +67,7 @@ interface Prospect {
   estimating_type: 'Budget' | 'Construction' | null;
   stage: string | null;
   last_call: string | null;
+  prospect_status: string | null;
   status: string | null;
   lost_reason_name: string | null;
   probability_level_id: string | null;
@@ -355,6 +356,7 @@ export default function ProspectsPage() {
     sharepoint_folder: string | null;
     type: string;
     active: boolean;
+    prospect_status?: string;
     engagement_trades?: EngagementTradeRow[] | null;
     users?: { name: string | null } | null;
   };
@@ -380,6 +382,14 @@ export default function ProspectsPage() {
         .order('bid_date', { ascending: false });
 
       if (engagementsError) throw engagementsError;
+
+      // Debug: Check what prospect_status values we're getting
+      console.log('First 3 prospects from DB:', engagementsData?.slice(0, 3).map(e => ({
+        name: e.name,
+        active: e.active,
+        prospect_status: e.prospect_status,
+        lost_reason: e.lost_reason?.reason
+      })));
 
       const engagementIds = (engagementsData ?? []).map(
         (e: EngagementRow) => e.id
@@ -450,12 +460,11 @@ export default function ProspectsPage() {
             estimating_type: item.estimating_type || 'Budget',
             stage: 'Construction',
             last_call: item.last_call,
+            prospect_status: item.prospect_status || 'active',
             status:
-              item.active === false
-                ? item.lost_reason?.reason
-                  ? `Inactive - ${item.lost_reason.reason}`
-                  : 'Inactive'
-                : 'Active',
+              item.prospect_status === 'lost' && item.lost_reason?.reason
+                ? `lost - ${item.lost_reason.reason}`
+                : item.prospect_status || 'active',
             lost_reason_name: item.lost_reason?.reason || null,
             probability_level_id: item.probability_level_id,
             probability_level_name: item.probability_level?.name || null,
@@ -1434,17 +1443,30 @@ export default function ProspectsPage() {
                             borderRadius: 4,
                             fontSize: 12,
                             fontWeight: 600,
-                            background:
-                              prospect.status === 'Active'
+                            background: (prospect.status || '').startsWith('lost')
+                              ? '#ef444420'
+                              : prospect.status === 'active'
                                 ? '#4CAF5020'
-                                : '#94a3b820',
-                            color:
-                              prospect.status === 'Active'
+                                : prospect.status === 'won'
+                                  ? '#3b82f620'
+                                  : prospect.status === 'delayed'
+                                    ? '#f59e0b20'
+                                    : '#94a3b820',
+                            color: (prospect.status || '').startsWith('lost')
+                              ? '#ef4444'
+                              : prospect.status === 'active'
                                 ? '#4CAF50'
-                                : '#64748b',
+                                : prospect.status === 'won'
+                                  ? '#3b82f6'
+                                  : prospect.status === 'delayed'
+                                    ? '#f59e0b'
+                                    : '#64748b',
                           }}
                         >
-                          {prospect.status || 'Active'}
+                          {prospect.status
+                            ? prospect.status.charAt(0).toUpperCase() +
+                              prospect.status.slice(1)
+                            : 'Active'}
                         </span>
                       </td>
                       <td style={td}>{dateStr(prospect.bid_date)}</td>

@@ -14,7 +14,7 @@ DEFAULT 'active';
 UPDATE engagements 
 SET prospect_status = CASE 
   WHEN type = 'project' THEN 'won'
-  WHEN type = 'prospect' AND active = false AND lost_reason_id IS NOT NULL THEN 'lost'
+  WHEN type = 'prospect' AND active = false THEN 'lost'
   WHEN type = 'prospect' AND active = true THEN 'active'
   ELSE 'active'
 END

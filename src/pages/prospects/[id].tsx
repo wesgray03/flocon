@@ -19,7 +19,7 @@ import { dateStr } from '@/lib/format';
 import { supabase } from '@/lib/supabaseClient';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
-import { Folder, Pencil, Plus, Save, Trash2, X, ChevronDown } from 'lucide-react';
+import { ChevronDown, Folder, Pencil, Plus, Save, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
@@ -151,14 +151,14 @@ export default function ProspectDetailPage() {
   // Close prospect menu when clicking outside
   useEffect(() => {
     if (!showProspectMenu) return;
-    
+
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest('.prospect-action-buttons')) {
         setShowProspectMenu(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showProspectMenu]);
@@ -1048,161 +1048,164 @@ export default function ProspectDetailPage() {
               }}
               className="prospect-action-buttons"
             >
-              {!editMode && !editTradesMode && prospect?.active !== false && prospect?.type === 'prospect' && (
-                <div style={{ position: 'relative' }}>
-                  <button
-                    onClick={() => setShowProspectMenu(!showProspectMenu)}
-                    disabled={converting}
-                    style={{
-                      padding: '10px 24px',
-                      background: colors.navy,
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: 8,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: converting ? 'not-allowed' : 'pointer',
-                      opacity: converting ? 0.7 : 1,
-                      transition: 'all 0.2s',
-                      minWidth: 200,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 8,
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!converting) {
-                        e.currentTarget.style.background = '#0d1b2a';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = colors.navy;
-                    }}
-                  >
-                    Prospect Options
-                    <ChevronDown size={16} />
-                  </button>
-                  
-                  {showProspectMenu && !converting && (
-                    <div
+              {!editMode &&
+                !editTradesMode &&
+                prospect?.active !== false &&
+                prospect?.type === 'prospect' && (
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      onClick={() => setShowProspectMenu(!showProspectMenu)}
+                      disabled={converting}
                       style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        marginTop: 8,
-                        background: '#fff',
-                        border: `1px solid ${colors.border}`,
+                        padding: '10px 24px',
+                        background: colors.navy,
+                        color: '#fff',
+                        border: 'none',
                         borderRadius: 8,
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: converting ? 'not-allowed' : 'pointer',
+                        opacity: converting ? 0.7 : 1,
+                        transition: 'all 0.2s',
                         minWidth: 200,
-                        zIndex: 1000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!converting) {
+                          e.currentTarget.style.background = '#0d1b2a';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = colors.navy;
                       }}
                     >
-                      <button
-                        onClick={() => {
-                          setShowProspectMenu(false);
-                          handleConvertToProject();
-                        }}
+                      Prospect Options
+                      <ChevronDown size={16} />
+                    </button>
+
+                    {showProspectMenu && !converting && (
+                      <div
                         style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          background: 'transparent',
-                          border: 'none',
-                          borderBottom: `1px solid ${colors.border}`,
-                          textAlign: 'left',
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#f5f5f5';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          marginTop: 8,
+                          background: '#fff',
+                          border: `1px solid ${colors.border}`,
+                          borderRadius: 8,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                          minWidth: 200,
+                          zIndex: 1000,
                         }}
                       >
-                        🚀 Mark as Won (Convert to Project)
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowProspectMenu(false);
-                          handleMarkAsLost();
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          background: 'transparent',
-                          border: 'none',
-                          borderBottom: `1px solid ${colors.border}`,
-                          textAlign: 'left',
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#f5f5f5';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                        }}
-                      >
-                        ❌ Mark as Lost
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowProspectMenu(false);
-                          handleMarkAsDelayed();
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          background: 'transparent',
-                          border: 'none',
-                          borderBottom: `1px solid ${colors.border}`,
-                          textAlign: 'left',
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#f5f5f5';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                        }}
-                      >
-                        ⏸️ Mark as Delayed
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowProspectMenu(false);
-                          handleMarkAsCancelled();
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          background: 'transparent',
-                          border: 'none',
-                          textAlign: 'left',
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          transition: 'background 0.2s',
-                          borderBottomLeftRadius: 8,
-                          borderBottomRightRadius: 8,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#f5f5f5';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                        }}
-                      >
-                        🚫 Mark as Cancelled
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+                        <button
+                          onClick={() => {
+                            setShowProspectMenu(false);
+                            handleConvertToProject();
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            background: 'transparent',
+                            border: 'none',
+                            borderBottom: `1px solid ${colors.border}`,
+                            textAlign: 'left',
+                            fontSize: 14,
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#f5f5f5';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                          }}
+                        >
+                          🚀 Mark as Won (Convert to Project)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowProspectMenu(false);
+                            handleMarkAsLost();
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            background: 'transparent',
+                            border: 'none',
+                            borderBottom: `1px solid ${colors.border}`,
+                            textAlign: 'left',
+                            fontSize: 14,
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#f5f5f5';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                          }}
+                        >
+                          ❌ Mark as Lost
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowProspectMenu(false);
+                            handleMarkAsDelayed();
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            background: 'transparent',
+                            border: 'none',
+                            borderBottom: `1px solid ${colors.border}`,
+                            textAlign: 'left',
+                            fontSize: 14,
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#f5f5f5';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                          }}
+                        >
+                          ⏸️ Mark as Delayed
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowProspectMenu(false);
+                            handleMarkAsCancelled();
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            background: 'transparent',
+                            border: 'none',
+                            textAlign: 'left',
+                            fontSize: 14,
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                            borderBottomLeftRadius: 8,
+                            borderBottomRightRadius: 8,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#f5f5f5';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                          }}
+                        >
+                          🚫 Mark as Cancelled
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
             </div>
             <div style={{ width: 0 }} />
           </div>
