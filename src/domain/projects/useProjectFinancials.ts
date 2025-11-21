@@ -5,6 +5,7 @@ export type ProjectFinancials = {
   // Revenue (FloCon data)
   contractAmount: number;
   coSalesTotal: number;
+  totalContractRevenue: number;
   billingsToDate: number;
   retainageToDate: number;
   remainingBillings: number;
@@ -46,6 +47,7 @@ export function useProjectFinancials(
   const [financials, setFinancials] = useState<ProjectFinancials>({
     contractAmount: 0,
     coSalesTotal: 0,
+    totalContractRevenue: 0,
     billingsToDate: 0,
     retainageToDate: 0,
     remainingBillings: 0,
@@ -196,8 +198,8 @@ export function useProjectFinancials(
         const currentProfitPercent =
           billingsToDate > 0 ? (currentProfitDollar / billingsToDate) * 100 : 0;
 
-        // Projected profit = total revenue - costs to date
-        const projectedProfitDollar = totalRevenue - costToDate;
+        // Projected profit = total contract revenue - total cost budget (planned profit)
+        const projectedProfitDollar = totalRevenue - totalContractBudget;
         const projectedProfitPercent =
           totalRevenue > 0 ? (projectedProfitDollar / totalRevenue) * 100 : 0;
 
@@ -209,6 +211,7 @@ export function useProjectFinancials(
         setFinancials({
           contractAmount,
           coSalesTotal,
+          totalContractRevenue: totalRevenue,
           billingsToDate,
           retainageToDate,
           remainingBillings,
@@ -233,6 +236,7 @@ export function useProjectFinancials(
         setFinancials({
           contractAmount: 0,
           coSalesTotal: 0,
+          totalContractRevenue: 0,
           billingsToDate: 0,
           retainageToDate: 0,
           remainingBillings: 0,

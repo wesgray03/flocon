@@ -98,6 +98,11 @@ export function FinancialOverview({
                   bold
                 />
                 <Row
+                  label="Total Contract Revenue"
+                  value={money(financials.totalContractRevenue)}
+                  bold
+                />
+                <Row
                   label="Billings-to-date"
                   value={money(financials.billingsToDate)}
                   bold
