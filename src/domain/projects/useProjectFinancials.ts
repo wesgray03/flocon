@@ -96,8 +96,6 @@ export function useProjectFinancials(
           console.error('Failed to load pay apps:', paError);
         }
 
-        if (cancelled) return;
-
         // Calculate change order totals
         const coRows = changeOrders ?? [];
         const coSalesTotal = coRows.reduce(
@@ -215,13 +213,12 @@ export function useProjectFinancials(
         const cashPositionPercent =
           cashOut > 0 ? (cashIn / cashOut - 1) * 100 : 0;
 
-        if (!cancelled) {
-          setFinancials({
-            contractAmount,
-            coSalesTotal,
-            billingsToDate,
-            retainageToDate,
-            remainingBillings,
+        setFinancials({
+          contractAmount,
+          coSalesTotal,
+          billingsToDate,
+          retainageToDate,
+          remainingBillings,
             percentCompleteRevenue,
             contractBudget,
             coBudgetTotal,
@@ -239,7 +236,6 @@ export function useProjectFinancials(
             netCashFlow,
             cashPositionPercent,
           });
-        }
       } catch (e) {
         console.error('Unexpected error loading project financials:', e);
         setFinancials({
