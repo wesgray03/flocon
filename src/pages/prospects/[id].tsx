@@ -39,6 +39,8 @@ type Prospect = {
   probability_level_id?: string | null;
   sharepoint_folder?: string | null;
   active?: boolean | null;
+  prospect_status?: string | null;
+  lost_reason?: string | null;
   trades?: { id: string; code: string; name: string; amount: number }[];
   extended?: number | null;
 };
@@ -173,6 +175,7 @@ export default function ProspectDetailPage() {
         .select(
           `
           *,
+          lost_reason:lost_reasons (reason),
           engagement_trades (
             trade_id,
             estimated_amount,
@@ -196,6 +199,8 @@ export default function ProspectDetailPage() {
             bid_date: prospectData.bid_date,
             sharepoint_folder: prospectData.sharepoint_folder,
             active: prospectData.active,
+            prospect_status: prospectData.prospect_status,
+            lost_reason: prospectData.lost_reason?.reason,
             trades: (prospectData.engagement_trades || []).map(
               (et: {
                 trade_id: string;
@@ -1024,6 +1029,42 @@ export default function ProspectDetailPage() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <h1 style={styles.titleStyle}>{prospect.name}</h1>
+              <span
+                style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background:
+                    (prospect.prospect_status || '').startsWith('lost')
+                      ? '#ef444420'
+                      : prospect.prospect_status === 'active'
+                      ? '#4CAF5020'
+                      : prospect.prospect_status === 'won'
+                      ? '#3b82f620'
+                      : prospect.prospect_status === 'delayed'
+                      ? '#f59e0b20'
+                      : '#94a3b820',
+                  color:
+                    (prospect.prospect_status || '').startsWith('lost')
+                      ? '#ef4444'
+                      : prospect.prospect_status === 'active'
+                      ? '#4CAF50'
+                      : prospect.prospect_status === 'won'
+                      ? '#3b82f6'
+                      : prospect.prospect_status === 'delayed'
+                      ? '#f59e0b'
+                      : '#64748b',
+                }}
+              >
+                {prospect.prospect_status === 'lost' && prospect.lost_reason
+                  ? `Lost - ${prospect.lost_reason}`
+                  : prospect.prospect_status
+                  ? prospect.prospect_status.charAt(0).toUpperCase() +
+                    prospect.prospect_status.slice(1)
+                  : 'Active'}
+              </span>
               {prospect.sharepoint_folder && (
                 <a
                   href={prospect.sharepoint_folder}
