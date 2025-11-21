@@ -17,9 +17,11 @@ async function runMigration() {
     console.log('⚙️  Adding column...\n');
 
     // Use the Supabase REST API to check and add the column
-    const { error: addColError } = await supabase.rpc('exec_sql', {
-      sql: 'ALTER TABLE engagement_pay_apps ADD COLUMN IF NOT EXISTS is_retainage_billing BOOLEAN DEFAULT false;'
-    }).catch(() => ({ error: 'RPC not available' }));
+    const { error: addColError } = await supabase
+      .rpc('exec_sql', {
+        sql: 'ALTER TABLE engagement_pay_apps ADD COLUMN IF NOT EXISTS is_retainage_billing BOOLEAN DEFAULT false;',
+      })
+      .catch(() => ({ error: 'RPC not available' }));
 
     if (addColError) {
       console.log('Trying direct approach...');
@@ -28,13 +30,22 @@ async function runMigration() {
         .from('engagement_pay_apps')
         .select('is_retainage_billing')
         .limit(1);
-      
+
       if (testError && testError.code === '42703') {
-        console.error('\n❌ Column does not exist. Please run this SQL in Supabase SQL Editor:\n');
-        console.error(fs.readFileSync(
-          path.join(__dirname, 'db', 'migrations', '2025-11-21-add-is-retainage-billing-flag.sql'),
-          'utf8'
-        ));
+        console.error(
+          '\n❌ Column does not exist. Please run this SQL in Supabase SQL Editor:\n'
+        );
+        console.error(
+          fs.readFileSync(
+            path.join(
+              __dirname,
+              'db',
+              'migrations',
+              '2025-11-21-add-is-retainage-billing-flag.sql'
+            ),
+            'utf8'
+          )
+        );
         process.exit(1);
       }
     }
@@ -42,16 +53,26 @@ async function runMigration() {
     console.log('✅ Column verified/added\n');
     console.log('📊 Summary:');
     console.log('- Added is_retainage_billing column to engagement_pay_apps');
-    console.log('- New pay apps will track whether they are retainage releases');
-    console.log('- Financial Overview will now calculate net retainage (held minus released)\n');
-
+    console.log(
+      '- New pay apps will track whether they are retainage releases'
+    );
+    console.log(
+      '- Financial Overview will now calculate net retainage (held minus released)\n'
+    );
   } catch (err) {
     console.error('\n❌ Migration failed:', err.message);
     console.error('\nPlease run this SQL manually in Supabase SQL Editor:\n');
-    console.error(fs.readFileSync(
-      path.join(__dirname, 'db', 'migrations', '2025-11-21-add-is-retainage-billing-flag.sql'),
-      'utf8'
-    ));
+    console.error(
+      fs.readFileSync(
+        path.join(
+          __dirname,
+          'db',
+          'migrations',
+          '2025-11-21-add-is-retainage-billing-flag.sql'
+        ),
+        'utf8'
+      )
+    );
     process.exit(1);
   }
 }

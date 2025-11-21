@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type ProjectFinancials = {
   // Revenue (FloCon data)
@@ -68,26 +68,24 @@ export function useProjectFinancials(
     cashPositionPercent: 0,
   });
 
-  useEffect(() => {
+  const load = useCallback(async (forceRefresh: boolean = false) => {
     if (!projectId) return;
-    let cancelled = false;
+    
+    setLoading(true);
+    try {
+      // Fetch change orders
+      const { data: changeOrders, error: coError } = await supabase
+        .from('engagement_change_orders')
+        .select('amount, budget_amount')
+        .eq('engagement_id', projectId)
+        .eq('deleted', false);
 
-    const load = async () => {
-      setLoading(true);
-      try {
-        // Fetch change orders
-        const { data: changeOrders, error: coError } = await supabase
-          .from('engagement_change_orders')
-          .select('amount, budget_amount')
-          .eq('engagement_id', projectId)
-          .eq('deleted', false);
+      if (coError) {
+        console.error('Failed to load change orders:', coError);
+      }
 
-        if (coError) {
-          console.error('Failed to load change orders:', coError);
-        }
-
-        // Fetch pay apps for billings and retainage
-        const { data: payApps, error: paError } = await supabase
+      // Fetch pay apps for billings and retainage
+      const { data: payApps, error: paError } = await supabase
           .from('engagement_pay_apps')
           .select(
             'current_payment_due, retainage_completed_work, is_retainage_billing, qbo_payment_total, status'
@@ -118,9 +116,9 @@ export function useProjectFinancials(
           0
         );
         // Calculate net retainage: sum retainage held, subtract retainage released
-        let retainageToDate = Math.round(
-          payAppRows.reduce(
-            (sum, r) => {
+        let retainageToDate =
+          Math.round(
+            payAppRows.reduce((sum, r) => {
               if (r.is_retainage_billing) {
                 // Retainage release - subtract the payment amount
                 return sum - (Number(r.current_payment_due) || 0);
@@ -128,10 +126,8 @@ export function useProjectFinancials(
                 // Normal billing - add the retainage withheld
                 return sum + (Number(r.retainage_completed_work) || 0);
               }
-            },
-            0
-          ) * 100
-        ) / 100;
+            }, 0) * 100
+          ) / 100;
         // Fix negative zero display
         if (retainageToDate === 0) retainageToDate = 0;
 
@@ -139,7 +135,7 @@ export function useProjectFinancials(
         let cashIn = 0;
         let cashOut = 0;
         let qboCosts = { costToDate: 0, cashOut: 0 };
-        
+
         if (qboJobId) {
           try {
             console.log(
@@ -148,23 +144,22 @@ export function useProjectFinancials(
               'engagement:',
               projectId
             );
-            
+
             // Fetch cash basis P&L for cash flow
             const cashFlowResponse = await fetch(
               `/api/qbo/profit-loss-cash?qboJobId=${qboJobId}`
             );
-            
+
             if (cashFlowResponse.ok) {
               const cashFlowData = await cashFlowResponse.json();
               console.log('Cash flow data received:', cashFlowData);
               cashIn = cashFlowData.income || 0;
               cashOut = (cashFlowData.cogs || 0) + (cashFlowData.expenses || 0);
             }
-            
+
             // Fetch accrual costs for cost-to-date
-            const costResponse = await fetch(
-              `/api/qbo/project-costs-cached?qboJobId=${qboJobId}&engagementId=${projectId}`
-            );
+            const costUrl = `/api/qbo/project-costs-cached?qboJobId=${qboJobId}&engagementId=${projectId}${forceRefresh ? '&forceRefresh=true' : ''}`;
+            const costResponse = await fetch(costUrl);
             console.log(
               'Cost response status:',
               costResponse.status,
@@ -218,7 +213,7 @@ export function useProjectFinancials(
         // Cash flow calculations
         const netCashFlow = cashIn - cashOut;
         const cashPositionPercent =
-          cashOut > 0 ? ((cashIn / cashOut) - 1) * 100 : 0;
+          cashOut > 0 ? (cashIn / cashOut - 1) * 100 : 0;
 
         if (!cancelled) {
           setFinancials({
@@ -247,41 +242,41 @@ export function useProjectFinancials(
         }
       } catch (e) {
         console.error('Unexpected error loading project financials:', e);
-        if (!cancelled) {
-          setFinancials({
-            contractAmount: 0,
-            coSalesTotal: 0,
-            billingsToDate: 0,
-            retainageToDate: 0,
-            remainingBillings: 0,
-            percentCompleteRevenue: 0,
-            contractBudget: 0,
-            coBudgetTotal: 0,
-            totalContractBudget: 0,
-            costToDate: 0,
-            remainingCost: 0,
-            percentCompleteCost: 0,
-            contractProfitPercent: 0,
-            changeOrderProfitPercent: 0,
-            totalProfitPercent: 0,
-            projectedProfitPercent: 0,
-            projectedProfitDollar: 0,
-            cashIn: 0,
-            cashOut: 0,
-            netCashFlow: 0,
-            cashPositionPercent: 0,
-          });
-        }
+        setFinancials({
+          contractAmount: 0,
+          coSalesTotal: 0,
+          billingsToDate: 0,
+          retainageToDate: 0,
+          remainingBillings: 0,
+          percentCompleteRevenue: 0,
+          contractBudget: 0,
+          coBudgetTotal: 0,
+          totalContractBudget: 0,
+          costToDate: 0,
+          remainingCost: 0,
+          percentCompleteCost: 0,
+          contractProfitPercent: 0,
+          changeOrderProfitPercent: 0,
+          totalProfitPercent: 0,
+          projectedProfitPercent: 0,
+          projectedProfitDollar: 0,
+          cashIn: 0,
+          cashOut: 0,
+          netCashFlow: 0,
+          cashPositionPercent: 0,
+        });
       } finally {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       }
-    };
-
-    load();
-    return () => {
-      cancelled = true;
-    };
   }, [projectId, contractAmount, contractBudget, qboJobId]);
 
-  return { loading, financials };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const refresh = useCallback(async () => {
+    await load(true);
+  }, [load]);
+
+  return { loading, financials, refresh };
 }

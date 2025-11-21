@@ -40,12 +40,12 @@ async function runMigration() {
     for (const [engagementId, apps] of Object.entries(byEngagement)) {
       // Sort by pay app number
       const sorted = apps
-        .filter(app => app.pay_app_number !== null)
+        .filter((app) => app.pay_app_number !== null)
         .sort((a, b) => Number(a.pay_app_number) - Number(b.pay_app_number));
 
       for (let i = 0; i < sorted.length; i++) {
         const app = sorted[i];
-        
+
         // Calculate new previous_payments
         let newPreviousPayments = 0;
         if (i > 0) {
@@ -58,16 +58,21 @@ async function runMigration() {
         // Update if different
         const { error: updateError } = await supabase
           .from('engagement_pay_apps')
-          .update({ 
+          .update({
             previous_payments: newPreviousPayments,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('id', app.id);
 
         if (updateError) {
-          console.error(`❌ Error updating pay app ${app.pay_app_number}:`, updateError);
+          console.error(
+            `❌ Error updating pay app ${app.pay_app_number}:`,
+            updateError
+          );
         } else {
-          console.log(`✅ Updated pay app #${app.pay_app_number}: previous_payments = $${newPreviousPayments.toFixed(2)}`);
+          console.log(
+            `✅ Updated pay app #${app.pay_app_number}: previous_payments = $${newPreviousPayments.toFixed(2)}`
+          );
           updatedCount++;
         }
       }
@@ -79,9 +84,8 @@ async function runMigration() {
     console.log(`${'='.repeat(60)}\n`);
     console.log('📊 Summary:');
     console.log('- Previous_payments now uses delta method');
-    console.log('- Based on previous pay app\'s total_earned_less_retainage');
+    console.log("- Based on previous pay app's total_earned_less_retainage");
     console.log('- Fixes negative payment issues after retainage releases\n');
-
   } catch (err) {
     console.error('\n❌ Migration failed:', err.message);
     console.error('\nStack trace:', err);

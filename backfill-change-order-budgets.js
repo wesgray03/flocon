@@ -28,7 +28,9 @@ async function backfillChangeOrderBudgets() {
     for (const co of changeOrders) {
       // Skip if budget_amount already set
       if (co.budget_amount && co.budget_amount !== 0) {
-        console.log(`⏭️  CO #${co.auto_number}: Already has budget ($${co.budget_amount.toFixed(2)})`);
+        console.log(
+          `⏭️  CO #${co.auto_number}: Already has budget ($${co.budget_amount.toFixed(2)})`
+        );
         skippedCount++;
         continue;
       }
@@ -37,13 +39,15 @@ async function backfillChangeOrderBudgets() {
       const amount = co.amount || 0;
       const budgetAmount = Math.round(amount * 0.65 * 100) / 100;
 
-      console.log(`📝 CO #${co.auto_number}: Setting budget to $${budgetAmount.toFixed(2)} (65% of $${amount.toFixed(2)})`);
+      console.log(
+        `📝 CO #${co.auto_number}: Setting budget to $${budgetAmount.toFixed(2)} (65% of $${amount.toFixed(2)})`
+      );
 
       const { error: updateError } = await supabase
         .from('engagement_change_orders')
-        .update({ 
+        .update({
           budget_amount: budgetAmount,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', co.id);
 
@@ -60,7 +64,6 @@ async function backfillChangeOrderBudgets() {
     console.log(`   Updated: ${updatedCount} change orders`);
     console.log(`   Skipped (already set): ${skippedCount} change orders`);
     console.log(`${'='.repeat(60)}\n`);
-
   } catch (err) {
     console.error('\n❌ Backfill failed:', err.message);
     console.error('\nStack trace:', err);

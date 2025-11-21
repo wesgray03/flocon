@@ -45,21 +45,30 @@ export async function fetchProfitLossCash(
   );
 
   // Traverse P&L report rows recursively
-  const traverseRows = (rows: any[], currentSection: 'income' | 'cogs' | 'expenses' | 'other' = 'other') => {
+  const traverseRows = (
+    rows: any[],
+    currentSection: 'income' | 'cogs' | 'expenses' | 'other' = 'other'
+  ) => {
     if (!rows) return;
 
     rows.forEach((row: any) => {
       // Check for section headers
       if (row.Header) {
         const headerText = (row.Header.ColData?.[0]?.value || '').toLowerCase();
-        const headerAmountStr = (row.Header.ColData?.[1]?.value || '').replace(/[,()]/g, '');
+        const headerAmountStr = (row.Header.ColData?.[1]?.value || '').replace(
+          /[,()]/g,
+          ''
+        );
         const headerAmount = parseFloat(headerAmountStr) || 0;
 
         // Determine section
         let section: 'income' | 'cogs' | 'expenses' | 'other' = 'other';
         if (headerText.includes('income') || headerText.includes('revenue')) {
           section = 'income';
-        } else if (headerText.includes('cost of goods') || headerText.includes('cogs')) {
+        } else if (
+          headerText.includes('cost of goods') ||
+          headerText.includes('cogs')
+        ) {
           section = 'cogs';
         } else if (headerText.includes('expense')) {
           section = 'expenses';

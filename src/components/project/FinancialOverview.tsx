@@ -3,6 +3,8 @@ import { useProjectFinancials } from '@/domain/projects/useProjectFinancials';
 import { money } from '@/lib/format';
 import * as styles from '@/styles/projectDetailStyles';
 import { colors } from '@/styles/theme';
+import { RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 
 // Centralized Financial Overview component consolidating duplicated desktop/mobile markup.
 // Pulls live data from FloCon (pay apps, change orders, trades) and QuickBooks (payments).
@@ -15,19 +17,51 @@ export function FinancialOverview({
 }) {
   // Desktop variant shows two side-by-side columns; mobile stacks sections.
   const isDesktop = variant === 'desktop';
-  const { financials, loading } = useProjectFinancials(
+  const { financials, loading, refresh } = useProjectFinancials(
     project?.id,
     project?.contract_amount || 0,
     project?.contract_budget || 0,
     project?.qbo_job_id
   );
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refresh();
+    setRefreshing(false);
+  };
 
   // Helper to format percentages
   const pct = (value: number) => `${Math.round(value)}%`;
 
   return (
     <div style={styles.cardStyle}>
-      <h2 style={styles.sectionHeaderStyle}>Financial Overview</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <h2 style={styles.sectionHeaderStyle}>Financial Overview</h2>
+        {project?.qbo_job_id && (
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing || loading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              background: refreshing || loading ? '#f0f0f0' : '#0078d4',
+              color: refreshing || loading ? '#999' : 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: refreshing || loading ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: 500,
+              opacity: refreshing || loading ? 0.6 : 1,
+            }}
+          >
+            <RefreshCw size={16} className={refreshing ? 'spin' : ''} />
+            Refresh
+          </button>
+        )}
+      </div>
       {loading && (
         <div style={{ color: colors.textSecondary }}>
           Loading financial data...

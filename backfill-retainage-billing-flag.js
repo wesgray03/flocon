@@ -9,13 +9,17 @@ const supabase = createClient(
 );
 
 async function backfillRetainageBillingFlag() {
-  console.log('🚀 Backfilling is_retainage_billing flag for existing pay apps...\n');
+  console.log(
+    '🚀 Backfilling is_retainage_billing flag for existing pay apps...\n'
+  );
 
   try {
     // Get all pay apps ordered by engagement and pay app number
     const { data: payApps, error: fetchError } = await supabase
       .from('engagement_pay_apps')
-      .select('id, engagement_id, pay_app_number, current_payment_due, retainage_completed_work, is_retainage_billing')
+      .select(
+        'id, engagement_id, pay_app_number, current_payment_due, retainage_completed_work, is_retainage_billing'
+      )
       .order('engagement_id')
       .order('pay_app_number');
 
@@ -36,12 +40,12 @@ async function backfillRetainageBillingFlag() {
     for (const [engagementId, apps] of Object.entries(byEngagement)) {
       // Sort by pay app number
       const sorted = apps
-        .filter(app => app.pay_app_number !== null)
+        .filter((app) => app.pay_app_number !== null)
         .sort((a, b) => Number(a.pay_app_number) - Number(b.pay_app_number));
 
       for (let i = 0; i < sorted.length; i++) {
         const app = sorted[i];
-        
+
         // Skip if already marked as retainage billing
         if (app.is_retainage_billing) continue;
 
@@ -59,24 +63,32 @@ async function backfillRetainageBillingFlag() {
         // Then it's likely a retainage billing
         const hasNoNewRetainage = (app.retainage_completed_work || 0) === 0;
         const currentPayment = app.current_payment_due || 0;
-        const retainageMatch = previousRetainageHeld > 0 && 
+        const retainageMatch =
+          previousRetainageHeld > 0 &&
           Math.abs(currentPayment - previousRetainageHeld) < 1; // Allow $1 rounding difference
 
         if (hasNoNewRetainage && retainageMatch) {
-          console.log(`📝 Pay app #${app.pay_app_number}: Identified as retainage billing`);
-          console.log(`   Previous retainage held: $${previousRetainageHeld.toFixed(2)}`);
+          console.log(
+            `📝 Pay app #${app.pay_app_number}: Identified as retainage billing`
+          );
+          console.log(
+            `   Previous retainage held: $${previousRetainageHeld.toFixed(2)}`
+          );
           console.log(`   Current payment: $${currentPayment.toFixed(2)}`);
 
           const { error: updateError } = await supabase
             .from('engagement_pay_apps')
-            .update({ 
+            .update({
               is_retainage_billing: true,
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             })
             .eq('id', app.id);
 
           if (updateError) {
-            console.error(`❌ Error updating pay app ${app.pay_app_number}:`, updateError);
+            console.error(
+              `❌ Error updating pay app ${app.pay_app_number}:`,
+              updateError
+            );
           } else {
             console.log(`✅ Updated\n`);
             updatedCount++;
@@ -89,7 +101,6 @@ async function backfillRetainageBillingFlag() {
     console.log(`✅ Backfill completed!`);
     console.log(`   Updated: ${updatedCount} pay apps`);
     console.log(`${'='.repeat(60)}\n`);
-
   } catch (err) {
     console.error('\n❌ Backfill failed:', err.message);
     console.error('\nStack trace:', err);

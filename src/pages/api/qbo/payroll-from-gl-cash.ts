@@ -31,7 +31,9 @@ export async function fetchPayrollFromGLCash(
     summarize_column_by: 'Total',
   });
 
-  console.log(`Fetching Cash Basis ProfitAndLoss report for customer ${qboJobId}...`);
+  console.log(
+    `Fetching Cash Basis ProfitAndLoss report for customer ${qboJobId}...`
+  );
 
   const profitAndLoss: any = await makeQBORequest(
     'GET',
