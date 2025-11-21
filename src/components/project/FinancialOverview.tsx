@@ -243,6 +243,9 @@ export function FinancialOverview({
 
           {isDesktop && (
             <>
+              <Table>
+                <Row label="" value="" />
+              </Table>
               <SectionHeading title="Cash Flow" marginTop />
               <Table>
                 <Row label="Cash In" value={money(financials.cashIn)} bold />
