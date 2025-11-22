@@ -316,6 +316,41 @@ export async function syncPayAppToQBO(
       errorMessage += ` [Intuit TID: ${error.intuit_tid}]`;
     }
 
+    // Special handling for duplicate document number error
+    if (errorMessage.includes('Duplicate Document Number Error')) {
+      console.log('Duplicate DocNumber detected, attempting to link to existing invoice...');
+      
+      // Extract the existing invoice ID from the error message
+      const txnIdMatch = errorMessage.match(/TxnId=(\d+)/);
+      if (txnIdMatch) {
+        const existingInvoiceId = txnIdMatch[1];
+        console.log(`Linking to existing invoice ID: ${existingInvoiceId}`);
+        
+        try {
+          // Update pay app to link to the existing invoice
+          const { error: updateError } = await client
+            .from('engagement_pay_apps')
+            .update({
+              qbo_invoice_id: existingInvoiceId,
+              qbo_sync_status: 'synced',
+              qbo_synced_at: new Date().toISOString(),
+              qbo_sync_error: null,
+            })
+            .eq('id', payAppId);
+
+          if (!updateError) {
+            console.log('Successfully linked to existing invoice');
+            return {
+              success: true,
+              invoiceId: existingInvoiceId,
+            };
+          }
+        } catch (linkError) {
+          console.error('Failed to link to existing invoice:', linkError);
+        }
+      }
+    }
+
     // Store error in database
     await client
       .from('engagement_pay_apps')
