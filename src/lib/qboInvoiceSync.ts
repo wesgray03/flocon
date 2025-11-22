@@ -157,11 +157,29 @@ export async function syncPayAppToQBO(
       };
     }
 
-    // 3. Get or create service item
+    // 3. Check if payment amount is valid (QuickBooks doesn't allow negative amounts)
+    const paymentAmount = payApp.current_payment_due || 0;
+    
+    if (paymentAmount < 0) {
+      // Mark as skipped with explanation
+      await client
+        .from('engagement_pay_apps')
+        .update({
+          qbo_sync_status: 'skipped',
+          qbo_sync_error: 'Cannot sync negative payment amount to QuickBooks. This typically happens when work was reduced from a previous pay app.',
+        })
+        .eq('id', payAppId);
+
+      return {
+        success: false,
+        error: 'Cannot sync negative payment amount to QuickBooks',
+      };
+    }
+
+    // 4. Get or create service item
     const serviceItemId = await getOrCreateServiceItem();
 
-    // 4. Build invoice with single line for current payment due
-    const paymentAmount = payApp.current_payment_due || 0;
+    // 5. Build invoice with single line for current payment due
 
     // Build DocNumber in format: ProjectNumber-PayAppNumber (e.g., "1289-1")
     const docNumber =
